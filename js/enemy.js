@@ -1,24 +1,6 @@
 function stand(actor, dt) {
 }
 
-function stageLeft(actor, dt) {
-  if (actor.visible && actor.live) {
-	actor.x -= 80*dt;
-  }
-  if (actor.x < 20) {
-	actor.live = false;
-  }
-}
-
-function stageRight(actor, dt) {
-  if (actor.visible && actor.live) {
-	actor.x += 80*dt;
-  }
-  if (actor.x - 20 > actor.ctx.canvas.width) {
-	actor.live = false;
-  }
-}
-
 
 export const CHARACTERS = {
   ghost: {costume: "ghost.png", role: stand, animations: []},
@@ -35,10 +17,10 @@ export class Enemy {
 	}
   }
 
-  static spawn(ctx, x, y, color, updater) {
+  static spawn(x, y, color, updater) {
 	let enemy = this.#INSTANCES.filter(e => !e.live).pop();
 	if (typeof enemy == "undefined") {
-	  enemy = new Enemy(ctx, x, y, color, updater);
+	  enemy = new Enemy(x, y, color, updater);
 	  this.#INSTANCES.push(enemy);
 	  console.log("Created new enemy", enemy);
 	} else {
@@ -48,8 +30,7 @@ export class Enemy {
 	return enemy;
   }
 
-  constructor(ctx, x, y, color, updater) {
-	this.ctx = ctx;
+  constructor(x, y, color, updater) {
 	this.init(x, y, color, updater);
   }
 
@@ -73,11 +54,11 @@ export class Enemy {
 	this.live = updated.live;
   }
 
-  draw() {
-	this.ctx.fillStyle = this.color;
-	this.ctx.beginPath();
-	this.ctx.arc(Math.round(this.x), Math.round(this.y), 10, 0, 2*Math.PI);
-	this.ctx.closePath();
-	this.ctx.fill();
+  draw(ctx) {
+	ctx.fillStyle = this.color;
+	ctx.beginPath();
+	ctx.arc(Math.round(this.x), Math.round(this.y), 10, 0, 2*Math.PI);
+	ctx.closePath();
+	ctx.fill();
   }
 }

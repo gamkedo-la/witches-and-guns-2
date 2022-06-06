@@ -7,14 +7,15 @@ export class Input {
 	this.onReleaseHooks = {};
 	this.mousePos = {x: null, y: null};
 	this.mouseButtonHeld = false;
-	document.addEventListener("keydown", event => this.keyPress(event));
-	document.addEventListener("keyup", event => this.keyRelease(event));
-	canvas.addEventListener("mousemove", event => this.updateMousePos(event));
+	const input = this;
+	document.addEventListener("keydown", event => input.keyPress(event));
+	document.addEventListener("keyup", event => input.keyRelease(event));
+	canvas.addEventListener("mousemove", event => input.updateMousePos(event));
 	canvas.addEventListener("mousedown", event => {
-	  this.mouseButtonHeld = true;
+	  input.mouseButtonHeld = true;
 	});
 	canvas.addEventListener("mouseup", event => {
-	  this.mouseButtonHeld = false;
+	  input.mouseButtonHeld = false;
 	});
   }
 

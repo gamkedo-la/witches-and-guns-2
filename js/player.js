@@ -1,8 +1,9 @@
 import {Enemy} from "./enemy.js";
 import {Projectile} from "./projectile.js";
+import {constants} from "./constants.js";
 
 export class Player {
-  static avatarHeight = 24;
+  static avatarHeight = 32;
   static avatarWidth = 8;
   static reticleSpeed = 270;
   static avatarSpeed = 120;
@@ -26,6 +27,7 @@ export class Player {
 	return {x: f*vel.x, y: f*vel.y};
   }
 
+  // TODO: move to game code
   static onHitTarget = function(dt, shot) {
 	for (const enemy of Enemy.alive()) {
 	  const dist = Math.sqrt(Math.pow(enemy.x - shot.target.x, 2) + Math.pow(enemy.y - shot.target.y, 2));
@@ -34,29 +36,30 @@ export class Player {
 		}
 	}
   }
-  
-  constructor (canvasContext, input) {
-	this.ctx = canvasContext;
-	this.input = input;
-	this.avatarPos = {x: 100, y: this.ctx.canvas.height - Player.avatarHeight};
-	this.reticlePos = {x: 104, y: this.ctx.canvas.height/2};
+
+  constructor(startPos) {
+	this.avatarPos = {x: 100, y: startPos.y};
+	this.reticlePos = {x: startPos.x + 4, y: startPos.y - 100};
 	this.shots = [];
 	this.shotDelay = 0;
 	this.hitTargetHooks = [Player.onHitTarget];
+	this.isShooting = false;
   }
 
-  update(dt) {
+  update(dt, input, level) {
 	this.shots = this.shots.filter(shot => shot.live);
-	if (!this.input.shoot) {
-	  if (this.input.left) {
+	if (!input.shoot) {
+	  if (input.left) {
 		this.avatarPos.x -= Player.avatarSpeed*dt;
 	  }
-	  if (this.input.right) {
+	  if (input.right) {
 		this.avatarPos.x += Player.avatarSpeed*dt;
 	  }
+	  this.isShooting = false;
+	  level.scroll(this.avatarPos.x);
 	} else if (this.shotDelay <= 0) {
+	  this.isShooting = true;
 	  this.shots.push(Projectile.get(
-		this.ctx,
 		8,
 		Player.avatarWidth/2,
 		{x: this.avatarPos.x + Player.avatarWidth/2, y: this.avatarPos.y},
@@ -68,7 +71,7 @@ export class Player {
 	}
 	this.shots.forEach(shot => shot.update(dt));
 	this.shotDelay -= dt;
-	const cv = Player.getAxis(this.input.up, this.input.down, this.input.left, this.input.right);
+	const cv = Player.getAxis(input.up, input.down, input.left, input.right);
 	if (!(cv.x === 0 && cv.y === 0)) {
 	  const vel = Player.clampNorm({
 		x: cv.x*Player.reticleSpeed,
@@ -80,38 +83,37 @@ export class Player {
 	if (this.avatarPos.x < 0) {
 	  this.avatarPos.x = 0;
 	}
-	if (this.avatarPos.x  > this.ctx.canvas.width - Player.avatarWidth) {
-	  this.avatarPos.x = this.ctx.canvas.width - Player.avatarWidth;
+	if (this.avatarPos.x  > constants.VIEWABLE_WIDTH - Player.avatarWidth) {
+	  this.avatarPos.x = constants.VIEWABLE_WIDTH - Player.avatarWidth;
 	}
 	if (this.reticlePos.x < Player.avatarWidth/2) {
 	  this.reticlePos.x = Player.avatarWidth/2;
 	}
-	if (this.reticlePos.x  > this.ctx.canvas.width - Player.avatarWidth/2) {
-	  this.reticlePos.x = this.ctx.canvas.width - Player.avatarWidth/2;
+	if (this.reticlePos.x  > constants.VIEWABLE_WIDTH - Player.avatarWidth/2) {
+	  this.reticlePos.x = constants.VIEWABLE_WIDTH - Player.avatarWidth/2;
 	}
 	if (this.reticlePos.y < Player.avatarWidth/2) {
 	  this.reticlePos.y = Player.avatarWidth/2;
 	}
-	if (this.reticlePos.y  > this.ctx.canvas.height - Player.avatarHeight) {
-	  this.reticlePos.y = this.ctx.canvas.height - Player.avatarHeight;
+	if (this.reticlePos.y  > constants.VIEWABLE_HEIGHT - Player.avatarHeight) {
+	  this.reticlePos.y = constants.VIEWABLE_HEIGHT - Player.avatarHeight;
 	}
   }
 
-  draw() {
-	this.ctx.strokeStyle = this.input.shoot ? "lime" : "red";
-	if (this.input.shoot) {
-	  this.ctx.setLineDash([2, 4]);
-	  this.ctx.beginPath();
-	  this.ctx.moveTo(Math.round(this.avatarPos.x + Player.avatarWidth/2), Math.round(this.avatarPos.y));
-	  this.ctx.lineTo(Math.round(this.reticlePos.x), Math.round(this.reticlePos.y));
-	  // this.ctx.stroke();
-	  this.ctx.setLineDash([]);
+  draw(ctx, assets) {
+	ctx.strokeStyle = this.isShooting ? "lime" : "red";
+	if (this.isShooting) {
+	  ctx.setLineDash([2, 4]);
+	  ctx.beginPath();
+	  ctx.moveTo(Math.round(this.avatarPos.x + Player.avatarWidth/2), Math.round(this.avatarPos.y));
+	  ctx.lineTo(Math.round(this.reticlePos.x), Math.round(this.reticlePos.y));
+	  // ctx.stroke();
+	  ctx.setLineDash([]);
 	}
-	this.ctx.beginPath();
-	this.ctx.arc(this.reticlePos.x, this.reticlePos.y, Math.round(Player.avatarWidth), 0, 2*Math.PI);
-	this.ctx.stroke();
-	this.ctx.fillStyle = "lime";
-	this.ctx.fillRect(Math.round(this.avatarPos.x), Math.round(this.avatarPos.y), Player.avatarWidth, Player.avatarHeight);
-	this.shots.forEach(shot => shot.draw());
+	ctx.beginPath();
+	ctx.arc(this.reticlePos.x, this.reticlePos.y, Math.round(Player.avatarWidth), 0, 2*Math.PI);
+	ctx.stroke();
+	ctx.drawImage(assets.player, 50, 0, 20, 32, Math.round(this.avatarPos.x), Math.round(this.avatarPos.y), 20, 32);
+	this.shots.forEach(shot => shot.draw(ctx));
   }
 }

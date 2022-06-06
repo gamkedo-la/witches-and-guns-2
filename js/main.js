@@ -9,14 +9,17 @@ class Game {
   static updateStep = 1/60;
   static last = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
 
-  constructor() {
-	this.canvas = document.getElementById("gameCanvas");
-	this.ctx = this.canvas.getContext("2d");
+  constructor(loadedAssets) {
+	const canvas = document.getElementById("gameCanvas");
+	this.ctx = canvas.getContext("2d");
+	this.assets = loadedAssets;
 
-	this.input = new Input(this.canvas);
-	this.editor = new Editor(this.ctx, this.input);
-	this.player = new Player(this.ctx, this.input);
-	this.currentLevel = new Level(this.ctx, this.editor.data);
+	this.input = new Input(canvas);
+	this.editor = new Editor();
+	this.input.onRelease(Input.EDIT, event => this.editor.toggle());
+	this.player = new Player({x: 100, y: this.ctx.canvas.height - Player.avatarHeight});
+	this.currentLevel = new Level(this.editor.data, this.ctx.canvas.width, this.ctx.canvas.height);
+	// this.currentLevel.scroll(this.player.avatarPos.x);
   }
 
   start() {
@@ -25,10 +28,10 @@ class Game {
 
   update(dt) {
 	if (this.editor.enabled) {
-	  this.editor.update(dt);
+	  this.editor.update(dt, this.input);
 	} else {
-	  this.currentLevel.update(dt);
-	  this.player.update(dt);
+	  this.currentLevel.update(dt, this.input);
+	  this.player.update(dt, this.input, this.currentLevel);
 	  for (const enemy of Enemy.alive()) {
 		enemy.update(dt);
 	  }
@@ -37,16 +40,16 @@ class Game {
 
   draw() {
 	this.ctx.fillStyle = this.editor.enabled ? "green" : "gray";
-	this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+	this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
 	if (this.editor.enabled) {
-	  this.editor.draw();
+	  this.editor.draw(this.ctx, this.assets);
 	} else {
-	  this.currentLevel.draw();
+	  this.currentLevel.draw(this.ctx, this.assets);
 	  for (const enemy of Enemy.alive()) {
-		enemy.draw();
+		enemy.draw(this.ctx, this.assets);
 	  }
-	  this.player.draw();
+	  this.player.draw(this.ctx, this.assets);
 	}
   }
 
@@ -66,7 +69,29 @@ class Game {
   }
 }
 
+const assetSpecs = [
+  {id: "player", path: "images/julhilde.png"},
+  {id: "tile", path: "images/tile.png"},
+  {id: "levelBG", path: "images/background.gif"},
+  {id: "editorUI", path: "images/editorUI.png"},
+];
+
+async function loadAsset(spec) {
+  const image = new Image();
+  image.src = spec.path;
+  await image.decode();
+  return [spec.id, image];
+}
+
+function loadAssets() {
+  return Promise.all(assetSpecs.map(spec => {
+	return loadAsset(spec);
+  }));
+}
+
 window.onload = function() {
-  const game = new Game();
-  game.start();
+  loadAssets().then(assetsArr => {
+	const game = new Game(Object.fromEntries(assetsArr));
+	game.start();
+  });
 };
