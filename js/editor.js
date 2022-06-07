@@ -1,8 +1,6 @@
 import {constants} from "./constants.js";
 import {Input} from "./input.js";
 
-
-
 class Button {
   static WIDTH = 17;
   static HEIGHT = 17;
@@ -202,7 +200,7 @@ export class Editor {
   }
 
   getTimeIndex() {
-	return this.components.timeSlider.selectedTime/constants.TIME_SLOT;
+	return this.components.timeSlider.sliderPos;
   }
 
   dropEnemy() {
@@ -316,8 +314,10 @@ class StageSlider {
 
 class TimeSlider {
   static SPEED = 2;
-  static MAX_TIME = 22000; // ms
+  static MAX_TIME = 100000; // ms
   static HEIGHT = 12;
+  static BTN_WIDTH = 7;
+  static TIME_STEP = 250; // ms
   
   constructor(editor) {
 	this.editor = editor;
@@ -326,55 +326,48 @@ class TimeSlider {
 	this.y = 184;
 	this.isDragging = false;
 	this.selectedTime = 0; // in ms
-	this.sliderWidth = Math.floor(this.timeToPos(constants.TIME_SLOT)) - 2;
+	this.maxPos = (constants.VIEWABLE_WIDTH - TimeSlider.BTN_WIDTH)/2;
   }
 
-  pos2Time(pos) {
-	const time = Math.round((TimeSlider.MAX_TIME / (426)) * pos);
-	return time - (time % constants.TIME_SLOT);
-  }
-
-  timeToPos(time) {
-	return (426 / TimeSlider.MAX_TIME) * time;
+  getSelectedTime() {
+	return this.sliderPos*TimeSlider.TIME_STEP;
   }
   
   update(dt, input) {
 	if (this.editor.isDragging) {
 	  return;
 	}
-	// TODO: implement discrete steps
 	if (input.left) {
-	  this.selectedTime = Math.max(0, this.selectedTime - TimeSlider.TIME_SLOT);
-	  this.sliderPos = this.timeToPos(this.selectedTime);
-	  console.log("Changed time slider position", this.sliderPos, "TIME:", this.selectedTime);
+	  this.sliderPos = Math.max(0, this.sliderPos - 1);
 	}
 	if (input.right) {
+	  this.sliderPos = Math.min(this.maxPos, this.sliderPos + 1);
 	  this.selectedTime = Math.max(TimeSlider.MAX_TIME, this.selectedTime + TimeSlider.TIME_SLOT);
-	  this.sliderPos = this.timeToPos(this.selectedTime);
+	  // this.sliderPos = this.timeToPos(this.selectedTime);
 	  console.log("Changed time slider position", this.sliderPos, "TIME:", this.selectedTime);
 	}
-	if (input.mouseButtonHeld && input.mousePos.y >= this.y && input.mousePos.y <= this.y + TimeSlider.HEIGHT) {
-	  this.sliderPos = Math.min(Math.max(input.mousePos.x, 0), 426 - 10);
+	if (input.mouseButtonHeld && input.mousePos.y >= this.y && input.mousePos.y <= this.y + TimeSlider.HEIGHT && input.mousePos.x > TimeSlider.BTN_WIDTH && input.mousePos.x < constants.VIEWABLE_WIDTH - TimeSlider.BTN_WIDTH) {
+	  this.sliderPos = Math.floor(input.mousePos.x) - TimeSlider.BTN_WIDTH;
 	  this.isDragging = true;
 	} else if (!input.mouseButtonHeld && this.isDragging) {
 	  this.isDragging = false;
-	  this.selectedTime = this.pos2Time(this.sliderPos);
-	  this.sliderPos = this.timeToPos(this.selectedTime) + 1;
+	  this.sliderPos = Math.min(TimeSlider.MAX_TIME/250, Math.max(0, Math.floor(input.mousePos.x) - TimeSlider.BTN_WIDTH));
+	  this.selectedTime = this.sliderPos*250;
 	  console.log("Changed time slider position", this.sliderPos, "TIME:", this.selectedTime);
 	}
   }
 
   draw(ctx, assets) {
-	ctx.drawImage(assets.editorUI, 74, 20, 7, TimeSlider.HEIGHT, 0, this.y, 7, TimeSlider.HEIGHT);
-	for (let i=7; i<ctx.canvas.width - 7; i+=2) {
+	ctx.drawImage(assets.editorUI, 74, 20, TimeSlider.BTN_WIDTH, TimeSlider.HEIGHT, 0, this.y, TimeSlider.BTN_WIDTH, TimeSlider.HEIGHT);
+	for (let i=7; i<ctx.canvas.width - TimeSlider.BTN_WIDTH; i+=2) {
 	  ctx.drawImage(assets.editorUI, 81, 20, 2, TimeSlider.HEIGHT, i, this.y, 2, TimeSlider.HEIGHT);
 	}
 	ctx.translate(ctx.canvas.width, this.y);
 	ctx.scale(-1, 1);
-	ctx.drawImage(assets.editorUI, 74, 20, 7, TimeSlider.HEIGHT, 0, 0, 7, TimeSlider.HEIGHT);
+	ctx.drawImage(assets.editorUI, 74, 20, TimeSlider.BTN_WIDTH, TimeSlider.HEIGHT, 0, 0, TimeSlider.BTN_WIDTH, TimeSlider.HEIGHT);
 	ctx.setTransform(1, 0, 0, 1, 0, 0);
 	ctx.fillStyle = "yellow";
-	ctx.fillRect(Math.round(this.sliderPos), this.y + 2, 1, 6);
+	ctx.fillRect(Math.round(this.sliderPos + this.sliderPos%2) + TimeSlider.BTN_WIDTH, this.y + 2, 1, 6);
   }
 }
 
