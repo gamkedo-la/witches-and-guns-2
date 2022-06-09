@@ -374,6 +374,9 @@ class TimeSlider {
 	console.log("Changed time slider position", this.sliderPos, "TIME:", this.getSelectedTime());
   }
 
+  screenPosToSliderPos(x) {
+	return Math.min(TimeSlider.MAX_TIME/TimeSlider.TIME_STEP, Math.max(0, Math.floor((x - TimeSlider.BTN_WIDTH)/2)));
+  }
   
   update(dt, input) {
 	if (this.editor.isDragging) {
@@ -382,22 +385,18 @@ class TimeSlider {
 	this.leftBtn.update(dt, input);
 	this.rightBtn.update(dt, input);
 	if (input.left) {
-	  this.sliderPos = Math.max(0, this.sliderPos - 1);
+	  this.stepLeft();
 	}
 	if (input.right) {
-	  this.sliderPos = Math.min(this.maxPos, this.sliderPos + 1);
-	  this.selectedTime = Math.max(TimeSlider.MAX_TIME, this.selectedTime + TimeSlider.TIME_SLOT);
-	  // this.sliderPos = this.timeToPos(this.selectedTime);
-	  console.log("Changed time slider position", this.sliderPos, "TIME:", this.selectedTime);
+	  this.stepRight();
 	}
 	if (input.mouseButtonHeld && input.mousePos.y >= this.y && input.mousePos.y <= this.y + TimeSlider.HEIGHT && input.mousePos.x > TimeSlider.BTN_WIDTH && input.mousePos.x < constants.VIEWABLE_WIDTH - TimeSlider.BTN_WIDTH) {
-	  this.sliderPos = Math.floor(input.mousePos.x) - TimeSlider.BTN_WIDTH;
+	  this.sliderPos = this.screenPosToSliderPos(input.mousePos.x);
 	  this.isDragging = true;
 	} else if (!input.mouseButtonHeld && this.isDragging) {
 	  this.isDragging = false;
-	  this.sliderPos = Math.min(TimeSlider.MAX_TIME/250, Math.max(0, Math.floor(input.mousePos.x) - TimeSlider.BTN_WIDTH));
-	  this.selectedTime = this.sliderPos*250;
-	  console.log("Changed time slider position", this.sliderPos, "TIME:", this.selectedTime);
+	  this.sliderPos = this.screenPosToSliderPos(input.mousePos.x);
+	  console.log("Changed time slider position", this.sliderPos, "TIME:", this.getSelectedTime());
 	}
   }
 
