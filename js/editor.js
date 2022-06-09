@@ -1,30 +1,29 @@
 import {constants} from "./constants.js";
 import {Input} from "./input.js";
 
-class Button {
-  static WIDTH = 17;
-  static HEIGHT = 17;
 
-  constructor(editor, spriteOffsetX, spriteOffsetY, order, containerY) {
-	this.editor = editor;
-	this.order = order;
-	this.x = Math.floor(order/2)*Button.WIDTH;
-	this.y = (order%2)*Button.HEIGHT + containerY;
+class Button {
+  constructor(x, y, width, height, spriteOffsetX, spriteOffsetY, flipSprite) {
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
 	this.spriteOffsetX = spriteOffsetX;
 	this.spriteOffsetY = spriteOffsetY;
 	this.mouseBtnWasHeld = false;
+	this.flipSprite = flipSprite || false;
   }
 
-  action() {
-	console.log("CLICKED", this);
+  onClick(fun) {
+	this.action = fun;
   }
 
   update(dt, input) {
 	const mousePosHere = pointInRectangle(input.mousePos, {
 	  x: this.x,
 	  y: this.y,
-	  width: Button.WIDTH,
-	  height: Button.HEIGHT,
+	  width: this.width,
+	  height: this.height,
 	});
 	if (mousePosHere && !input.mouseButtonHeld && this.mouseBtnWasHeld) {
 	  this.action();
@@ -33,18 +32,48 @@ class Button {
   }
 
   draw(ctx, assets) {
-	ctx.drawImage(assets.editorUI, this.spriteOffsetX, this.spriteOffsetY, Button.WIDTH, Button.HEIGHT, this.x, this.y, Button.WIDTH, Button.HEIGHT);
+	if (this.flipSprite) {
+	  ctx.translate(this.x + this.width, this.y);
+	  ctx.scale(-1, 1);
+	  ctx.drawImage(assets.editorUI, this.spriteOffsetX, this.spriteOffsetY, this.width, this.height, 0, 0, this.width, this.height);
+	  ctx.setTransform(1, 0, 0, 1, 0, 0);
+	} else {
+	  ctx.drawImage(assets.editorUI, this.spriteOffsetX, this.spriteOffsetY, this.width, this.height, this.x, this.y, this.width, this.height);
+	}
 	if (this.mouseBtnWasHeld) {
 	  const oldAlpha = ctx.globalAlpha;
 	  ctx.globalAlpha = .3;
 	  ctx.fillStyle = "white";
-	  ctx.fillRect(this.x + 1, this.y + 1, Button.WIDTH - 2, Button.HEIGHT - 2);
+	  ctx.fillRect(this.x + 1, this.y + 1, this.width - 2, this.height - 2);
 	  ctx.globalAlpha = oldAlpha;
 	}
   }
 }
 
-class PlayButton extends Button {
+class ToolButton extends Button {
+  static WIDTH = 17;
+  static HEIGHT = 17;
+
+  constructor(editor, spriteOffsetX, spriteOffsetY, order, containerY) {
+	super(
+	  Math.floor(order/2)*ToolButton.WIDTH,
+	  (order%2)*ToolButton.HEIGHT + containerY,
+	  ToolButton.WIDTH,
+	  ToolButton.HEIGHT,
+	  spriteOffsetX,
+	  spriteOffsetY,
+	  false,
+	);
+	this.editor = editor;
+	this.order = order;
+  }
+
+  action() {
+	console.log("CLICKED", this);
+  }
+}
+
+class PlayButton extends ToolButton {
   constructor(editor, order, containerY) {
 	super(editor, 0, 0, order, containerY);
   }
@@ -53,45 +82,45 @@ class PlayButton extends Button {
   }
 }
 
-class EnemyButton extends Button {
+class EnemyButton extends ToolButton {
   constructor(editor, order, containerY) {
-	super(editor, Button.WIDTH, 0, order, containerY);
+	super(editor, ToolButton.WIDTH, 0, order, containerY);
   }
 }
 
-class CopyButton extends Button {
+class CopyButton extends ToolButton {
   constructor(editor, order, containerY) {
-	super(editor, Button.WIDTH*2, 0, order, containerY);
+	super(editor, ToolButton.WIDTH*2, 0, order, containerY);
   }
 }
 
-class UndoButton extends Button {
+class UndoButton extends ToolButton {
   constructor(editor, order, containerY) {
-	super(editor, Button.WIDTH*3, 0, order, containerY);
+	super(editor, ToolButton.WIDTH*3, 0, order, containerY);
   }
 }
 
-class HandButton extends Button {
+class HandButton extends ToolButton {
   constructor(editor, order, containerY) {
-	super(editor, 0, Button.HEIGHT, order, containerY);
+	super(editor, 0, ToolButton.HEIGHT, order, containerY);
   }
 }
 
-class WayPointButton extends Button {
+class WayPointButton extends ToolButton {
   constructor(editor, order, containerY) {
-	super(editor, Button.WIDTH, Button.HEIGHT, order, containerY);
+	super(editor, ToolButton.WIDTH, ToolButton.HEIGHT, order, containerY);
   }
 }
 
-class TrashButton extends Button {
+class TrashButton extends ToolButton {
   constructor(editor, order, containerY) {
-	super(editor, Button.WIDTH*2, Button.HEIGHT, order, containerY);
+	super(editor, ToolButton.WIDTH*2, ToolButton.HEIGHT, order, containerY);
   }
 }
 
-class SaveButton extends Button {
+class SaveButton extends ToolButton {
   constructor(editor, order, containerY) {
-	super(editor, Button.WIDTH*3, Button.HEIGHT, order, containerY);
+	super(editor, ToolButton.WIDTH*3, ToolButton.HEIGHT, order, containerY);
   }
 }
 
@@ -110,7 +139,7 @@ export class Editor {
 	this.enabled = true;
 	this.components = {
 	  timeSlider: new TimeSlider(this),
-	  enemyPalette: new EnemyPalette(this, Button.WIDTH*Editor.buttonSpecs.length/2, 184 + TimeSlider.HEIGHT),
+	  enemyPalette: new EnemyPalette(this, ToolButton.WIDTH*Editor.buttonSpecs.length/2, 184 + TimeSlider.HEIGHT),
 	  stageSlider: new StageSlider(this),
 	};
 	const buttonsY = this.components.timeSlider.y + TimeSlider.HEIGHT;
@@ -178,7 +207,6 @@ export class Editor {
 	}
 	for (const [i, btn] of this.buttons.entries()) {
 	  btn.update(dt, input);
-	  // btn.draw(ctx, assets, this.components.timeSlider.y + TimeSlider.HEIGHT, i);
 	}
 	if (this.isDragging) {
 	  if (input.mouseButtonHeld) {
@@ -325,18 +353,34 @@ class TimeSlider {
 	this.containerY = 240 - TimeSlider.HEIGHT;
 	this.y = 184;
 	this.isDragging = false;
-	this.selectedTime = 0; // in ms
 	this.maxPos = (constants.VIEWABLE_WIDTH - TimeSlider.BTN_WIDTH)/2;
+	this.leftBtn = new Button(0, this.y, TimeSlider.BTN_WIDTH, TimeSlider.HEIGHT, 74, 20);
+	this.leftBtn.onClick(() => this.stepLeft());
+	this.rightBtn = new Button(constants.VIEWABLE_WIDTH - TimeSlider.BTN_WIDTH, this.y, TimeSlider.BTN_WIDTH, TimeSlider.HEIGHT, 74, 20, true);
+	this.rightBtn.onClick(() => this.stepRight());
   }
 
   getSelectedTime() {
 	return this.sliderPos*TimeSlider.TIME_STEP;
   }
+
+  stepLeft() {
+	this.sliderPos = Math.max(0, this.sliderPos - 1);
+	console.log("Changed time slider position", this.sliderPos, "TIME:", this.getSelectedTime());
+  }
+
+  stepRight() {
+	this.sliderPos = Math.min(this.maxPos, this.sliderPos + 1);
+	console.log("Changed time slider position", this.sliderPos, "TIME:", this.getSelectedTime());
+  }
+
   
   update(dt, input) {
 	if (this.editor.isDragging) {
 	  return;
 	}
+	this.leftBtn.update(dt, input);
+	this.rightBtn.update(dt, input);
 	if (input.left) {
 	  this.sliderPos = Math.max(0, this.sliderPos - 1);
 	}
@@ -358,16 +402,13 @@ class TimeSlider {
   }
 
   draw(ctx, assets) {
-	ctx.drawImage(assets.editorUI, 74, 20, TimeSlider.BTN_WIDTH, TimeSlider.HEIGHT, 0, this.y, TimeSlider.BTN_WIDTH, TimeSlider.HEIGHT);
+	this.leftBtn.draw(ctx, assets);
 	for (let i=7; i<ctx.canvas.width - TimeSlider.BTN_WIDTH; i+=2) {
 	  ctx.drawImage(assets.editorUI, 81, 20, 2, TimeSlider.HEIGHT, i, this.y, 2, TimeSlider.HEIGHT);
 	}
-	ctx.translate(ctx.canvas.width, this.y);
-	ctx.scale(-1, 1);
-	ctx.drawImage(assets.editorUI, 74, 20, TimeSlider.BTN_WIDTH, TimeSlider.HEIGHT, 0, 0, TimeSlider.BTN_WIDTH, TimeSlider.HEIGHT);
-	ctx.setTransform(1, 0, 0, 1, 0, 0);
+	this.rightBtn.draw(ctx, assets);
 	ctx.fillStyle = "yellow";
-	ctx.fillRect(Math.round(this.sliderPos + this.sliderPos%2) + TimeSlider.BTN_WIDTH, this.y + 2, 1, 6);
+	ctx.fillRect(Math.floor(this.sliderPos*2) + TimeSlider.BTN_WIDTH, this.y + 2, 1, 6);
   }
 }
 
