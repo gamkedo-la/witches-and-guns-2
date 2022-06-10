@@ -151,6 +151,7 @@ export class Editor {
 	this.isDragging = false;
 	this.data = Array(Math.ceil(TimeSlider.MAX_TIME/constants.TIME_SLOT));
 	this.stageOffset = 0;
+	this.selectedEnemy = null;
   }
 
   scrollRight(offset) {
@@ -235,8 +236,13 @@ export class Editor {
 	const index = this.getTimeIndex();
 	if (typeof this.data[index] === "undefined") {
 	  this.data[index] = [];
- }
+	}
 	this.data[index].push(this.dragObj.enemy);
+	this.selectedEnemy = {
+	  enemy: this.dragObj.enemy,
+	  index: index,
+	  subindex: this.data[index].length - 1
+	};
 	console.log("DATA UPDATED", this.data);
   }
 
@@ -283,6 +289,12 @@ export class Editor {
 	// draw buttons
 	for (const [i, btn] of this.buttons.entries()) {
 	  btn.draw(ctx, assets, this.components.timeSlider.y + TimeSlider.HEIGHT, i);
+	}
+	if (this.selectedEnemy !== null && timeIndex === this.selectedEnemy.index) {
+	  ctx.setLineDash([2, 3]);
+	  ctx.strokeStyle = "lime";
+	  ctx.strokeRect(Math.round(this.selectedEnemy.enemy.x), Math.round(this.selectedEnemy.enemy.y), this.selectedEnemy.enemy.width, this.selectedEnemy.enemy.height);
+	  ctx.setLineDash([]);
 	}
   }
 
