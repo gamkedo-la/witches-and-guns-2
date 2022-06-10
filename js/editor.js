@@ -116,6 +116,9 @@ class TrashButton extends ToolButton {
   constructor(editor, order, containerY) {
 	super(editor, ToolButton.WIDTH*2, ToolButton.HEIGHT, order, containerY);
   }
+  action() {
+	this.editor.deleteSelected();
+  }
 }
 
 class SaveButton extends ToolButton {
@@ -300,6 +303,13 @@ export class Editor {
 
   toggle() {
 	this.enabled = !this.enabled;
+  }
+
+  deleteSelected() {
+	if (this.selectedEnemy !== null && this.getTimeIndex() === this.selectedEnemy.index) {
+	  this.data[this.selectedEnemy.index].splice(this.selectedEnemy.subindex, 1);
+	  this.selectedEnemy = null;
+	}
   }
 }
 
