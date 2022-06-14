@@ -154,6 +154,7 @@ export class Editor {
 	this.isDragging = false;
 	this.data = Array(Math.ceil(TimeSlider.MAX_TIME/constants.TIME_SLOT));
 	this.stageOffset = 0;
+	this.dragOffset = {x: 0, y: 0};
 	this.selectedEnemy = null;
   }
 
@@ -184,6 +185,8 @@ export class Editor {
 				height: box.height,
 				enemy: Object.assign({}, box.enemy),
 			  };
+			  this.dragOffset.x = this.dragObj.x - mouseX;
+			  this.dragOffset.y = this.dragObj.y - mouseY;
 			  break;
 			}
 		  }
@@ -199,6 +202,8 @@ export class Editor {
 				height: enemy.height,
 				enemy: enemy,
 			  });
+			  this.dragOffset.x = this.dragObj.x - mouseX;
+			  this.dragOffset.y = this.dragObj.y - mouseY;
 			  enemies.splice(i, 1);
 			  break;
 			}
@@ -214,8 +219,8 @@ export class Editor {
 	}
 	if (this.isDragging) {
 	  if (input.mouseButtonHeld) {
-		this.dragObj.x = input.mousePos.x;
-		this.dragObj.y = input.mousePos.y;
+		this.dragObj.x = input.mousePos.x + this.dragOffset.x;
+		this.dragObj.y = input.mousePos.y + this.dragOffset.y;
 	  } else {
 		this.isDragging = false;
 		if (this.dragObj.x > 0 && this.dragObj.x + this.dragObj.width < this.components.enemyPalette.containerX && this.dragObj.y < this.components.timeSlider.y) {
