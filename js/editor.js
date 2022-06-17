@@ -212,7 +212,7 @@ export class Editor {
 			  });
 			  enemies.splice(i, 1);
 			  break;
-			} else {
+			} else if (pointInRectangle(input.mousePos, enemy)) {
 			  this.isDragging = true;
 			  Object.assign(this.dragObj, {
 				x: enemy.x,
