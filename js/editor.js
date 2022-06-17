@@ -138,6 +138,8 @@ export class Editor {
 	UndoButton,
 	SaveButton,
   ];
+  static WP_HANDLE_SIZE = 6;
+
   constructor() {
 	this.enabled = true;
 	this.components = {
@@ -151,7 +153,9 @@ export class Editor {
 	  return new BtnClass(editor, i, buttonsY);
 	});
 	this.dragObj = {};
+	this.dragWP = {};
 	this.isDragging = false;
+	this.isDraggingWP = false;
 	this.data = Array(Math.ceil(TimeSlider.MAX_TIME/constants.TIME_SLOT));
 	this.stageOffset = 0;
 	this.dragOffset = {x: 0, y: 0};
@@ -171,7 +175,7 @@ export class Editor {
   update(dt, input) {
 	const mouseX = input.mousePos.x;
 	const mouseY = input.mousePos.y;
-	if (!this.isDragging) {
+	if (!(this.isDragging || this.isDraggingWP)) {
 	  if (input.mouseButtonHeld && (mouseY < this.components.timeSlider.y || mouseY > this.components.timeSlider.y + TimeSlider.HEIGHT)) {
 		const dragFromPalette = mouseX > this.components.enemyPalette.x && mouseX < this.components.enemyPalette.x + this.components.enemyPalette.width && mouseY > this.components.enemyPalette.y && mouseY < this.components.enemyPalette.y + this.components.enemyPalette.height;
 		if (dragFromPalette) {
@@ -193,7 +197,22 @@ export class Editor {
 		} else {
 		  const enemies = this.getEnemiesForTime();
 		  for (const [i, enemy] of enemies.entries()) {
-			if (mouseX > enemy.x && mouseX < enemy.x + enemy.width && mouseY > enemy.y && mouseY < enemy.y + enemy.height) {
+			const wpHandle = {
+			  x: enemy.endX ? enemy.endX : enemy.x + enemy.width/2 - Editor.WP_HANDLE_SIZE/2,
+			  y: enemy.y + enemy.height/2 - Editor.WP_HANDLE_SIZE/2,
+			  width: Editor.WP_HANDLE_SIZE,
+			  height: Editor.WP_HANDLE_SIZE,
+			};
+			if (pointInRectangle(input.mousePos, wpHandle)) { // clicking inside waypoint area
+			  this.isDraggingWP = true;
+			  Object.assign(this.dragWP, {
+				enemy: enemy,
+				start: {x: enemy.x + enemy.width/2, y: enemy.y + enemy.height/2},
+				end: {x: mouseX, y: enemy.y + enemy.height/2},
+			  });
+			  enemies.splice(i, 1);
+			  break;
+			} else {
 			  this.isDragging = true;
 			  Object.assign(this.dragObj, {
 				x: enemy.x,
@@ -217,7 +236,17 @@ export class Editor {
 	for (const [i, btn] of this.buttons.entries()) {
 	  btn.update(dt, input);
 	}
-	if (this.isDragging) {
+	if (this.isDraggingWP) {
+	  if (input.mouseButtonHeld) {
+		this.dragWP.end.x = input.mousePos.x;
+	  } else {
+		this.isDraggingWP = false;
+		if (this.dragWP.end.x > 0 && this.dragWP.end.x < constants.VIEWABLE_WIDTH) {
+		  this.dragWP.enemy.endX = this.dragWP.end.x;
+		  this.dropEnemy(this.dragWP.enemy);
+		}
+	  }
+	} else if (this.isDragging) {
 	  if (input.mouseButtonHeld) {
 		this.dragObj.x = input.mousePos.x + this.dragOffset.x;
 		this.dragObj.y = input.mousePos.y + this.dragOffset.y;
@@ -230,7 +259,7 @@ export class Editor {
 		  this.dragObj.enemy.width = this.dragObj.width;
 		  this.dragObj.enemy.height = this.dragObj.height;
 		  this.dragObj.enemy.alive = true;
-		  this.dropEnemy();
+		  this.dropEnemy(this.dragObj.enemy);
 		}
 	  }
 	}
@@ -240,14 +269,14 @@ export class Editor {
 	return this.components.timeSlider.sliderPos;
   }
 
-  dropEnemy() {
+  dropEnemy(enemy) {
 	const index = this.getTimeIndex();
 	if (typeof this.data[index] === "undefined") {
 	  this.data[index] = [];
 	}
-	this.data[index].push(this.dragObj.enemy);
+	this.data[index].push(enemy);
 	this.selectedEnemy = {
-	  enemy: this.dragObj.enemy,
+	  enemy: enemy,
 	  index: index,
 	  subindex: this.data[index].length - 1
 	};
@@ -267,6 +296,21 @@ export class Editor {
 	for (const enemy of this.getEnemiesForTime()) {
 	  ctx.fillStyle = enemy.color;
 	  ctx.fillRect(Math.round(enemy.x), Math.round(enemy.y), enemy.width, enemy.height);
+	  // draw waypoint "handle"
+
+	  const endY = enemy.y + enemy.height/2;
+	  if (enemy.endX) {
+		ctx.strokeStyle = "orange";
+		ctx.beginPath();
+		ctx.moveTo(Math.round(enemy.x + enemy.width/2), Math.round(enemy.y + enemy.height/2));
+		ctx.lineTo(Math.round(enemy.endX), Math.round(endY));
+		ctx.stroke();
+		ctx.strokeStyle = "white";
+		ctx.strokeRect(Math.round(enemy.endX - Editor.WP_HANDLE_SIZE/2), Math.round(endY - Editor.WP_HANDLE_SIZE/2), Editor.WP_HANDLE_SIZE, Editor.WP_HANDLE_SIZE);
+	  } else {
+		ctx.strokeStyle = "black";
+		ctx.strokeRect(Math.round(enemy.x + enemy.width/2 - Editor.WP_HANDLE_SIZE/2), Math.round(endY - Editor.WP_HANDLE_SIZE/2), Editor.WP_HANDLE_SIZE, Editor.WP_HANDLE_SIZE);
+	  }
 	}
 	const timeIndex = this.getTimeIndex();
 	const oldAlpha = ctx.globalAlpha;
@@ -287,6 +331,13 @@ export class Editor {
 	  }
 	}
 	ctx.globalAlpha = oldAlpha;
+	if (this.isDraggingWP) {
+	  ctx.strokeStyle = "red";
+	  ctx.beginPath();
+	  ctx.moveTo(this.dragWP.start.x, this.dragWP.start.y);
+	  ctx.lineTo(this.dragWP.end.x, this.dragWP.end.y);
+	  ctx.stroke();
+	}
 	if (this.isDragging) {
 	  ctx.fillStyle = this.dragObj.enemy.color;
 	  const oldAlpha = ctx.globalAlpha;
