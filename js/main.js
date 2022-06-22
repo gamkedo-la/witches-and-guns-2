@@ -16,7 +16,10 @@ class Game {
 
 	this.input = new Input(canvas);
 	this.editor = new Editor();
-	this.input.onRelease(Input.EDIT, event => this.editor.toggle());
+	this.input.onRelease(Input.EDIT, event => {
+	  this.editor.toggle();
+	  this.currentLevel.reset();
+	});
 	this.player = new Player({x: 100, y: this.ctx.canvas.height - Player.avatarHeight});
 	this.currentLevel = new Level(this.editor.data, this.ctx.canvas.width, this.ctx.canvas.height);
 	// this.currentLevel.scroll(this.player.avatarPos.x);
@@ -32,9 +35,6 @@ class Game {
 	} else {
 	  this.currentLevel.update(dt, this.input);
 	  this.player.update(dt, this.input, this.currentLevel);
-	  for (const enemy of Enemy.alive()) {
-		enemy.update(dt);
-	  }
 	}
   }
 

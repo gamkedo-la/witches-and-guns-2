@@ -1,4 +1,5 @@
 import {constants} from "./constants.js";
+import {Enemy} from "./enemy.js";
 import {Input} from "./input.js";
 
 
@@ -160,6 +161,7 @@ export class Editor {
 	this.stageOffset = 0;
 	this.dragOffset = {x: 0, y: 0};
 	this.selectedEnemy = null;
+	this.simEnemies = [];
   }
 
   scrollRight(offset) {
@@ -220,6 +222,7 @@ export class Editor {
 				width: enemy.width,
 				height: enemy.height,
 				enemy: enemy,
+				endX: enemy.x + enemy.width,
 			  });
 			  this.dragOffset.x = this.dragObj.x - mouseX;
 			  this.dragOffset.y = this.dragObj.y - mouseY;
@@ -261,6 +264,23 @@ export class Editor {
 		  this.dragObj.enemy.alive = true;
 		  this.dropEnemy(this.dragObj.enemy);
 		}
+	  }
+	}
+  }
+
+  updateSimEnemies(timeIndex) {
+	// simulate enemies
+	this.simEnemies = [];
+	for (let i=0; i<this.data.length; i++) {
+	  const enemySpecs = this.data[i];
+	  if (i >= timeIndex || typeof enemySpecs === "undefined") {
+		continue;
+	  }
+	  const time = (timeIndex - i)*constants.TIME_SLOT;
+	  for (const spec of enemySpecs) {
+		const enemy = Enemy.spawn(spec.x, spec.y, spec.color, spec.endX);
+		enemy.update(time/1000);
+		this.simEnemies.push(enemy);
 	  }
 	}
   }
@@ -316,20 +336,10 @@ export class Editor {
 	const oldAlpha = ctx.globalAlpha;
 	ctx.globalAlpha = 0.3;
 
-	for (let i=0; i<this.data.length; i++) {
-	  const enemies = this.data[i];
-	  if (i >= timeIndex || typeof enemies === "undefined") {
-		continue;
-	  }
-	  const time = (timeIndex - i)*constants.TIME_SLOT;
-	  for (const enemy of enemies) {
-		ctx.fillStyle = enemy.color;
-		const updated = enemy.updater(enemy, time/1000);
-		if (updated.alive) {
-		  ctx.fillRect(Math.round(updated.x), Math.round(updated.y), enemy.width, enemy.height);
-		}
-	  }
-	}
+	for (const enemy of this.simEnemies) {
+	  ctx.fillStyle = enemy.color;
+	  ctx.fillRect(Math.round(enemy.x), Math.round(enemy.y), enemy.width, enemy.height);
+	};
 	ctx.globalAlpha = oldAlpha;
 	if (this.isDraggingWP) {
 	  ctx.strokeStyle = "red";
@@ -442,14 +452,18 @@ class TimeSlider {
 	return this.sliderPos*TimeSlider.TIME_STEP;
   }
 
-  stepLeft() {
-	this.sliderPos = Math.max(0, this.sliderPos - 1);
+  updateSliderPos(pos) {
+	this.sliderPos = pos;
 	console.log("Changed time slider position", this.sliderPos, "TIME:", this.getSelectedTime());
+	this.editor.updateSimEnemies(this.sliderPos);
+  }
+
+  stepLeft() {
+	this.updateSliderPos(Math.max(0, this.sliderPos - 1));
   }
 
   stepRight() {
-	this.sliderPos = Math.min(this.maxPos, this.sliderPos + 1);
-	console.log("Changed time slider position", this.sliderPos, "TIME:", this.getSelectedTime());
+	this.updateSliderPos(Math.min(this.maxPos, this.sliderPos + 1));
   }
 
   screenPosToSliderPos(x) {
@@ -469,12 +483,11 @@ class TimeSlider {
 	  this.stepRight();
 	}
 	if (input.mouseButtonHeld && input.mousePos.y >= this.y && input.mousePos.y <= this.y + TimeSlider.HEIGHT && input.mousePos.x > TimeSlider.BTN_WIDTH && input.mousePos.x < constants.VIEWABLE_WIDTH - TimeSlider.BTN_WIDTH) {
-	  this.sliderPos = this.screenPosToSliderPos(input.mousePos.x);
+	  this.updateSliderPos(this.screenPosToSliderPos(input.mousePos.x));
 	  this.isDragging = true;
 	} else if (!input.mouseButtonHeld && this.isDragging) {
 	  this.isDragging = false;
-	  this.sliderPos = this.screenPosToSliderPos(input.mousePos.x);
-	  console.log("Changed time slider position", this.sliderPos, "TIME:", this.getSelectedTime());
+	  this.updateSliderPos(this.screenPosToSliderPos(input.mousePos.x));
 	}
   }
 

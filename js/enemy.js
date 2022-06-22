@@ -17,47 +17,52 @@ export class Enemy {
 	}
   }
 
-  static spawn(x, y, color, updater) {
+  static spawn(x, y, color, endX) {
 	let enemy = this.#INSTANCES.filter(e => !e.live).pop();
 	if (typeof enemy == "undefined") {
-	  enemy = new Enemy(x, y, color, updater);
+	  enemy = new Enemy(x, y, color, endX);
 	  this.#INSTANCES.push(enemy);
 	  console.log("Created new enemy", enemy);
 	} else {
-	  enemy.init(x, y, color, updater);
+	  enemy.init(x, y, color, endX);
 	  console.log("Recycled enemy", enemy);
 	}
 	return enemy;
   }
 
-  constructor(x, y, color, updater) {
-	this.init(x, y, color, updater);
+  constructor(x, y, color, endX) {
+	this.init(x, y, color, endX);
   }
 
-  init(x, y, color, updater) {
+  init(x, y, color, endX) {
 	this.color = color;
 	this.live = true;
-	this.x = x;
+	this.startX = this.x = x;
 	this.y = y;
-	this.updater = updater;
+	this.width = 24;
+	this.height = 24;
+	this.endX = endX;
+	this.velX = Math.sign(this.endX - this.startX)*20;
+	this.endXTime = (this.endX - this.startX)/this.velX;
   }
 
-  update(dt) {
+  update(accTime) {
 	if (!this.live) {
 	  return;
 	}
-	this.timer += dt;
-	// FIXME: we shouldn't need to copy from "updated"
-	const updated = this.updater(this, dt);
-	this.x = updated.x;
-	this.y = updated.y;
-	this.live = updated.live;
+	if (accTime < this.endXTime) {
+	  this.x = this.startX + this.velX*accTime;
+	} else {	// TODO: introduce "stop and maybe shoot" time here
+	  this.x = this.endX - this.velX*(accTime - this.endXTime);
+	}
+	// TODO: "accelerate" enemy when it's not visible on-screen
+	// TODO: "kill" enemy when it's off-stage
   }
 
   draw(ctx) {
 	ctx.fillStyle = this.color;
 	ctx.beginPath();
-	ctx.arc(Math.round(this.x), Math.round(this.y), 10, 0, 2*Math.PI);
+	ctx.arc(Math.round(this.x  - this.width/2), Math.round(this.y + this.height/2), this.width/2, 0, 2*Math.PI);
 	ctx.closePath();
 	ctx.fill();
   }
