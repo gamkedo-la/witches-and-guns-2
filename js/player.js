@@ -30,7 +30,7 @@ export class Player {
   // TODO: move to game code
   static onHitTarget = function(dt, shot) {
 	for (const enemy of Enemy.alive()) {
-	  const dist = Math.sqrt(Math.pow(enemy.x - shot.target.x, 2) + Math.pow(enemy.y - shot.target.y, 2));
+	  const dist = Math.sqrt(Math.pow(enemy.x + enemy.width/2 - shot.target.x, 2) + Math.pow(enemy.y + enemy.height/2 - shot.target.y, 2));
 		if (dist <= 16) {
 		  enemy.live = false;
 		}
