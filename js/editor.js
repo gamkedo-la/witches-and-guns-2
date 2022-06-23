@@ -187,8 +187,8 @@ export class Editor {
 			  this.dragObj = {
 				x: box.x,
 				y: box.y,
-				width: box.width,
-				height: box.height,
+				width: box.enemy.width,
+				height: box.enemy.height,
 				enemy: Object.assign({}, box.enemy),
 			  };
 			  this.dragOffset.x = this.dragObj.x - mouseX;
@@ -253,6 +253,8 @@ export class Editor {
 	  if (input.mouseButtonHeld) {
 		this.dragObj.x = input.mousePos.x + this.dragOffset.x;
 		this.dragObj.y = input.mousePos.y + this.dragOffset.y;
+		this.dragObj.enemy.x = this.dragObj.x;
+		this.dragObj.enemy.y = this.dragObj.y;
 	  } else {
 		this.isDragging = false;
 		if (this.dragObj.x > 0 && this.dragObj.x + this.dragObj.width < this.components.enemyPalette.containerX && this.dragObj.y < this.components.timeSlider.y) {
@@ -307,6 +309,11 @@ export class Editor {
 	return this.data[this.getTimeIndex()] || [];
   }
 
+  drawEnemy(enemy, ctx, assets) {
+	const spec = enemy.imageSpec;
+	ctx.drawImage(assets[spec.id], spec.sx, spec.sy, spec.sWidth, spec.sHeight, Math.round(enemy.x), Math.round(enemy.y), enemy.width, enemy.height);
+  }
+
   draw(ctx, assets) {
 	// TODO: draw stage wings
 	ctx.drawImage(assets.levelBG, this.stageOffset, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -314,21 +321,18 @@ export class Editor {
 	  component.draw(ctx, assets);
 	}
 	for (const enemy of this.getEnemiesForTime()) {
-	  ctx.fillStyle = enemy.color;
-	  ctx.fillRect(Math.round(enemy.x), Math.round(enemy.y), enemy.width, enemy.height);
+	  this.drawEnemy(enemy, ctx, assets);
 	  // draw waypoint "handle"
-
 	  const endY = enemy.y + enemy.height/2;
 	  if (enemy.endX) {
-		ctx.strokeStyle = "orange";
+		ctx.strokeStyle = "yellow";
 		ctx.beginPath();
 		ctx.moveTo(Math.round(enemy.x + enemy.width/2), Math.round(enemy.y + enemy.height/2));
 		ctx.lineTo(Math.round(enemy.endX), Math.round(endY));
 		ctx.stroke();
-		ctx.strokeStyle = "white";
+		ctx.strokeStyle = "cyan";
 		ctx.strokeRect(Math.round(enemy.endX - Editor.WP_HANDLE_SIZE/2), Math.round(endY - Editor.WP_HANDLE_SIZE/2), Editor.WP_HANDLE_SIZE, Editor.WP_HANDLE_SIZE);
 	  } else {
-		ctx.strokeStyle = "black";
 		ctx.strokeRect(Math.round(enemy.x + enemy.width/2 - Editor.WP_HANDLE_SIZE/2), Math.round(endY - Editor.WP_HANDLE_SIZE/2), Editor.WP_HANDLE_SIZE, Editor.WP_HANDLE_SIZE);
 	  }
 	}
@@ -352,7 +356,7 @@ export class Editor {
 	  ctx.fillStyle = this.dragObj.enemy.color;
 	  const oldAlpha = ctx.globalAlpha;
 	  ctx.globalAlpha = 0.5;
-	  ctx.fillRect(Math.round(this.dragObj.x), Math.round(this.dragObj.y), this.dragObj.width, this.dragObj.height);
+	  this.drawEnemy(this.dragObj.enemy, ctx, assets);
 	  ctx.globalAlpha = oldAlpha;
 	}
 	// draw buttons
@@ -542,11 +546,15 @@ class EnemyPalette {
 	this.containerX = 426 - 32;
 	this.height = 240 - 24;
 	this.enemies = [
-	  {name: "GHOST", color: "pink", updater: updateGhost},
-	  {name: "GOBLIN", color: "red", updater: updateGoblin},
-	  {name: "ZOMBIE", color: "orange", updater: updateZombie},
-	  {name: "SKELETON", color: "magenta", updater: updateSkeleton},
-	  {name: "EVILEYE", color: "yellow", updater: updateGhost},
+	  {name: "RASPBERRY_DONUT", width: 32, height: 32, imageSpec: {
+		id: "donutSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32}
+	  },
+	  {name: "CHOCO_DONUT", width: 32, height: 32, imageSpec: {
+		id: "donutSheet", sx: 0, sy: 32, sWidth: 32, sHeight: 32}
+	  },
+	  {name: "FROSTED_DONUT", width: 32, height: 32, imageSpec: {
+		id: "donutSheet", sx: 0, sy: 64, sWidth: 32, sHeight: 32
+	  }},
 	];
 	const enemyBoxX = this.containerX + EnemyPalette.margin;
 	this.enemyBoxes = this.enemies.map((enemy, i) => ({
@@ -572,10 +580,9 @@ class EnemyPalette {
 	ctx.fillRect(this.x + EnemyPalette.scrollBtnWidth, this.y, EnemyPalette.boxSize*this.enemyBoxes.length, EnemyPalette.boxSize);
 	for (const [i, box] of this.enemyBoxes.entries()) {
 	  const offset = i*EnemyPalette.boxSize;
-	  ctx.fillStyle = box.enemy.color;
-	  // ctx.fillRect(box.x, box.y, EnemyPalette.boxSize, EnemyPalette.boxSize);
 	  ctx.drawImage(assets.editorUI, 71, 0, 3, EnemyPalette.boxSize, this.x + EnemyPalette.scrollBtnWidth + offset, this.y, 3, EnemyPalette.boxSize);
-	  ctx.fillRect(box.x, box.y, box.width, box.height);
+	  const spec = box.enemy.imageSpec;
+	  ctx.drawImage(assets[spec.id], spec.sx, spec.sy, spec.sWidth, spec.sHeight, Math.round(box.x), Math.round(box.y), box.width, box.height);
 	  ctx.drawImage(assets.editorUI, 68, 0, 3, EnemyPalette.boxSize, this.x + EnemyPalette.scrollBtnWidth + (i+1)*EnemyPalette.boxSize - 3, this.y, 3, EnemyPalette.boxSize);
 	}	
 	// draw right scroll button

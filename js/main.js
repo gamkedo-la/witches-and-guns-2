@@ -74,6 +74,7 @@ const assetSpecs = [
   {id: "tile", path: "images/tile.png"},
   {id: "levelBG", path: "images/background.gif"},
   {id: "editorUI", path: "images/editorUI.png"},
+  {id: "donutSheet", path: "images/donut.png"},
 ];
 
 async function loadAsset(spec) {
