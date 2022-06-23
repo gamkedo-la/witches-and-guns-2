@@ -506,34 +506,6 @@ class TimeSlider {
   }
 }
 
-function updateGhost(ghost, dt) {
-  const speed = 20;
-  const updated = Object.create(ghost);
-  updated.x += speed*dt;
-  return updated;
-}
-
-function updateGoblin(goblin, dt) {
-  const speed = 32;
-  const updated = Object.create(goblin);
-  updated.x += speed*dt;
-  return updated;
-}
-
-function updateZombie(zombie, dt) {
-  const speed = 10;
-  const updated = Object.create(zombie);
-  updated.x += speed*dt;
-  return updated;
-}
-
-function updateSkeleton(skeleton, dt) {
-  const speed = 24;
-  const updated = Object.create(skeleton);
-  updated.y += speed*dt;
-  return updated;
-}
-
 class EnemyPalette {
   static margin = 4;
   static boxSize = 32;
