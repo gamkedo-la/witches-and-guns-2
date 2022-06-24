@@ -341,8 +341,7 @@ export class Editor {
 	ctx.globalAlpha = 0.3;
 
 	for (const enemy of this.simEnemies) {
-	  ctx.fillStyle = enemy.color;
-	  ctx.fillRect(Math.round(enemy.x), Math.round(enemy.y), enemy.width, enemy.height);
+	  this.drawEnemy(enemy, ctx, assets);
 	};
 	ctx.globalAlpha = oldAlpha;
 	if (this.isDraggingWP) {
