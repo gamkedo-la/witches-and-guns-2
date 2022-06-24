@@ -46,9 +46,6 @@ class Game {
 	  this.editor.draw(this.ctx, this.assets);
 	} else {
 	  this.currentLevel.draw(this.ctx, this.assets);
-	  for (const enemy of Enemy.alive()) {
-		enemy.draw(this.ctx, this.assets);
-	  }
 	  this.player.draw(this.ctx, this.assets);
 	}
   }

@@ -69,5 +69,8 @@ export class Level {
 
   draw(ctx, assets) {
 	ctx.drawImage(assets.levelBG, Math.round(this.offset), 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
+	for (const enemy of Enemy.alive()) {
+	  enemy.draw(ctx, assets, this.offset);
+	}
   }
 }

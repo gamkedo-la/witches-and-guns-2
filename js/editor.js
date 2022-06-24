@@ -311,7 +311,7 @@ export class Editor {
 
   drawEnemy(enemy, ctx, assets) {
 	const spec = enemy.imageSpec;
-	ctx.drawImage(assets[spec.id], spec.sx, spec.sy, spec.sWidth, spec.sHeight, Math.round(enemy.x), Math.round(enemy.y), enemy.width, enemy.height);
+	ctx.drawImage(assets[spec.id], spec.sx, spec.sy, spec.sWidth, spec.sHeight, Math.round(enemy.x - this.stageOffset), Math.round(enemy.y), enemy.width, enemy.height);
   }
 
   draw(ctx, assets) {
@@ -327,13 +327,13 @@ export class Editor {
 	  if (enemy.endX) {
 		ctx.strokeStyle = "yellow";
 		ctx.beginPath();
-		ctx.moveTo(Math.round(enemy.x + enemy.width/2), Math.round(enemy.y + enemy.height/2));
-		ctx.lineTo(Math.round(enemy.endX), Math.round(endY));
+		ctx.moveTo(Math.round(enemy.x - this.stageOffset + enemy.width/2), Math.round(enemy.y + enemy.height/2));
+		ctx.lineTo(Math.round(enemy.endX - this.stageOffset), Math.round(endY));
 		ctx.stroke();
 		ctx.strokeStyle = "cyan";
-		ctx.strokeRect(Math.round(enemy.endX - Editor.WP_HANDLE_SIZE/2), Math.round(endY - Editor.WP_HANDLE_SIZE/2), Editor.WP_HANDLE_SIZE, Editor.WP_HANDLE_SIZE);
+		ctx.strokeRect(Math.round(enemy.endX - this.stageOffset - Editor.WP_HANDLE_SIZE/2), Math.round(endY - Editor.WP_HANDLE_SIZE/2), Editor.WP_HANDLE_SIZE, Editor.WP_HANDLE_SIZE);
 	  } else {
-		ctx.strokeRect(Math.round(enemy.x + enemy.width/2 - Editor.WP_HANDLE_SIZE/2), Math.round(endY - Editor.WP_HANDLE_SIZE/2), Editor.WP_HANDLE_SIZE, Editor.WP_HANDLE_SIZE);
+		ctx.strokeRect(Math.round(enemy.x - this.stageOffset + enemy.width/2 - Editor.WP_HANDLE_SIZE/2), Math.round(endY - Editor.WP_HANDLE_SIZE/2), Editor.WP_HANDLE_SIZE, Editor.WP_HANDLE_SIZE);
 	  }
 	}
 	const timeIndex = this.getTimeIndex();
@@ -365,7 +365,7 @@ export class Editor {
 	if (this.selectedEnemy !== null && timeIndex === this.selectedEnemy.index) {
 	  ctx.setLineDash([2, 3]);
 	  ctx.strokeStyle = "lime";
-	  ctx.strokeRect(Math.round(this.selectedEnemy.enemy.x), Math.round(this.selectedEnemy.enemy.y), this.selectedEnemy.enemy.width, this.selectedEnemy.enemy.height);
+	  ctx.strokeRect(Math.round(this.selectedEnemy.enemy.x - this.stageOffset), Math.round(this.selectedEnemy.enemy.y), this.selectedEnemy.enemy.width, this.selectedEnemy.enemy.height);
 	  ctx.setLineDash([]);
 	}
   }

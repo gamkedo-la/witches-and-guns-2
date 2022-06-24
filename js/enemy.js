@@ -60,7 +60,7 @@ export class Enemy {
 	// TODO: "kill" enemy when it's off-stage
   }
 
-  draw(ctx, assets) {
-	ctx.drawImage(assets[this.imageSpec.id], 0, 0, this.imageSpec.sWidth, this.imageSpec.sHeight, Math.round(this.x), Math.round(this.y), this.width, this.height);
+  draw(ctx, assets, offset) {
+	ctx.drawImage(assets[this.imageSpec.id], 0, 0, this.imageSpec.sWidth, this.imageSpec.sHeight, Math.round(this.x - offset), Math.round(this.y), this.width, this.height);
   }
 }
