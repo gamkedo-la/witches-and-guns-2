@@ -102,14 +102,6 @@ export class Player {
 
   draw(ctx, assets, offset) {
 	ctx.strokeStyle = this.isShooting ? "lime" : "red";
-	if (this.isShooting) {
-	  ctx.setLineDash([2, 4]);
-	  ctx.beginPath();
-	  ctx.moveTo(Math.round(this.avatarPos.x + Player.avatarWidth/2), Math.round(this.avatarPos.y));
-	  ctx.lineTo(Math.round(this.reticlePos.x), Math.round(this.reticlePos.y));
-	  // ctx.stroke();
-	  ctx.setLineDash([]);
-	}
 	ctx.beginPath();
 	ctx.arc(Math.round(this.reticlePos.x - offset), Math.round(this.reticlePos.y), Math.round(Player.avatarWidth), 0, 2*Math.PI);
 	ctx.stroke();
