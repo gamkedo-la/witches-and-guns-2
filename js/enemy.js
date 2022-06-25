@@ -57,7 +57,6 @@ export class Enemy {
 	  this.x = this.endX - this.velX*(accTime - this.endXTime);
 	}
 	// TODO: "accelerate" enemy when it's not visible on-screen
-	// TODO: "kill" enemy when it's off-stage
   }
 
   draw(ctx, assets, offset) {

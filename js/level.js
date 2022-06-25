@@ -25,6 +25,7 @@ export class Level {
 	this.tilesCtx = tilesCanvas.getContext("2d");
 	this.levelData = data;
 	this.waveIndex = 0;
+	this.width = width;
 	this.offset = 0;	// number of pixels camera has moved to the right
 	this.tiles = Array.of(Level.gridWidth*Level.gridHeight);
 	this.tiles.fill({});
@@ -64,6 +65,9 @@ export class Level {
 	this.enemyClock += dt;
 	for (const enemy of Enemy.alive()) {
 	  enemy.update(this.enemyClock);
+	  if (enemy.x + enemy.width < 0 || enemy.x > this.width) {
+		enemy.live = false;
+	  }
 	}
   }
 
