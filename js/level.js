@@ -10,7 +10,7 @@ export class Level {
   static gridHeight = 10;
   static tileSize = 16; // pixels
   static #WAVE_TIMER = 0;
-  static #SCROLL_SPEED = 8;
+  static #SCROLL_SPEED = 256;
 
   static getXForGridIndex(i) {
 	return i % Level.gridWidth;
@@ -37,14 +37,12 @@ export class Level {
 	this.waveIndex = 0;
 	this.offset = 0;
   }
-  scroll(pos) {
-	this.offset = lerp(this.offset, (constants.PLAYABLE_WIDTH/constants.VIEWABLE_WIDTH)*pos, 0.12);
-	if (this.offset < 0) {
-	  this.offset = 0;
-	}
-	if (this.offset > constants.PLAYABLE_WIDTH - constants.VIEWABLE_WIDTH) {
-	  this.offset = constants.PLAYABLE_WIDTH - constants.VIEWABLE_WIDTH;
-	}
+
+  scrollLeft(dt) {
+	this.offset = Math.max(0, this.offset - Level.#SCROLL_SPEED*dt);
+  }
+  scrollRight(dt) {
+	this.offset = Math.min(this.offset + Level.#SCROLL_SPEED*dt, this.width - constants.VIEWABLE_WIDTH);
   }
 
   update(dt) {

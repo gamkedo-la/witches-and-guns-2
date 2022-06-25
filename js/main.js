@@ -21,8 +21,7 @@ class Game {
 	  this.currentLevel.reset();
 	});
 	this.player = new Player({x: 100, y: this.ctx.canvas.height - Player.avatarHeight});
-	this.currentLevel = new Level(this.editor.data, this.ctx.canvas.width, this.ctx.canvas.height);
-	// this.currentLevel.scroll(this.player.avatarPos.x);
+	this.currentLevel = new Level(this.editor.data, this.assets.levelBG.width, this.ctx.canvas.height);
   }
 
   start() {
@@ -46,7 +45,7 @@ class Game {
 	  this.editor.draw(this.ctx, this.assets);
 	} else {
 	  this.currentLevel.draw(this.ctx, this.assets);
-	  this.player.draw(this.ctx, this.assets);
+	  this.player.draw(this.ctx, this.assets, this.currentLevel.offset);
 	}
   }
 

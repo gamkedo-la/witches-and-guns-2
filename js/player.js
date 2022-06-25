@@ -50,13 +50,12 @@ export class Player {
 	this.shots = this.shots.filter(shot => shot.live);
 	if (!input.shoot) {
 	  if (input.left) {
-		this.avatarPos.x -= Player.avatarSpeed*dt;
+		this.avatarPos.x = Math.max(0, this.avatarPos.x - Player.avatarSpeed*dt);
 	  }
 	  if (input.right) {
-		this.avatarPos.x += Player.avatarSpeed*dt;
+		this.avatarPos.x = Math.min(level.width - Player.avatarWidth, this.avatarPos.x + Player.avatarSpeed*dt);
 	  }
 	  this.isShooting = false;
-	  level.scroll(this.avatarPos.x);
 	} else if (this.shotDelay <= 0) {
 	  this.isShooting = true;
 	  this.shots.push(Projectile.get(
@@ -80,17 +79,18 @@ export class Player {
 	  this.reticlePos.x += vel.x*dt;
 	  this.reticlePos.y += vel.y*dt;
 	}
-	if (this.avatarPos.x < 0) {
-	  this.avatarPos.x = 0;
+	const screenX = this.avatarPos.x - level.offset;
+	if (screenX > constants.VIEWABLE_WIDTH*(2/3)) {
+	  level.scrollRight(dt);
 	}
-	if (this.avatarPos.x  > constants.VIEWABLE_WIDTH - Player.avatarWidth) {
-	  this.avatarPos.x = constants.VIEWABLE_WIDTH - Player.avatarWidth;
+	if (screenX < constants.VIEWABLE_WIDTH/3) {
+	  level.scrollLeft(dt);
 	}
-	if (this.reticlePos.x < Player.avatarWidth/2) {
-	  this.reticlePos.x = Player.avatarWidth/2;
+	if (this.reticlePos.x < level.offset + Player.avatarWidth/2) {
+	  this.reticlePos.x = level.offset + Player.avatarWidth/2;
 	}
-	if (this.reticlePos.x  > constants.VIEWABLE_WIDTH - Player.avatarWidth/2) {
-	  this.reticlePos.x = constants.VIEWABLE_WIDTH - Player.avatarWidth/2;
+	if (this.reticlePos.x  > level.offset + constants.VIEWABLE_WIDTH - Player.avatarWidth/2) {
+	  this.reticlePos.x = level.offset + constants.VIEWABLE_WIDTH - Player.avatarWidth/2;
 	}
 	if (this.reticlePos.y < Player.avatarWidth/2) {
 	  this.reticlePos.y = Player.avatarWidth/2;
@@ -100,7 +100,7 @@ export class Player {
 	}
   }
 
-  draw(ctx, assets) {
+  draw(ctx, assets, offset) {
 	ctx.strokeStyle = this.isShooting ? "lime" : "red";
 	if (this.isShooting) {
 	  ctx.setLineDash([2, 4]);
@@ -111,9 +111,9 @@ export class Player {
 	  ctx.setLineDash([]);
 	}
 	ctx.beginPath();
-	ctx.arc(this.reticlePos.x, this.reticlePos.y, Math.round(Player.avatarWidth), 0, 2*Math.PI);
+	ctx.arc(Math.round(this.reticlePos.x - offset), Math.round(this.reticlePos.y), Math.round(Player.avatarWidth), 0, 2*Math.PI);
 	ctx.stroke();
-	ctx.drawImage(assets.player, 50, 0, 20, 32, Math.round(this.avatarPos.x), Math.round(this.avatarPos.y), 20, 32);
-	this.shots.forEach(shot => shot.draw(ctx));
+	ctx.drawImage(assets.player, 50, 0, 20, 32, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), 20, 32);
+	this.shots.forEach(shot => shot.draw(ctx, assets, offset));
   }
 }

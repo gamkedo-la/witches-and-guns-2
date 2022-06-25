@@ -50,14 +50,14 @@ export class Projectile {
 	return this;
   }
 
-  draw(ctx, assets) {
+  draw(ctx, assets, offset) {
 	  ctx.strokeStyle = "yellow";
 	  ctx.beginPath();
 	  const shotDrawPos = {
 		x: this.position.y - 4 < this.target.y ? this.target.x : this.position.x,
 		y: this.position.y - 4 < this.target.y ? this.target.y : this.position.y,
 	  };
-	  ctx.arc(Math.round(shotDrawPos.x), Math.round(shotDrawPos.y), Math.round(this.radius), 0, 2*Math.PI);
+	  ctx.arc(Math.round(shotDrawPos.x - offset), Math.round(shotDrawPos.y), Math.round(this.radius), 0, 2*Math.PI);
 	  ctx.stroke();
   }
 }
