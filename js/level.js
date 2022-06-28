@@ -54,7 +54,7 @@ export class Level {
 	  if (typeof enemySpecs != "undefined") {
 		for (let i=0; i<enemySpecs.length; i++) {
 		  const data = enemySpecs[i];
-		  Enemy.spawn(data.x, data.y, data.color, data.endX);
+		  Enemy.spawn(data.x, data.y, data.imageSpec, data.endX);
 		}
 		console.log("Time for a new wave!", this.waveIndex);
 	  }

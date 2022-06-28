@@ -17,25 +17,25 @@ export class Enemy {
 	}
   }
 
-  static spawn(x, y, color, endX) {
+  static spawn(x, y, imageSpec, endX) {
 	let enemy = this.#INSTANCES.filter(e => !e.live).pop();
 	if (typeof enemy == "undefined") {
-	  enemy = new Enemy(x, y, color, endX);
+	  enemy = new Enemy(x, y, imageSpec, endX);
 	  this.#INSTANCES.push(enemy);
 	  console.log("Created new enemy", enemy);
 	} else {
-	  enemy.init(x, y, color, endX);
+	  enemy.init(x, y, imageSpec, endX);
 	  console.log("Recycled enemy", enemy);
 	}
 	return enemy;
   }
 
-  constructor(x, y, color, endX) {
-	this.init(x, y, color, endX);
+  constructor(x, y, imageSpec, endX) {
+	this.init(x, y, imageSpec, endX);
   }
 
-  init(x, y, color, endX) {
-	this.color = color;
+  init(x, y, imageSpec, endX) {
+	this.imageSpec = imageSpec;
 	this.live = true;
 	this.startX = this.x = x;
 	this.y = y;
@@ -44,7 +44,6 @@ export class Enemy {
 	this.endX = endX;
 	this.velX = Math.sign(this.endX - this.startX)*20;
 	this.endXTime = (this.endX - this.startX)/this.velX;
-	this.imageSpec = {id: "donutSheet", sx: 0, sy: 0, sWidth: this.width, sHeight: this.height};
   }
 
   update(accTime) {
@@ -60,6 +59,6 @@ export class Enemy {
   }
 
   draw(ctx, assets, offset) {
-	ctx.drawImage(assets[this.imageSpec.id], 0, 0, this.imageSpec.sWidth, this.imageSpec.sHeight, Math.round(this.x - offset), Math.round(this.y), this.width, this.height);
+	ctx.drawImage(assets[this.imageSpec.id], this.imageSpec.sx, this.imageSpec.sy, this.imageSpec.sWidth, this.imageSpec.sHeight, Math.round(this.x - offset), Math.round(this.y), this.width, this.height);
   }
 }

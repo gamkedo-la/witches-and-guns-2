@@ -1,7 +1,6 @@
 import {Input} from "./input.js";
 import {Player} from "./player.js";
 import {Level} from "./level.js";
-import {Enemy} from "./enemy.js";
 import {Editor} from "./editor.js";
 
 class Game {
