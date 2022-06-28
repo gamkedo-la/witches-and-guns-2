@@ -140,6 +140,7 @@ export class Editor {
 	SaveButton,
   ];
   static WP_HANDLE_SIZE = 6;
+  static WING_WIDTH = 64;
 
   constructor() {
 	this.enabled = true;
@@ -166,12 +167,12 @@ export class Editor {
 
   scrollRight(offset) {
 	this.stageOffset += offset;
-	this.stageOffset = Math.min(this.stageOffset, constants.PLAYABLE_WIDTH);
+	this.stageOffset = Math.min(this.stageOffset, constants.PLAYABLE_WIDTH - constants.VIEWABLE_WIDTH + Editor.WING_WIDTH);
   }
 
   scrollLeft(offset) {
 	this.stageOffset -= offset;
-	this.stageOffset = Math.max(this.stageOffset, 0);
+	this.stageOffset = Math.max(this.stageOffset, -Editor.WING_WIDTH);
   }
 
   update(dt, input) {
@@ -257,7 +258,7 @@ export class Editor {
 		this.dragObj.enemy.y = this.dragObj.y;
 	  } else {
 		this.isDragging = false;
-		if (this.dragObj.x > 0 && this.dragObj.x + this.dragObj.width < this.components.enemyPalette.containerX && this.dragObj.y < this.components.timeSlider.y) {
+		if (this.dragObj.x > -Editor.WING_WIDTH && this.dragObj.x + this.dragObj.width < constants.PLAYABLE_WIDTH + Editor.WING_WIDTH && this.dragObj.y + this.dragObj.height < this.components.timeSlider.y) {
 		  // drop on stage
 		  this.dragObj.enemy.x = this.dragObj.x;
 		  this.dragObj.enemy.y = this.dragObj.y;
