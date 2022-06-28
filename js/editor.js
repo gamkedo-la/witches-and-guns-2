@@ -205,16 +205,16 @@ export class Editor {
 			  width: Editor.WP_HANDLE_SIZE,
 			  height: Editor.WP_HANDLE_SIZE,
 			};
-			if (pointInRectangle(input.mousePos, wpHandle)) { // clicking inside waypoint area
+			if (pointInRectangle({x: mouseX + this.stageOffset, y: mouseY}, wpHandle)) { // clicking inside waypoint area
 			  this.isDraggingWP = true;
 			  Object.assign(this.dragWP, {
 				enemy: enemy,
-				start: {x: enemy.x + enemy.width/2, y: enemy.y + enemy.height/2},
-				end: {x: mouseX, y: enemy.y + enemy.height/2},
+				start: {x: enemy.x + enemy.width/2 - this.stageOffset, y: enemy.y + enemy.height/2},
+				end: {x: mouseX - this.stageOffset, y: enemy.y + enemy.height/2},
 			  });
 			  enemies.splice(i, 1);
 			  break;
-			} else if (pointInRectangle(input.mousePos, enemy)) {
+			} else if (pointInRectangle({x: mouseX + this.stageOffset, y: mouseY}, enemy)) {
 			  this.isDragging = true;
 			  Object.assign(this.dragObj, {
 				x: enemy.x,
@@ -222,9 +222,9 @@ export class Editor {
 				width: enemy.width,
 				height: enemy.height,
 				enemy: enemy,
-				endX: enemy.x + enemy.width,
+				endX: enemy.x + this.stageOffset + enemy.width,
 			  });
-			  this.dragOffset.x = this.dragObj.x - mouseX;
+			  this.dragOffset.x = this.dragObj.x - mouseX - this.stageOffset;
 			  this.dragOffset.y = this.dragObj.y - mouseY;
 			  enemies.splice(i, 1);
 			  break;
@@ -245,13 +245,13 @@ export class Editor {
 	  } else {
 		this.isDraggingWP = false;
 		if (this.dragWP.end.x > 0 && this.dragWP.end.x < constants.VIEWABLE_WIDTH) {
-		  this.dragWP.enemy.endX = this.dragWP.end.x;
+		  this.dragWP.enemy.endX = this.dragWP.end.x + this.stageOffset;
 		  this.dropEnemy(this.dragWP.enemy);
 		}
 	  }
 	} else if (this.isDragging) {
 	  if (input.mouseButtonHeld) {
-		this.dragObj.x = input.mousePos.x + this.dragOffset.x;
+		this.dragObj.x = input.mousePos.x + this.dragOffset.x + this.stageOffset;
 		this.dragObj.y = input.mousePos.y + this.dragOffset.y;
 		this.dragObj.enemy.x = this.dragObj.x;
 		this.dragObj.enemy.y = this.dragObj.y;
