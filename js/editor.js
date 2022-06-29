@@ -584,6 +584,9 @@ class EnemyPalette {
 	  {name: "FROSTED_DONUT", width: 32, height: 32, imageSpec: {
 		id: "donutSheet", sx: 0, sy: 64, sWidth: 32, sHeight: 32
 	  }},
+	  {name: "EVIL_PRINTER", width: 32, height: 32, imageSpec: {
+		id: "printerSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32
+	  }},
 	];
 	const enemyBoxX = this.containerX + EnemyPalette.margin;
 	this.enemyBoxes = this.enemies.map((enemy, i) => ({
