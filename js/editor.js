@@ -142,7 +142,7 @@ export class Editor {
 	UndoButton,
 	SaveButton,
   ];
-  static WP_HANDLE_SIZE = 6;
+  static WP_HANDLE_SIZE = 8;
   static WING_WIDTH = 64;
 
   constructor() {
