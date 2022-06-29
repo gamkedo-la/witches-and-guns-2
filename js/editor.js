@@ -99,6 +99,9 @@ class UndoButton extends ToolButton {
   constructor(editor, order, containerY) {
 	super(editor, ToolButton.WIDTH*3, 0, order, containerY);
   }
+  action() {
+	this.editor.undo();
+  }
 }
 
 class HandButton extends ToolButton {
@@ -163,6 +166,8 @@ export class Editor {
 	this.dragOffset = {x: 0, y: 0};
 	this.selectedEnemy = null;
 	this.simEnemies = [];
+	// TODO: add limit to undoList size
+	this.undoList = [];
   }
 
   scrollRight(offset) {
@@ -178,6 +183,7 @@ export class Editor {
   update(dt, input) {
 	const mouseX = input.mousePos.x;
 	const mouseY = input.mousePos.y;
+	const timeIndex = this.getTimeIndex();
 	if (!(this.isDragging || this.isDraggingWP)) {
 	  if (input.mouseButtonHeld && (mouseY < this.components.timeSlider.y || mouseY > this.components.timeSlider.y + TimeSlider.HEIGHT)) {
 		const dragFromPalette = mouseX > this.components.enemyPalette.x && mouseX < this.components.enemyPalette.x + this.components.enemyPalette.width && mouseY > this.components.enemyPalette.y && mouseY < this.components.enemyPalette.y + this.components.enemyPalette.height;
@@ -191,6 +197,8 @@ export class Editor {
 				width: box.enemy.width,
 				height: box.enemy.height,
 				enemy: Object.assign({}, box.enemy),
+				new: true,
+				subindex: this.data[timeIndex] ? this.data[timeIndex].length - 1 : 0,
 			  };
 			  this.dragOffset.x = this.dragObj.x - mouseX;
 			  this.dragOffset.y = this.dragObj.y - mouseY;
@@ -209,11 +217,11 @@ export class Editor {
 			if (pointInRectangle({x: mouseX + this.stageOffset, y: mouseY}, wpHandle)) { // clicking inside waypoint area
 			  this.isDraggingWP = true;
 			  Object.assign(this.dragWP, {
-				enemy: enemy,
+				index: this.getTimeIndex(),
+				subindex: i,
 				start: {x: enemy.x + enemy.width/2 - this.stageOffset, y: enemy.y + enemy.height/2},
 				end: {x: mouseX - this.stageOffset, y: enemy.y + enemy.height/2},
 			  });
-			  enemies.splice(i, 1);
 			  break;
 			} else if (pointInRectangle({x: mouseX + this.stageOffset, y: mouseY}, enemy)) {
 			  this.isDragging = true;
@@ -224,10 +232,11 @@ export class Editor {
 				height: enemy.height,
 				enemy: enemy,
 				endX: enemy.x + this.stageOffset + enemy.width,
+				subindex: i,
 			  });
+			  this.dragObj.new = false;
 			  this.dragOffset.x = this.dragObj.x - mouseX - this.stageOffset;
 			  this.dragOffset.y = this.dragObj.y - mouseY;
-			  enemies.splice(i, 1);
 			  break;
 			}
 		  }
@@ -246,26 +255,17 @@ export class Editor {
 	  } else {
 		this.isDraggingWP = false;
 		if (this.dragWP.end.x > 0 && this.dragWP.end.x < constants.VIEWABLE_WIDTH) {
-		  this.dragWP.enemy.endX = this.dragWP.end.x + this.stageOffset;
-		  this.dropEnemy(this.dragWP.enemy);
+		  this.dropWP();
 		}
 	  }
 	} else if (this.isDragging) {
 	  if (input.mouseButtonHeld) {
 		this.dragObj.x = input.mousePos.x + this.dragOffset.x + this.stageOffset;
 		this.dragObj.y = input.mousePos.y + this.dragOffset.y;
-		this.dragObj.enemy.x = this.dragObj.x;
-		this.dragObj.enemy.y = this.dragObj.y;
 	  } else {
 		this.isDragging = false;
 		if (this.dragObj.x > -Editor.WING_WIDTH && this.dragObj.x + this.dragObj.width < constants.PLAYABLE_WIDTH + Editor.WING_WIDTH && this.dragObj.y + this.dragObj.height < this.components.timeSlider.y) {
-		  // drop on stage
-		  this.dragObj.enemy.x = this.dragObj.x;
-		  this.dragObj.enemy.y = this.dragObj.y;
-		  this.dragObj.enemy.width = this.dragObj.width;
-		  this.dragObj.enemy.height = this.dragObj.height;
-		  this.dragObj.enemy.alive = true;
-		  this.dropEnemy(this.dragObj.enemy);
+		  this.dropEnemy();
 		}
 	  }
 	}
@@ -292,18 +292,50 @@ export class Editor {
 	return this.components.timeSlider.sliderPos;
   }
 
-  dropEnemy(enemy) {
-	const index = this.getTimeIndex();
+  addEnemy(enemy, index) {
+	if (index === null || typeof(index) === "undefined") {
+	  index = this.getTimeIndex();
+	}
 	if (typeof this.data[index] === "undefined") {
 	  this.data[index] = [];
 	}
 	this.data[index].push(enemy);
+	console.log("DATA UPDATED", this.data, this.undoList);
+  }
+
+  dropEnemy() {
+	this.undoList.push(this.takeDataSnapshot());
+	const enemy = this.dragObj.enemy;
+	enemy.x = this.dragObj.x;
+	enemy.y = this.dragObj.y;
+	const index = this.getTimeIndex();
+	this.selectedEnemy = {enemy: enemy, index: index, subindex: this.dragObj.subindex};
+	if (this.dragObj.new) {
+	  this.addEnemy(enemy, index);
+	  const added = Object.assign({}, this.selectedEnemy);
+	}
+  }
+
+  dropWP() {
+	this.undoList.push(this.takeDataSnapshot());
+	const enemy = this.data[this.dragWP.index][this.dragWP.subindex];
+	enemy.endX = this.dragWP.end.x + this.stageOffset;
 	this.selectedEnemy = {
 	  enemy: enemy,
-	  index: index,
-	  subindex: this.data[index].length - 1
+	  index: this.dragWP.index,
+	  subindex: this.dragWP.subindex
 	};
-	console.log("DATA UPDATED", this.data);
+  }
+
+  takeDataSnapshot() {
+	// return deep copy of this.data
+	const snapshot = this.data.map(arr => {
+	  return arr.map(enemy => {
+		return {...enemy};
+	  });
+	});
+	console.log("Took data snapshot", snapshot);
+	return snapshot;
   }
 
   getEnemiesForTime() {
@@ -369,16 +401,41 @@ export class Editor {
 	  ctx.strokeRect(Math.round(this.selectedEnemy.enemy.x - this.stageOffset), Math.round(this.selectedEnemy.enemy.y), this.selectedEnemy.enemy.width, this.selectedEnemy.enemy.height);
 	  ctx.setLineDash([]);
 	}
+	if (this.isDragging) {
+	  ctx.setLineDash([2, 3]);
+	  ctx.strokeStyle = "pink";
+	  ctx.strokeRect(Math.round(this.dragObj.x - this.stageOffset), Math.round(this.dragObj.y), this.dragObj.width, this.dragObj.height);
+	  ctx.setLineDash([]);
+	}
   }
 
   toggle() {
 	this.enabled = !this.enabled;
   }
 
+  deleteEnemy(index, subindex) {
+	if (Array.isArray(this.data[index])) {
+	  this.data[index].splice(subindex, 1);
+	}
+  }
+
   deleteSelected() {
 	if (this.selectedEnemy !== null && this.getTimeIndex() === this.selectedEnemy.index) {
-	  this.data[this.selectedEnemy.index].splice(this.selectedEnemy.subindex, 1);
+	  this.undoList.push(this.takeDataSnapshot());
+	  this.deleteEnemy(this.selectedEnemy.index, this.selectedEnemy.subindex);
 	  this.selectedEnemy = null;
+	  console.log("DATA UPDATED", this.data, this.undoList);
+	}
+  }
+
+  undo() {
+	// TODO: handle simEnemies
+	if (this.undoList.length) {
+	  const snapshot = this.undoList.pop();
+	  this.data = snapshot;
+	  this.selectedEnemy = null;
+	} else {
+	  console.log("No further undo information");
 	}
   }
 }
