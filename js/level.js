@@ -63,9 +63,6 @@ export class Level {
 	this.enemyClock += dt;
 	for (const enemy of Enemy.alive()) {
 	  enemy.update(this.enemyClock);
-	  if (enemy.x + enemy.width < 0 || enemy.x > this.width) {
-		enemy.live = false;
-	  }
 	}
   }
 

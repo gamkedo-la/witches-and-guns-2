@@ -1,11 +1,5 @@
-function stand(actor, dt) {
-}
+import {constants} from "./constants.js";
 
-
-export const CHARACTERS = {
-  ghost: {costume: "ghost.png", role: stand, animations: []},
-  zombie: {costume: "zombie.png", role: stand, animations: []},
-};
 
 export class Enemy {
   static #INSTANCES = [];
@@ -54,6 +48,9 @@ export class Enemy {
 	  this.x = this.startX + this.velX*accTime;
 	} else {	// TODO: introduce "stop and maybe shoot" time here
 	  this.x = this.endX - this.velX*(accTime - this.endXTime);
+	  if (this.x + this.width < 0 || this.x > constants.PLAYABLE_WIDTH) {
+		this.live = false;
+	  }
 	}
 	// TODO: "accelerate" enemy when it's not visible on-screen
   }
