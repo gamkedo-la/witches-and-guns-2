@@ -6,27 +6,14 @@ function lerp(from, to, amount) {
 }
 
 export class Level {
-  static gridWidth = 25;
-  static gridHeight = 10;
-  static tileSize = 16; // pixels
   static #TIMER = 0;
   static #WAVE_TIMER = 0;
   static #SCROLL_SPEED = 256;
-
-  static getXForGridIndex(i) {
-	return i % Level.gridWidth;
-  }
-
-  static getYForGridIndex(i) {
-	return Math.floor(i/Level.gridWidth);
-  }
 
   constructor(data, width, height) {
 	this.levelData = data;
 	this.width = width;
 	this.offset = 0;	// number of pixels camera has moved to the right
-	this.tiles = Array.of(Level.gridWidth*Level.gridHeight);
-	this.tiles.fill({});
 	this.enemies = [];
   }
 
