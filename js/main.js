@@ -17,7 +17,7 @@ class Game {
 	this.editor = new Editor();
 	this.input.onRelease(Input.EDIT, event => {
 	  this.editor.toggle();
-	  this.currentLevel.reset();
+	  this.currentLevel.reset(this.editor.takeDataSnapshot());
 	});
 	this.player = new Player({x: 100, y: this.ctx.canvas.height - Player.avatarHeight});
 	this.currentLevel = new Level(this.editor.data, this.assets.levelBG.width, this.ctx.canvas.height);

@@ -9,6 +9,7 @@ export class Level {
   static gridWidth = 25;
   static gridHeight = 10;
   static tileSize = 16; // pixels
+  static #TIMER = 0;
   static #WAVE_TIMER = 0;
   static #SCROLL_SPEED = 256;
 
@@ -21,21 +22,22 @@ export class Level {
   }
 
   constructor(data, width, height) {
-	const tilesCanvas = document.createElement("canvas");
-	this.tilesCtx = tilesCanvas.getContext("2d");
 	this.levelData = data;
-	this.waveIndex = 0;
 	this.width = width;
 	this.offset = 0;	// number of pixels camera has moved to the right
 	this.tiles = Array.of(Level.gridWidth*Level.gridHeight);
 	this.tiles.fill({});
-	this.enemyClock = 0;
+	this.enemies = [];
   }
 
-  reset() {
-	this.enemyClock = 0;
-	this.waveIndex = 0;
+  reset(data) {
+	Level.#TIMER = 0;
+	Level.#WAVE_TIMER = 0;
+	this.levelData = data;
 	this.offset = 0;
+	for (const enemy of Enemy.alive()) {
+	  enemy.live = false;
+	}
   }
 
   scrollLeft(dt) {
@@ -46,24 +48,33 @@ export class Level {
   }
 
   update(dt) {
+	Level.#TIMER += dt;
 	Level.#WAVE_TIMER += dt;
-
+	const timeIndex = Math.floor(Level.#TIMER*1000/constants.TIME_SLOT);
 	if (Level.#WAVE_TIMER*1000 > constants.TIME_SLOT) {
-	  Level.#WAVE_TIMER = 0;
-	  const enemySpecs = this.levelData[this.waveIndex++];
-	  if (typeof enemySpecs != "undefined") {
-		for (let i=0; i<enemySpecs.length; i++) {
-		  const data = enemySpecs[i];
-		  Enemy.spawn(data.x, data.y, data.imageSpec, data.endX);
-		}
-		console.log("Time for a new wave!", this.waveIndex);
+	  if (typeof(this.enemies[timeIndex - 1]) === "undefined") {
+		this.enemies[timeIndex - 1] = [];
 	  }
-	  this.waveIndex = this.waveIndex % this.levelData.length;
+	  if ((this.levelData[timeIndex - 1] || []).length) {
+		console.log("Time for a new wave!", timeIndex, Level.#WAVE_TIMER, Level.#TIMER);
+	  }
+	  for (const enemySpec of (this.levelData[timeIndex - 1] || [])) {
+		const enemy = Enemy.spawn(enemySpec.x, enemySpec.y, enemySpec.imageSpec, enemySpec.endX);
+		this.enemies[timeIndex - 1].push(enemy);
+	  }
+	  Level.#WAVE_TIMER = 0;
 	}
-	this.enemyClock += dt;
-	for (const enemy of Enemy.alive()) {
-	  enemy.update(this.enemyClock);
+	for (let i=0; i<=timeIndex; i++) {
+	  if (typeof this.enemies[i] === "undefined") {
+		continue;
+	  }
+	  for (const enemy of this.enemies[i]) {
+		if (enemy.live) {
+		  enemy.update(Level.#TIMER - i*constants.TIME_SLOT/1000);
+		}
+	  }
 	}
+	// TODO: reset when timer reaches max
   }
 
   draw(ctx, assets) {

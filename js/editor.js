@@ -274,9 +274,9 @@ export class Editor {
   updateSimEnemies(timeIndex) {
 	// simulate enemies
 	this.simEnemies = [];
-	for (let i=0; i<this.data.length; i++) {
+	for (let i=0; i<timeIndex; i++) {
 	  const enemySpecs = this.data[i];
-	  if (i >= timeIndex || typeof enemySpecs === "undefined") {
+	  if (typeof enemySpecs === "undefined") {
 		continue;
 	  }
 	  const time = (timeIndex - i)*constants.TIME_SLOT;
@@ -411,6 +411,9 @@ export class Editor {
 
   toggle() {
 	this.enabled = !this.enabled;
+	if (this.enabled) {
+	  this.updateSimEnemies(this.components.timeSlider.sliderPos);
+	}
   }
 
   deleteEnemy(index, subindex) {
