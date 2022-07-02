@@ -38,7 +38,8 @@ export class Enemy {
 	this.width = 32;
 	this.height = 32;
 	this.endX = endX;
-	this.velX = Math.sign(this.endX - this.startX)*20;
+	this.speed = 64;
+	this.velX = Math.sign(this.endX - this.startX)*this.speed;
 	this.endXTime = (this.endX - this.startX)/this.velX;
 	this.endAttackTime = this.endXTime + 2;
 	this.attacked = false;
