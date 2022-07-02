@@ -1,5 +1,6 @@
 import {constants} from "./constants.js";
 import {Enemy} from "./enemy.js";
+import {Projectile} from "./projectile.js";
 
 function lerp(from, to, amount) {
     return (1 - amount) * from + amount * to;
@@ -10,11 +11,12 @@ export class Level {
   static #WAVE_TIMER = 0;
   static #SCROLL_SPEED = 256;
 
-  constructor(data, width, height) {
+  constructor(data, width, height, player) {
 	this.levelData = data;
 	this.width = width;
 	this.offset = 0;	// number of pixels camera has moved to the right
 	this.enemies = [];
+	this.player = player;
   }
 
   reset(data) {
@@ -57,9 +59,12 @@ export class Level {
 	  }
 	  for (const enemy of this.enemies[i]) {
 		if (enemy.live) {
-		  enemy.update(Level.#TIMER - i*constants.TIME_SLOT/1000);
+		  enemy.update(Level.#TIMER - i*constants.TIME_SLOT/1000, this.player);
 		}
 	  }
+	}
+	for (const projectile of Projectile.alive()) {
+	  projectile.update(dt);
 	}
 	// TODO: reset when timer reaches max
   }
@@ -68,6 +73,9 @@ export class Level {
 	ctx.drawImage(assets.levelBG, Math.round(this.offset), 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
 	for (const enemy of Enemy.alive()) {
 	  enemy.draw(ctx, assets, this.offset);
+	}
+	for (const projectile of Projectile.alive()) {
+	  projectile.draw(ctx, assets, this.offset);
 	}
   }
 }

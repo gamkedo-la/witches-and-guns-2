@@ -68,7 +68,6 @@ export class Player {
 	  ));
 	  this.shotDelay = Player.timeBetweenShots;
 	}
-	this.shots.forEach(shot => shot.update(dt));
 	this.shotDelay -= dt;
 	const cv = Player.getAxis(input.up, input.down, input.left, input.right);
 	if (!(cv.x === 0 && cv.y === 0)) {
@@ -106,6 +105,5 @@ export class Player {
 	ctx.arc(Math.round(this.reticlePos.x - offset), Math.round(this.reticlePos.y), Math.round(Player.avatarWidth), 0, 2*Math.PI);
 	ctx.stroke();
 	ctx.drawImage(assets.player, 50, 0, 20, 32, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), 20, 32);
-	this.shots.forEach(shot => shot.draw(ctx, assets, offset));
   }
 }

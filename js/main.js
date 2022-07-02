@@ -20,7 +20,7 @@ class Game {
 	  this.currentLevel.reset(this.editor.takeDataSnapshot());
 	});
 	this.player = new Player({x: 100, y: this.ctx.canvas.height - Player.avatarHeight});
-	this.currentLevel = new Level(this.editor.data, this.assets.levelBG.width, this.ctx.canvas.height);
+	this.currentLevel = new Level(this.editor.data, this.assets.levelBG.width, this.ctx.canvas.height, this.player);
   }
 
   start() {

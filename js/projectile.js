@@ -11,6 +11,14 @@ export class Projectile {
 	}
   }
 
+  static alive = function* () {
+	for (const projectile of this.#INSTANCES) {
+	  if (projectile.live) {
+		yield projectile;
+	  }
+	}
+  }
+
   /**
    * Create a projectile
    * @param {number} speed - velocity vector
@@ -26,7 +34,9 @@ export class Projectile {
   update(dt) {
 	this.position.x += this.velocity.x*dt;
 	this.position.y += this.velocity.y*dt;
-	if (this.position.y - this.target.height < this.target.y) {
+	this.reachedTarget = this.velocity.y > 0 ? this.position.y > this.target.y + this.target.height : this.position.y < this.target.y;
+	if (this.reachedTarget) {
+	// if (this.position.y - this.target.height < Math.sign(this.velocity.y)*this.target.y) {
 	  this.live = false;
 	  this.hooks.forEach(hook => hook(dt, this));
 	}
@@ -42,6 +52,7 @@ export class Projectile {
 	};
 	this.hooks = hooks;
 	this.live = true;
+	this.reachedTarget = false;
 	return this;
   }
 
@@ -51,13 +62,13 @@ export class Projectile {
   }
 
   draw(ctx, assets, offset) {
-	  ctx.strokeStyle = "yellow";
-	  ctx.beginPath();
-	  const shotDrawPos = {
-		x: this.position.y - 4 < this.target.y ? this.target.x : this.position.x,
-		y: this.position.y - 4 < this.target.y ? this.target.y : this.position.y,
-	  };
-	  ctx.arc(Math.round(shotDrawPos.x - offset), Math.round(shotDrawPos.y), Math.round(this.radius), 0, 2*Math.PI);
-	  ctx.stroke();
+	ctx.strokeStyle = "yellow";
+	ctx.beginPath();
+	const shotDrawPos = {
+	  x: this.reachedTarget ? this.target.x : this.position.x,
+	  y: this.reachedTarget ? this.target.y : this.position.y,
+	};
+	ctx.arc(Math.round(shotDrawPos.x - offset), Math.round(shotDrawPos.y), Math.round(this.radius), 0, 2*Math.PI);
+	ctx.stroke();
   }
 }

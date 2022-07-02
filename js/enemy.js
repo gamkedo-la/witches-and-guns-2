@@ -1,4 +1,6 @@
 import {constants} from "./constants.js";
+import {Player} from "./player.js";
+import {Projectile} from "./projectile.js";
 
 
 export class Enemy {
@@ -38,16 +40,33 @@ export class Enemy {
 	this.endX = endX;
 	this.velX = Math.sign(this.endX - this.startX)*20;
 	this.endXTime = (this.endX - this.startX)/this.velX;
+	this.endAttackTime = this.endXTime + 2;
+	this.attacked = false;
+	this.hitTargetHooks = [];
   }
 
-  update(accTime) {
+  update(accTime, player) {
 	if (!this.live) {
 	  return;
 	}
 	if (accTime < this.endXTime) {
 	  this.x = this.startX + this.velX*accTime;
-	} else {	// TODO: introduce "stop and maybe shoot" time here
-	  this.x = this.endX - this.velX*(accTime - this.endXTime);
+	} else if (accTime < this.endAttackTime) {
+	  this.x = this.startX + this.velX*this.endXTime;
+	  if (!this.attacked && typeof(player) !== "undefined") {	// NOTE: player can be undefined in editor
+		const projectile = Projectile.get(
+		  1.5,
+		  6,
+		  {x: this.x + this.width/2, y: this.y + this.height/2},
+		  {x: player.avatarPos.x + Player.avatarWidth*1.5, y: player.avatarPos.y, height: Player.avatarHeight/2},
+		  1,
+		  this.hitTargetHooks,
+		);
+		console.log("SHOT", projectile);
+		this.attacked = true;
+	  }
+	} else {
+	  this.x = this.endX - this.velX*(accTime - this.endAttackTime);
 	  if (this.x + this.width < 0 || this.x > constants.PLAYABLE_WIDTH) {
 		this.live = false;
 	  }
