@@ -129,6 +129,10 @@ class SaveButton extends ToolButton {
   constructor(editor, order, containerY) {
 	super(editor, ToolButton.WIDTH*3, ToolButton.HEIGHT, order, containerY);
   }
+
+  action() {
+	this.editor.save().then(() => alert("Level saved correctly"));
+  }
 }
 
 export class Editor {
@@ -144,6 +148,7 @@ export class Editor {
   ];
   static WP_HANDLE_SIZE = 8;
   static WING_WIDTH = 64;
+  static #LEVEL_NAMES = ["graveyard"];	// NOTE: level filenames
 
   constructor() {
 	this.enabled = true;
@@ -161,13 +166,20 @@ export class Editor {
 	this.dragWP = {};
 	this.isDragging = false;
 	this.isDraggingWP = false;
-	this.data = Array(Math.ceil(TimeSlider.MAX_TIME/constants.TIME_SLOT));
 	this.stageOffset = 0;
 	this.dragOffset = {x: 0, y: 0};
 	this.selectedEnemy = null;
 	this.simEnemies = [];
 	// TODO: add limit to undoList size
 	this.undoList = [];
+	this.levelData = {
+	  waves: Array(Math.ceil(TimeSlider.MAX_TIME/constants.TIME_SLOT)),	// enemy waves
+	  props: []
+	};
+	const levelName = Editor.#LEVEL_NAMES[0];
+	fetch(`../levels/${levelName}.json`)
+	  .then(response => response.json()).then(levelData => this.levelData = levelData)
+	  .catch(error => alert(`Level file "${levelName}.json" not found. Starting out with empty level.`));
   }
 
   scrollRight(offset) {
@@ -198,7 +210,7 @@ export class Editor {
 				height: box.enemy.height,
 				enemy: Object.assign({}, box.enemy),
 				new: true,
-				subindex: this.data[timeIndex] ? this.data[timeIndex].length - 1 : 0,
+				subindex: this.levelData.waves[timeIndex] ? this.levelData.waves[timeIndex].length - 1 : 0,
 			  };
 			  this.dragOffset.x = this.dragObj.x - mouseX;
 			  this.dragOffset.y = this.dragObj.y - mouseY;
@@ -275,7 +287,7 @@ export class Editor {
 	// simulate enemies
 	this.simEnemies = [];
 	for (let i=0; i<timeIndex; i++) {
-	  const enemySpecs = this.data[i];
+	  const enemySpecs = this.levelData.waves[i];
 	  if (typeof enemySpecs === "undefined") {
 		continue;
 	  }
@@ -296,11 +308,11 @@ export class Editor {
 	if (index === null || typeof(index) === "undefined") {
 	  index = this.getTimeIndex();
 	}
-	if (typeof this.data[index] === "undefined") {
-	  this.data[index] = [];
+	if (typeof this.levelData.waves[index] === "undefined" || this.levelData.waves[index] === null) {
+	  this.levelData.waves[index] = [];
 	}
-	this.data[index].push(enemy);
-	console.log("DATA UPDATED", this.data, this.undoList);
+	this.levelData.waves[index].push(enemy);
+	console.log("DATA UPDATED", this.levelData.waves, this.undoList);
   }
 
   dropEnemy() {
@@ -318,7 +330,7 @@ export class Editor {
 
   dropWP() {
 	this.undoList.push(this.takeDataSnapshot());
-	const enemy = this.data[this.dragWP.index][this.dragWP.subindex];
+	const enemy = this.levelData.waves[this.dragWP.index][this.dragWP.subindex];
 	enemy.endX = this.dragWP.end.x + this.stageOffset;
 	this.selectedEnemy = {
 	  enemy: enemy,
@@ -328,18 +340,23 @@ export class Editor {
   }
 
   takeDataSnapshot() {
-	// return deep copy of this.data
-	const snapshot = this.data.map(arr => {
-	  return arr.map(enemy => {
-		return {...enemy};
-	  });
-	});
+	// return deep copy of this.levelData
+	const snapshot = {
+	  waves: this.levelData.waves.map(arr => {
+		return (arr||[]).map(enemy => {
+		  return {...enemy};
+		});
+	  }),
+	  props: this.levelData.props.map(prop => {
+		return {...prop};
+	  }),
+	};
 	console.log("Took data snapshot", snapshot);
 	return snapshot;
   }
 
   getEnemiesForTime() {
-	return this.data[this.getTimeIndex()] || [];
+	return this.levelData.waves[this.getTimeIndex()] || [];
   }
 
   drawEnemy(enemy, ctx, assets) {
@@ -417,8 +434,8 @@ export class Editor {
   }
 
   deleteEnemy(index, subindex) {
-	if (Array.isArray(this.data[index])) {
-	  this.data[index].splice(subindex, 1);
+	if (Array.isArray(this.levelData.waves[index])) {
+	  this.levelData.waves[index].splice(subindex, 1);
 	}
   }
 
@@ -427,7 +444,7 @@ export class Editor {
 	  this.undoList.push(this.takeDataSnapshot());
 	  this.deleteEnemy(this.selectedEnemy.index, this.selectedEnemy.subindex);
 	  this.selectedEnemy = null;
-	  console.log("DATA UPDATED", this.data, this.undoList);
+	  console.log("DATA UPDATED", this.levelData, this.undoList);
 	}
   }
 
@@ -435,11 +452,21 @@ export class Editor {
 	// TODO: handle simEnemies
 	if (this.undoList.length) {
 	  const snapshot = this.undoList.pop();
-	  this.data = snapshot;
+	  this.levelData = snapshot;
 	  this.selectedEnemy = null;
 	} else {
 	  console.log("No further undo information");
 	}
+  }
+
+  async save() {
+	const newHandle = await window.showSaveFilePicker();
+	const writableStream = await newHandle.createWritable();
+	const data = JSON.stringify(this.takeDataSnapshot(), null, 2);
+	const blob = new Blob([data], {type: "application/json"});
+	await writableStream.write(blob);
+	await writableStream.close();
+	return data;
   }
 }
 
