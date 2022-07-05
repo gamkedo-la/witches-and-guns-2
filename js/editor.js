@@ -155,6 +155,7 @@ export class Editor {
 	this.components = {
 	  timeSlider: new TimeSlider(this),
 	  enemyPalette: new EnemyPalette(this, ToolButton.WIDTH*Editor.buttonSpecs.length/2, 184 + TimeSlider.HEIGHT),
+	  propsPalette: new PropPalette(this, (EnemyPalette.boxSize + EnemyPalette.margin)*4 + ToolButton.WIDTH*Editor.buttonSpecs.length/2, 184 + TimeSlider.HEIGHT),
 	  stageSlider: new StageSlider(this),
 	};
 	const buttonsY = this.components.timeSlider.y + TimeSlider.HEIGHT;
@@ -292,7 +293,7 @@ export class Editor {
 		continue;
 	  }
 	  const time = (timeIndex - i)*constants.TIME_SLOT;
-	  for (const spec of enemySpecs) {
+	  for (const spec of (enemySpecs || [])) {
 		const enemy = Enemy.spawn(spec.x, spec.y, spec.imageSpec, spec.endX);
 		enemy.update(time/1000);
 		this.simEnemies.push(enemy);
@@ -649,6 +650,64 @@ class EnemyPalette {
 	}	
 	// draw right scroll button
 	ctx.translate(this.x + EnemyPalette.scrollBtnWidth*2 + EnemyPalette.boxSize*this.enemyBoxes.length, this.y);
+	ctx.scale(-1, 1);
+	ctx.drawImage(assets.editorUI, 85, 0, 6, 32, 0, 0, 6, 32);
+	ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
+}
+
+
+class PropPalette {
+  static margin = 4;
+  static boxSize = 32;
+  static scrollBtnWidth = 6;
+
+  constructor(editor, x, y) {
+	this.editor = editor;
+	this.x = x;
+	this.y = y;
+	this.containerX = 426*2 - 32;
+	this.height = 240 - 24;
+	this.props = [
+	  {name: "GRAVEYARD_1", width: 32, height: 32, imageSpec: {
+		id: "graveyardProps", sx: 0, sy: 0, sWidth: 32, sHeight: 32}
+	  },
+	  {name: "GRAVEYARD_2", width: 32, height: 32, imageSpec: {
+		id: "graveyardProps", sx: 32, sy: 0, sWidth: 32, sHeight: 32}
+	  },
+	  {name: "GRAVEYARD_3", width: 32, height: 32, imageSpec: {
+		id: "graveyardProps", sx: 64, sy: 0, sWidth: 32, sHeight: 32}
+	  },
+	];
+	const propBoxX = this.containerX + PropPalette.margin;
+	this.propBoxes = this.props.map((prop, i) => ({
+	  x: this.x + 10 + i*PropPalette.boxSize,
+	  y: this.y + PropPalette.margin,
+	  width: PropPalette.boxSize - PropPalette.margin*2,
+	  height: PropPalette.boxSize - PropPalette.margin*2,
+	  prop: prop,
+	}));
+	this.width = PropPalette.boxSize*this.propBoxes.length + PropPalette.scrollBtnWidth*2;
+  }
+
+  update(dt, input) {
+  }
+
+  draw(ctx, assets) {
+	// draw left scroll button
+	ctx.drawImage(assets.editorUI, 85, 0, PropPalette.scrollBtnWidth, 32, this.x, this.y, PropPalette.scrollBtnWidth, 32);
+	// draw prop palette
+	ctx.fillStyle = "black";
+	ctx.fillRect(this.x + PropPalette.scrollBtnWidth, this.y, PropPalette.boxSize*this.propBoxes.length, PropPalette.boxSize);
+	for (const [i, box] of this.propBoxes.entries()) {
+	  const offset = i*PropPalette.boxSize;
+	  ctx.drawImage(assets.editorUI, 71, 0, 3, PropPalette.boxSize, this.x + PropPalette.scrollBtnWidth + offset, this.y, 3, PropPalette.boxSize);
+	  const spec = box.prop.imageSpec;
+	  ctx.drawImage(assets[spec.id], spec.sx, spec.sy, spec.sWidth, spec.sHeight, Math.round(box.x), Math.round(box.y), box.width, box.height);
+	  ctx.drawImage(assets.editorUI, 68, 0, 3, PropPalette.boxSize, this.x + PropPalette.scrollBtnWidth + (i+1)*PropPalette.boxSize - 3, this.y, 3, PropPalette.boxSize);
+	}
+	// draw right scroll button
+	ctx.translate(this.x + PropPalette.scrollBtnWidth*2 + PropPalette.boxSize*this.propBoxes.length, this.y);
 	ctx.scale(-1, 1);
 	ctx.drawImage(assets.editorUI, 85, 0, 6, 32, 0, 0, 6, 32);
 	ctx.setTransform(1, 0, 0, 1, 0, 0);

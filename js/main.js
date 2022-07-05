@@ -71,6 +71,7 @@ const assetSpecs = [
   {id: "editorUI", path: "images/editorUI.png"},
   {id: "donutSheet", path: "images/donut.png"},
   {id: "printerSheet", path: "images/printer.png"},
+  {id: "graveyardProps", path: "images/graveyardObjects.png"},
 ];
 
 async function loadAsset(spec) {
