@@ -114,6 +114,9 @@ class WayPointButton extends ToolButton {
   constructor(editor, order, containerY) {
 	super(editor, ToolButton.WIDTH, ToolButton.HEIGHT, order, containerY);
   }
+  action() {
+	this.editor.addWalkWay();
+  }
 }
 
 class TrashButton extends ToolButton {
@@ -165,8 +168,14 @@ export class Editor {
 	});
 	this.dragObj = {};
 	this.dragWP = {};
+	this.dragWW = null;
+	this.newWalkWay = null;
+	this.enemyWalkWay = null;
+	this.isAddingWalkWay = false;
+	this.selectedWalkWay = null;
 	this.isDragging = false;
 	this.isDraggingWP = false;
+	this.isDraggingWW = false;
 	this.stageOffset = 0;
 	this.dragOffset = {x: 0, y: 0};
 	this.selectedEnemy = null;
@@ -175,7 +184,8 @@ export class Editor {
 	this.undoList = [];
 	this.levelData = {
 	  waves: Array(Math.ceil(TimeSlider.MAX_TIME/constants.TIME_SLOT)),	// enemy waves
-	  props: []
+	  props: [],
+	  walkways: [],	// y positions of walkways
 	};
 	const levelName = Editor.#LEVEL_NAMES[0];
 	fetch(`../levels/${levelName}.json`)
@@ -197,7 +207,17 @@ export class Editor {
 	const mouseX = input.mousePos.x;
 	const mouseY = input.mousePos.y;
 	const timeIndex = this.getTimeIndex();
-	if (!(this.isDragging || this.isDraggingWP)) {
+	if (this.isAddingWalkWay) {
+	  this.newWalkWay = mouseY;
+	  if (input.mouseButtonHeld) {
+		this.isAddingWalkWay = false;
+		if (typeof this.levelData.walkways == "undefined") {
+		  this.levelData.walkways = [];
+		}
+		this.levelData.walkways.push(this.newWalkWay);
+		this.newWalkWay = null;
+	  }
+	} else if (!(this.isDragging || this.isDraggingWP)) {
 	  if (input.mouseButtonHeld && (mouseY < this.components.timeSlider.y || mouseY > this.components.timeSlider.y + TimeSlider.HEIGHT)) {
 		const dragFromPalette = mouseX > this.components.enemyPalette.x && mouseX < this.components.enemyPalette.x + this.components.enemyPalette.width && mouseY > this.components.enemyPalette.y && mouseY < this.components.enemyPalette.y + this.components.enemyPalette.height;
 		if (dragFromPalette) {
@@ -254,6 +274,16 @@ export class Editor {
 			}
 		  }
 		}
+		if (!(dragFromPalette || this.isDragging || this.isDraggingWP || this.isDraggingWW)) {
+		  for (const [i, walkway] of (this.levelData.walkways || []).entries()) {
+			if (mouseY > walkway - 10 && mouseY < walkway) {
+			  this.isDraggingWW = true;
+			  this.dragWW = {y: walkway, index: i};
+			  this.dragOffset.y = walkway - mouseY;
+			  break;
+			}
+		  }
+		}
 	  } 
 	}
 	for (const component of Object.values(this.components)) {
@@ -275,11 +305,37 @@ export class Editor {
 	  if (input.mouseButtonHeld) {
 		this.dragObj.x = input.mousePos.x + this.dragOffset.x + this.stageOffset;
 		this.dragObj.y = input.mousePos.y + this.dragOffset.y;
+		let minY = Number.MAX_SAFE_INTEGER;
+		for (const walkWayY of (this.levelData.walkways || [])) {
+		  if (Math.abs(walkWayY - mouseY) <= Math.abs(minY - mouseY)) {
+			minY = walkWayY;
+		  }
+		}
+		this.enemyWalkWay = minY;
 	  } else {
 		this.isDragging = false;
-		if (this.dragObj.x > -Editor.WING_WIDTH && this.dragObj.x + this.dragObj.width < constants.PLAYABLE_WIDTH + Editor.WING_WIDTH && this.dragObj.y + this.dragObj.height < this.components.timeSlider.y) {
+		if (this.dragObj.x > -Editor.WING_WIDTH && this.dragObj.x + this.dragObj.width < constants.PLAYABLE_WIDTH + Editor.WING_WIDTH) {
 		  this.dropEnemy();
 		}
+	  }
+	} else if (this.isDraggingWW) {
+	  if (input.mouseButtonHeld) {
+		this.dragWW.y = input.mousePos.y + this.dragOffset.y;
+	  } else {
+		this.undoList.push(this.takeDataSnapshot());
+		const oldWW = this.levelData.walkways[this.dragWW.index];
+		this.levelData.walkways[this.dragWW.index] = this.dragWW.y;
+		for (const wave of this.levelData.waves) {
+		  for (const enemy of wave) {
+			if (enemy.y + enemy.height === oldWW) {
+			  enemy.y = this.dragWW.y - enemy.height;
+			}
+		  }
+		}
+		this.isDraggingWW = false;
+		this.selectedWalkWay = this.dragWW.y;
+		this.selectedEnemy = null;
+		this.dragWW = null;
 	  }
 	}
   }
@@ -320,9 +376,11 @@ export class Editor {
 	this.undoList.push(this.takeDataSnapshot());
 	const enemy = this.dragObj.enemy;
 	enemy.x = this.dragObj.x;
-	enemy.y = this.dragObj.y;
+	enemy.y = this.enemyWalkWay - enemy.height;
+	this.enemyWalkWay = null;
 	const index = this.getTimeIndex();
 	this.selectedEnemy = {enemy: enemy, index: index, subindex: this.dragObj.subindex};
+	this.selectedWalkWay = null;
 	if (this.dragObj.new) {
 	  this.addEnemy(enemy, index);
 	  const added = Object.assign({}, this.selectedEnemy);
@@ -338,6 +396,7 @@ export class Editor {
 	  index: this.dragWP.index,
 	  subindex: this.dragWP.subindex
 	};
+	this.selectedWalkWay = null;
   }
 
   takeDataSnapshot() {
@@ -351,6 +410,7 @@ export class Editor {
 	  props: this.levelData.props.map(prop => {
 		return {...prop};
 	  }),
+	  walkways: [...(this.levelData.walkways || [])],
 	};
 	console.log("Took data snapshot", snapshot);
 	return snapshot;
@@ -367,7 +427,25 @@ export class Editor {
 
   draw(ctx, assets) {
 	// TODO: draw stage wings
+	const oldAlpha = ctx.globalAlpha;
 	ctx.drawImage(assets.levelBG, this.stageOffset, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
+	for (const walkway of (this.levelData.walkways || [])) {
+	  ctx.globalAlpha = 0.6;
+	  if (walkway === this.enemyWalkWay) {
+		ctx.fillStyle = "fuchsia";
+	  } else if (walkway === this.selectedWalkWay) {
+		ctx.globalAlpha = 0.8;
+		ctx.fillStyle = "lime";
+	  } else {
+		ctx.fillStyle = "indianred";
+	  }
+	  ctx.fillRect(0, Math.round(walkway) - 10, ctx.canvas.width, 10);
+	  ctx.globalAlpha = oldAlpha;
+	}
+	if (this.isAddingWalkWay && this.newWalkWay !== null) {
+	  ctx.fillStyle = 'hotpink';
+	  ctx.fillRect(0, Math.round(this.newWalkWay) - 10, ctx.canvas.width, 10);
+	}
 	for (const component of Object.values(this.components)) {
 	  component.draw(ctx, assets);
 	}
@@ -388,7 +466,6 @@ export class Editor {
 	  }
 	}
 	const timeIndex = this.getTimeIndex();
-	const oldAlpha = ctx.globalAlpha;
 	ctx.globalAlpha = 0.3;
 
 	for (const enemy of this.simEnemies) {
@@ -425,6 +502,12 @@ export class Editor {
 	  ctx.strokeRect(Math.round(this.dragObj.x - this.stageOffset), Math.round(this.dragObj.y), this.dragObj.width, this.dragObj.height);
 	  ctx.setLineDash([]);
 	}
+	if (this.isDraggingWW) {
+	  ctx.globalAlpha = 0.8;
+	  ctx.fillStyle = "lime";
+	  ctx.fillRect(0, Math.round(this.dragWW.y) - 10, ctx.canvas.width, 10);
+	  ctx.globalAlpha = oldAlpha;
+	}
   }
 
   toggle() {
@@ -446,6 +529,10 @@ export class Editor {
 	  this.deleteEnemy(this.selectedEnemy.index, this.selectedEnemy.subindex);
 	  this.selectedEnemy = null;
 	  console.log("DATA UPDATED", this.levelData, this.undoList);
+	} else if (this.selectedWalkWay !== null) {
+	  this.undoList.push(this.takeDataSnapshot());
+	  this.levelData.walkways = this.levelData.walkways.filter(ww => ww !== this.selectedWalkWay);
+	  this.selectedWalkWay = null;
 	}
   }
 
@@ -455,6 +542,7 @@ export class Editor {
 	  const snapshot = this.undoList.pop();
 	  this.levelData = snapshot;
 	  this.selectedEnemy = null;
+	  this.selectedWalkWay = null;
 	} else {
 	  console.log("No further undo information");
 	}
@@ -468,6 +556,13 @@ export class Editor {
 	await writableStream.write(blob);
 	await writableStream.close();
 	return data;
+  }
+
+  addWalkWay() {
+	if (!this.isAddingWalkWay) {
+	  this.isAddingWalkWay = true;
+	  this.newWalkWay = null;
+	}
   }
 }
 
