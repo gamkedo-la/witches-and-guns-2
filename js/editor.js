@@ -53,7 +53,7 @@ class Button {
 
 class ToolButton extends Button {
   static WIDTH = 17;
-  static HEIGHT = 17;
+  static HEIGHT = 16;
 
   constructor(editor, spriteOffsetX, spriteOffsetY, order, containerY) {
 	super(
@@ -83,13 +83,7 @@ class PlayButton extends ToolButton {
   }
 }
 
-class EnemyButton extends ToolButton {
-  constructor(editor, order, containerY) {
-	super(editor, ToolButton.WIDTH, 0, order, containerY);
-  }
-}
-
-class CopyButton extends ToolButton {
+class GroupButton extends ToolButton {
   constructor(editor, order, containerY) {
 	super(editor, ToolButton.WIDTH*2, 0, order, containerY);
   }
@@ -104,15 +98,9 @@ class UndoButton extends ToolButton {
   }
 }
 
-class HandButton extends ToolButton {
-  constructor(editor, order, containerY) {
-	super(editor, 0, ToolButton.HEIGHT, order, containerY);
-  }
-}
-
 class WalkWayButton extends ToolButton {
   constructor(editor, order, containerY) {
-	super(editor, ToolButton.WIDTH, ToolButton.HEIGHT, order, containerY);
+	super(editor, ToolButton.WIDTH, ToolButton.HEIGHT - 1, order, containerY);
   }
   action() {
 	this.editor.addWalkWay();
@@ -141,11 +129,9 @@ class SaveButton extends ToolButton {
 export class Editor {
   static buttonSpecs = [
 	PlayButton,
-	HandButton,
-	EnemyButton,
-	WalkWayButton,
-	CopyButton,
 	TrashButton,
+	GroupButton,
+	WalkWayButton,
 	UndoButton,
 	SaveButton,
   ];
