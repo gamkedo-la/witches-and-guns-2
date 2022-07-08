@@ -759,13 +759,13 @@ class PropPalette {
 	this.containerX = 426*2 - 32;
 	this.height = 240 - 24;
 	this.props = [
-	  {name: "GRAVEYARD_1", width: 32, height: 32, imageSpec: {
+	  {name: "GRAVE_1", width: 32, height: 32, imageSpec: {
 		id: "graveyardProps", sx: 0, sy: 0, sWidth: 32, sHeight: 32}
 	  },
-	  {name: "GRAVEYARD_2", width: 32, height: 32, imageSpec: {
+	  {name: "GRAVE_2", width: 32, height: 32, imageSpec: {
 		id: "graveyardProps", sx: 32, sy: 0, sWidth: 32, sHeight: 32}
 	  },
-	  {name: "GRAVEYARD_3", width: 32, height: 32, imageSpec: {
+	  {name: "GRAVE_3", width: 32, height: 32, imageSpec: {
 		id: "graveyardProps", sx: 64, sy: 0, sWidth: 32, sHeight: 32}
 	  },
 	];
