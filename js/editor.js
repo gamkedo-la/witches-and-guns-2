@@ -214,7 +214,11 @@ export class Editor {
 		if (typeof this.levelData.walkways == "undefined") {
 		  this.levelData.walkways = [];
 		}
-		this.levelData.walkways.push(this.newWalkWay);
+		if (this.newWalkWay < this.components.timeSlider.y) {
+		  this.levelData.walkways.push(this.newWalkWay);
+		} else {
+		  console.log("Dropped walkway outside of gameplay area");
+		}
 		this.newWalkWay = null;
 	  }
 	} else if (!(this.isDragging || this.isDraggingWP)) {
@@ -322,19 +326,23 @@ export class Editor {
 	  if (input.mouseButtonHeld) {
 		this.dragWW.y = input.mousePos.y + this.dragOffset.y;
 	  } else {
-		this.undoList.push(this.takeDataSnapshot());
-		const oldWW = this.levelData.walkways[this.dragWW.index];
-		this.levelData.walkways[this.dragWW.index] = this.dragWW.y;
-		for (const wave of this.levelData.waves) {
-		  for (const enemy of wave) {
-			if (enemy.y + enemy.height === oldWW) {
-			  enemy.y = this.dragWW.y - enemy.height;
+		if (this.dragWW.y < this.components.timeSlider.y) {
+		  this.undoList.push(this.takeDataSnapshot());
+		  const oldWW = this.levelData.walkways[this.dragWW.index];
+		  this.levelData.walkways[this.dragWW.index] = this.dragWW.y;
+		  for (const wave of this.levelData.waves) {
+			for (const enemy of wave) {
+			  if (enemy.y + enemy.height === oldWW) {
+				enemy.y = this.dragWW.y - enemy.height;
+			  }
 			}
 		  }
+		  this.selectedWalkWay = this.dragWW.y;
+		  this.selectedEnemy = null;
+		} else {
+		  console.log("Dropped walkway outside of gameplay area");
 		}
 		this.isDraggingWW = false;
-		this.selectedWalkWay = this.dragWW.y;
-		this.selectedEnemy = null;
 		this.dragWW = null;
 	  }
 	}
