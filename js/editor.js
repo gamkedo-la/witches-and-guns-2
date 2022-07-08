@@ -337,6 +337,7 @@ export class Editor {
 			  }
 			}
 		  }
+		  this.updateSimEnemies(this.getTimeIndex());
 		  this.selectedWalkWay = this.dragWW.y;
 		  this.selectedEnemy = null;
 		} else {
