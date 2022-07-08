@@ -110,7 +110,7 @@ class HandButton extends ToolButton {
   }
 }
 
-class WayPointButton extends ToolButton {
+class WalkWayButton extends ToolButton {
   constructor(editor, order, containerY) {
 	super(editor, ToolButton.WIDTH, ToolButton.HEIGHT, order, containerY);
   }
@@ -143,7 +143,7 @@ export class Editor {
 	PlayButton,
 	HandButton,
 	EnemyButton,
-	WayPointButton,
+	WalkWayButton,
 	CopyButton,
 	TrashButton,
 	UndoButton,
