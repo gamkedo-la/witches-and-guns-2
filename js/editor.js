@@ -768,6 +768,21 @@ class PropPalette {
 	  {name: "GRAVE_3", width: 32, height: 32, imageSpec: {
 		id: "graveyardProps", sx: 64, sy: 0, sWidth: 32, sHeight: 32}
 	  },
+	  {name: "BUSH_1", width: 32, height: 32, imageSpec: {
+		id: "graveyardProps", sx: 0, sy: 32, sWidth: 32, sHeight: 32}
+	  },
+	  {name: "BUSH_2", width: 32, height: 32, imageSpec: {
+		id: "graveyardProps", sx: 32, sy: 32, sWidth: 32, sHeight: 32}
+	  },
+	  {name: "BUSH_3", width: 32, height: 32, imageSpec: {
+		id: "graveyardProps", sx: 64, sy: 32, sWidth: 32, sHeight: 32}
+	  },
+	  {name: "ROCK_1", width: 32, height: 32, imageSpec: {
+		id: "graveyardProps", sx: 0, sy: 64, sWidth: 32, sHeight: 32}
+	  },
+	  {name: "ROCK_2", width: 32, height: 32, imageSpec: {
+		id: "graveyardProps", sx: 32, sy: 64, sWidth: 32, sHeight: 32}
+	  },
 	];
 	const propBoxX = this.containerX + PropPalette.margin;
 	this.propBoxes = this.props.map((prop, i) => ({
