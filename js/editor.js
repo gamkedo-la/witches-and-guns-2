@@ -141,6 +141,7 @@ export class Editor {
 
   constructor() {
 	this.enabled = true;
+	this.onToggleHook = () => {};
 	this.components = {
 	  timeSlider: new TimeSlider(this),
 	  enemyPalette: new EnemyPalette(this, ToolButton.WIDTH*Editor.buttonSpecs.length/2, 184 + TimeSlider.HEIGHT),
@@ -509,7 +510,13 @@ export class Editor {
 	this.enabled = !this.enabled;
 	if (this.enabled) {
 	  this.updateSimEnemies(this.components.timeSlider.sliderPos);
+	} else {
+	  this.onToggleHook(this.takeDataSnapshot());
 	}
+  }
+
+  onToggle(hook) {
+	this.onToggleHook = hook;
   }
 
   deleteEnemy(index, subindex) {
@@ -543,7 +550,7 @@ export class Editor {
 	}
   }
 
-  async save() {
+  async save() {	// TODO: lock editor during save
 	const newHandle = await window.showSaveFilePicker();
 	const writableStream = await newHandle.createWritable();
 	const data = JSON.stringify(this.takeDataSnapshot(), null, 2);
