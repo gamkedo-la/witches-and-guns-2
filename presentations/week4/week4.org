@@ -1,0 +1,71 @@
+#+OPTIONS: reveal_title_slide:nil reveal_center:t reveal_progress:t reveal_history:nil reveal_control:t
+#+OPTIONS: reveal_rolling_links:t reveal_keyboard:t reveal_overview:t num:nil
+#+OPTIONS: toc:0
+#+REVEAL_ROOT: https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.9.2/
+#+REVEAL_MARGIN: 0.2
+#+REVEAL_MIN_SCALE: 0.8
+#+REVEAL_TRANS: fast
+#+REVEAL_THEME: blood
+
+
+* Witches n' Guns 2
+
+  #+BEGIN_export html
+  <h1>Week 4</h1>
+  <em>Release date</em>: <strong>October 16</strong><br>
+  <em>Lead</em>: <strong>Gonzalo Delgado</strong>
+  <hr>
+  #+END_export
+
+  - 1 new member in Slack channel
+  - 25 new commits
+
+* Contributions
+
+** Patrick McKeown
+
+   - Player Shooting #1 @@html:<audio controls><source src="./demo/sounds/WG2_player_shooting_1.mp3" type="audio/mp3"><source src="./demo/sounds/WG2_player_shooting_1.wav" type="audio/wave"></audio>@@
+   - Player Shooting #2 @@html:<audio controls><source src="./demo/sounds/WG2_player_shooting_2.mp3" type="audio/mp3"><source src="./demo/sounds/WG2_player_shooting_2.wav" type="audio/wave"></audio>@@
+
+** Vince McKeown
+
+   #+ATTR_HTML: :width 240 :style float:left
+   [[./images/printerdeath.gif]]
+
+   #+ATTR_HTML: :width 240 :style float:left
+   [[./images/printerhurt.gif]]
+
+   #+ATTR_HTML: :width 320 :style float:left
+   [[./images/graveyardObjects.png]]
+
+
+
+** Gonzalo Delgado
+
+   - Added favicon
+   - Implemented walkways
+   - Updated editor buttons
+   - Integrated graveyard objects into editor (WIP)
+   - Updated Makefile to include sounds and levels in builds
+
+* Demo
+
+#+BEGIN_export html
+<iframe src="./demo/index.html" width="852" height="480"></iframe>
+#+END_export
+
+* Schedule
+
+#+BEGIN_export html
+<blockquote class="trello-board-compact">
+  <a href="https://trello.com/b/MYl1KS07/witches-n-guns-2">
+  Witches 'n Guns 2 Schedule
+  </a>
+</blockquote>
+<script src="https://p.trellocdn.com/embed.min.js"></script>
+#+END_export
+
+* Join!
+
+  *#team-witches-and-guns-2*
+
