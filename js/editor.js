@@ -318,7 +318,13 @@ export class Editor {
 		  const oldWW = this.levelData.walkways[this.dragWW.index];
 		  this.levelData.walkways[this.dragWW.index] = this.dragWW.y;
 		  for (const wave of this.levelData.waves) {
+			if (typeof(wave) === "undefined" || wave === null) {
+			  continue;
+			}
 			for (const enemy of wave) {
+			  if (typeof(enemy) === "undefined" || enemy === null) {
+				continue;
+			  }
 			  if (enemy.y + enemy.height === oldWW) {
 				enemy.y = this.dragWW.y - enemy.height;
 			  }
