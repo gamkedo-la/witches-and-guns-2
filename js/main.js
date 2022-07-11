@@ -2,6 +2,7 @@ import {Input} from "./input.js";
 import {Player} from "./player.js";
 import {Level} from "./level.js";
 import {Editor} from "./editor.js";
+import {loadAssets} from "./assets.js";
 
 class Game {
   static dt = 0;
@@ -18,7 +19,7 @@ class Game {
 	this.editor.onToggle(data => this.currentLevel.reset(data));
 	this.input.onRelease(Input.EDIT, event =>  this.editor.toggle());
 	this.player = new Player({x: 100, y: this.ctx.canvas.height - Player.avatarHeight});
-	this.currentLevel = new Level(this.editor.data, this.assets.levelBG.width, this.ctx.canvas.height, this.player);
+	this.currentLevel = new Level(this.editor.data, this.assets.images.levelBG.width, this.ctx.canvas.height, this.player);
   }
 
   start() {
@@ -39,10 +40,10 @@ class Game {
 	this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
 	if (this.editor.enabled) {
-	  this.editor.draw(this.ctx, this.assets);
+	  this.editor.draw(this.ctx, this.assets.images);
 	} else {
-	  this.currentLevel.draw(this.ctx, this.assets);
-	  this.player.draw(this.ctx, this.assets, this.currentLevel.offset);
+	  this.currentLevel.draw(this.ctx, this.assets.images);
+	  this.player.draw(this.ctx, this.assets.images, this.currentLevel.offset);
 	}
   }
 
@@ -62,32 +63,13 @@ class Game {
   }
 }
 
-const assetSpecs = [
-  {id: "player", path: "images/julhilde.png"},
-  {id: "tile", path: "images/tile.png"},
-  {id: "levelBG", path: "images/background.gif"},
-  {id: "editorUI", path: "images/editorUI.png"},
-  {id: "donutSheet", path: "images/donut.png"},
-  {id: "printerSheet", path: "images/printer.png"},
-  {id: "graveyardProps", path: "images/graveyardObjects.png"},
-];
-
-async function loadAsset(spec) {
-  const image = new Image();
-  image.src = spec.path;
-  await image.decode();
-  return [spec.id, image];
-}
-
-function loadAssets() {
-  return Promise.all(assetSpecs.map(spec => {
-	return loadAsset(spec);
-  }));
-}
-
 window.onload = function() {
-  loadAssets().then(assetsArr => {
-	const game = new Game(Object.fromEntries(assetsArr));
+  loadAssets().then(([images, sounds, levels]) => {
+	const game = new Game({
+	  images: Object.fromEntries(images),
+	  sounds: Object.fromEntries(sounds),
+	  levels: Object.fromEntries(levels),
+	});
 	game.start();
   });
 };
