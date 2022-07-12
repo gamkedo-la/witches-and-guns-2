@@ -139,7 +139,7 @@ export class Editor {
   static WING_WIDTH = 64;
   static #LEVEL_NAMES = ["graveyard"];	// NOTE: level filenames
 
-  constructor() {
+  constructor(levelData) {
 	this.enabled = true;
 	this.onToggleHook = () => {};
 	this.components = {
@@ -169,15 +169,11 @@ export class Editor {
 	this.simEnemies = [];
 	// TODO: add limit to undoList size
 	this.undoList = [];
-	this.levelData = {
+	this.levelData = levelData || {
 	  waves: Array(Math.ceil(TimeSlider.MAX_TIME/constants.TIME_SLOT)),	// enemy waves
 	  props: [],
 	  walkways: [],	// y positions of walkways
 	};
-	const levelName = Editor.#LEVEL_NAMES[0];
-	fetch(`../levels/${levelName}.json`)
-	  .then(response => response.json()).then(levelData => this.levelData = levelData)
-	  .catch(error => alert(`Level file "${levelName}.json" not found. Starting out with empty level.`));
   }
 
   scrollRight(offset) {

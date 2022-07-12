@@ -12,7 +12,9 @@ const assetSpecs = {
 	{id: "playerShooting1", path: "sounds/WG2_player_shooting_1.mp3"},
 	{id: "playerShooting2", path: "sounds/WG2_player_shooting_2.mp3"},
   ],
-  levels: [],
+  levels: [
+	{id: "graveyard", path: "levels/graveyard.json"},
+  ],
 };
 
 async function loadImage(spec) {
@@ -30,7 +32,9 @@ async function loadSound(spec, audioCtx) {
 }
 
 async function loadLevel(spec) {
-  return [spec.id, null];
+  const response = await fetch(spec.path);
+  const data = await response.json();
+  return [spec.id, data];
 }
 
 export function loadAssets(audioCtx) {
