@@ -9,8 +9,8 @@ const assetSpecs = {
 	{id: "graveyardProps", path: "images/graveyardObjects.png"},
   ],
   sounds: [
-	{id: "playerShooting1", path: "sounds/WG2_player_shooting_1.mp3"},
-	{id: "playerShooting2", path: "sounds/WG2_player_shooting_2.mp3"},
+	{id: "playerShooting1", path: "sounds/player_shoot-1-WG.mp3"},
+	{id: "playerShooting2", path: "sounds/player-shoot-3-WG.mp3"},
   ],
   levels: [
 	{id: "graveyard", path: "levels/graveyard.json"},
