@@ -9,11 +9,11 @@ class Game {
   static updateStep = 1/60;
   static last = window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
 
-  constructor(loadedAssets) {
+  constructor(loadedAssets, audioCtx) {
 	const canvas = document.getElementById("gameCanvas");
 	this.ctx = canvas.getContext("2d");
+	this.audioCtx = audioCtx;
 	this.assets = loadedAssets;
-
 	this.input = new Input(canvas);
 	this.editor = new Editor();
 	this.editor.onToggle(data => this.currentLevel.reset(data));
@@ -31,7 +31,7 @@ class Game {
 	  this.editor.update(dt, this.input);
 	} else {
 	  this.currentLevel.update(dt, this.input);
-	  this.player.update(dt, this.input, this.currentLevel);
+	  this.player.update(dt, this.input, this.currentLevel, this);
 	}
   }
 
@@ -64,12 +64,13 @@ class Game {
 }
 
 window.onload = function() {
-  loadAssets().then(([images, sounds, levels]) => {
+  const audioCtx = new AudioContext();
+  loadAssets(audioCtx).then(([images, sounds, levels]) => {
 	const game = new Game({
 	  images: Object.fromEntries(images),
 	  sounds: Object.fromEntries(sounds),
 	  levels: Object.fromEntries(levels),
-	});
+	}, audioCtx);
 	game.start();
   });
 };

@@ -44,9 +44,10 @@ export class Player {
 	this.shotDelay = 0;
 	this.hitTargetHooks = [Player.onHitTarget];
 	this.isShooting = false;
+	this.shootingSound = "playerShooting1";
   }
 
-  update(dt, input, level) {
+  update(dt, input, level, game) {
 	this.shots = this.shots.filter(shot => shot.live);
 	if (!input.shoot) {
 	  if (input.left) {
@@ -67,6 +68,11 @@ export class Player {
 		this.hitTargetHooks,
 	  ));
 	  this.shotDelay = Player.timeBetweenShots;
+	  const source = game.audioCtx.createBufferSource();
+	  source.buffer = game.assets.sounds[this.shootingSound];
+	  this.shootingSound = this.shootingSound == "playerShooting1" ? "playerShooting2" : "playerShooting1";
+	  source.connect(game.audioCtx.destination);
+	  source.start();
 	}
 	this.shotDelay -= dt;
 	const cv = Player.getAxis(input.up, input.down, input.left, input.right);

@@ -8,7 +8,10 @@ const assetSpecs = {
 	{id: "printerSheet", path: "images/printer.png"},
 	{id: "graveyardProps", path: "images/graveyardObjects.png"},
   ],
-  sounds: [],
+  sounds: [
+	{id: "playerShooting1", path: "sounds/WG2_player_shooting_1.mp3"},
+	{id: "playerShooting2", path: "sounds/WG2_player_shooting_2.mp3"},
+  ],
   levels: [],
 };
 
@@ -19,19 +22,22 @@ async function loadImage(spec) {
   return [spec.id, image];
 }
 
-async function loadSound(spec) {
-  return [spec.id, null];
+async function loadSound(spec, audioCtx) {
+  const response = await fetch(spec.path);
+  const buffer = await response.arrayBuffer();
+  const audio = await audioCtx.decodeAudioData(buffer);
+  return [spec.id, audio];
 }
 
 async function loadLevel(spec) {
   return [spec.id, null];
 }
 
-export function loadAssets() {
+export function loadAssets(audioCtx) {
   // const [images, sounds, levels] =
   return Promise.all([
 	Promise.all(assetSpecs.images.map(spec => loadImage(spec))),
-	Promise.all(assetSpecs.sounds.map(spec => loadSound(spec))),
+	Promise.all(assetSpecs.sounds.map(spec => loadSound(spec, audioCtx))),
 	Promise.all(assetSpecs.levels.map(spec => loadLevel(spec))),
   ]);
 }
