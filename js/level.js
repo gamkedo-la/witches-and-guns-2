@@ -44,12 +44,11 @@ export class Level {
 	  if (typeof(this.enemies[timeIndex - 1]) === "undefined") {
 		this.enemies[timeIndex - 1] = [];
 	  }
-	  if ((this.levelData.waves[timeIndex - 1] || []).length) {
-		console.log("Time for a new wave!", timeIndex, Level.#WAVE_TIMER, Level.#TIMER);
-	  }
-	  for (const enemySpec of (this.levelData.waves[timeIndex - 1] || [])) {
-		const enemy = Enemy.spawn(enemySpec.x, enemySpec.y, enemySpec.imageSpec, enemySpec.endX);
-		this.enemies[timeIndex - 1].push(enemy);
+	  for (const walkway of Object.keys(this.levelData.walkways).sort()) {
+		for (const enemySpec of (this.levelData.walkways[walkway][timeIndex - 1] || [])) {
+		  const enemy = Enemy.spawn(enemySpec.x, Number(walkway) - enemySpec.height, enemySpec.imageSpec, enemySpec.endX);
+		  this.enemies[timeIndex - 1].push(enemy);
+		}
 	  }
 	  Level.#WAVE_TIMER = 0;
 	}

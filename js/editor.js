@@ -170,9 +170,11 @@ export class Editor {
 	// TODO: add limit to undoList size
 	this.undoList = [];
 	this.levelData = levelData || {
-	  waves: Array(Math.ceil(TimeSlider.MAX_TIME/constants.TIME_SLOT)),	// enemy waves
 	  props: [],
-	  walkways: [],	// y positions of walkways
+	  walkways: {
+		// y positions of walkways: [enemy waves inside walkway]
+		150: [],
+	  },
 	};
   }
 
@@ -198,7 +200,7 @@ export class Editor {
 		  this.levelData.walkways = [];
 		}
 		if (this.newWalkWay < this.components.timeSlider.y) {
-		  this.levelData.walkways.push(this.newWalkWay);
+		  this.levelData.walkways[Math.round(this.newWalkWay)] = [];	// enemy waves
 		} else {
 		  console.log("Dropped walkway outside of gameplay area");
 		}
@@ -218,7 +220,7 @@ export class Editor {
 				height: box.enemy.height,
 				enemy: Object.assign({}, box.enemy),
 				new: true,
-				subindex: this.levelData.waves[timeIndex] ? this.levelData.waves[timeIndex].length - 1 : 0,
+				// subindex: this.levelData.waves[timeIndex] ? this.levelData.waves[timeIndex].length - 1 : 0,
 			  };
 			  this.dragOffset.x = this.dragObj.x - mouseX;
 			  this.dragOffset.y = this.dragObj.y - mouseY;
@@ -226,8 +228,7 @@ export class Editor {
 			}
 		  }
 		} else {
-		  const enemies = this.getEnemiesForTime();
-		  for (const [i, enemy] of enemies.entries()) {
+		  for (const [i, walkway, enemy] of this.getEnemiesForTime()) {
 			const wpHandle = {
 			  x: enemy.endX ? enemy.endX : enemy.x + enemy.width/2 - Editor.WP_HANDLE_SIZE/2,
 			  y: enemy.y + enemy.height/2 - Editor.WP_HANDLE_SIZE/2,
@@ -237,6 +238,7 @@ export class Editor {
 			if (pointInRectangle({x: mouseX + this.stageOffset, y: mouseY}, wpHandle)) { // clicking inside waypoint area
 			  this.isDraggingWP = true;
 			  Object.assign(this.dragWP, {
+				walkway: walkway,
 				index: this.getTimeIndex(),
 				subindex: i,
 				start: {x: enemy.x + enemy.width/2 - this.stageOffset, y: enemy.y + enemy.height/2},
@@ -253,6 +255,7 @@ export class Editor {
 				enemy: enemy,
 				endX: enemy.x + this.stageOffset + enemy.width,
 				subindex: i,
+				oldWW: walkway,
 			  });
 			  this.dragObj.new = false;
 			  this.dragOffset.x = this.dragObj.x - mouseX - this.stageOffset;
@@ -262,10 +265,10 @@ export class Editor {
 		  }
 		}
 		if (!(dragFromPalette || this.isDragging || this.isDraggingWP || this.isDraggingWW)) {
-		  for (const [i, walkway] of (this.levelData.walkways || []).entries()) {
+		  for (const walkway of Object.keys(this.levelData.walkways)) {
 			if (mouseY > walkway - 10 && mouseY < walkway) {
 			  this.isDraggingWW = true;
-			  this.dragWW = {y: walkway, index: i};
+			  this.dragWW = {y: walkway, old: walkway};
 			  this.dragOffset.y = walkway - mouseY;
 			  break;
 			}
@@ -293,7 +296,7 @@ export class Editor {
 		this.dragObj.x = input.mousePos.x + this.dragOffset.x + this.stageOffset;
 		this.dragObj.y = input.mousePos.y + this.dragOffset.y;
 		let minY = Number.MAX_SAFE_INTEGER;
-		for (const walkWayY of (this.levelData.walkways || [])) {
+		for (const walkWayY of Object.keys(this.levelData.walkways)) {
 		  if (Math.abs(walkWayY - mouseY) <= Math.abs(minY - mouseY)) {
 			minY = walkWayY;
 		  }
@@ -310,24 +313,18 @@ export class Editor {
 		this.dragWW.y = input.mousePos.y + this.dragOffset.y;
 	  } else {
 		if (this.dragWW.y < this.components.timeSlider.y) {
-		  this.undoList.push(this.takeDataSnapshot());
-		  const oldWW = this.levelData.walkways[this.dragWW.index];
-		  this.levelData.walkways[this.dragWW.index] = this.dragWW.y;
-		  for (const wave of this.levelData.waves) {
-			if (typeof(wave) === "undefined" || wave === null) {
-			  continue;
-			}
-			for (const enemy of wave) {
-			  if (typeof(enemy) === "undefined" || enemy === null) {
-				continue;
-			  }
-			  if (enemy.y + enemy.height === oldWW) {
+		  if (this.dragWW.old !== this.dragWW.y.toString()) {
+			this.undoList.push(this.takeDataSnapshot());
+			this.levelData.walkways[this.dragWW.y.toString()] = this.levelData.walkways[this.dragWW.old].map(waves => {
+			  return (waves || []).map(enemy => {
 				enemy.y = this.dragWW.y - enemy.height;
-			  }
-			}
+				return enemy;
+			  });
+			});
+			delete this.levelData.walkways[this.dragWW.old];
+			this.updateSimEnemies(this.getTimeIndex());
 		  }
-		  this.updateSimEnemies(this.getTimeIndex());
-		  this.selectedWalkWay = this.dragWW.y;
+		  this.selectedWalkWay = this.dragWW.y.toString();
 		  this.selectedEnemy = null;
 		} else {
 		  console.log("Dropped walkway outside of gameplay area");
@@ -341,16 +338,18 @@ export class Editor {
   updateSimEnemies(timeIndex) {
 	// simulate enemies
 	this.simEnemies = [];
-	for (let i=0; i<timeIndex; i++) {
-	  const enemySpecs = this.levelData.waves[i];
-	  if (typeof enemySpecs === "undefined") {
-		continue;
-	  }
-	  const time = (timeIndex - i)*constants.TIME_SLOT;
-	  for (const spec of (enemySpecs || [])) {
-		const enemy = Enemy.spawn(spec.x, spec.y, spec.imageSpec, spec.endX);
-		enemy.update(time/1000);
-		this.simEnemies.push(enemy);
+	for (const [walkway, waves] of Object.entries(this.levelData.walkways)) {
+	  for (let i=0; i<timeIndex; i++) {
+		const enemySpecs = waves[i];
+		if (typeof enemySpecs === "undefined") {
+		  continue;
+		}
+		const time = (timeIndex - i)*constants.TIME_SLOT;
+		for (const spec of (enemySpecs || [])) {
+		  const enemy = Enemy.spawn(spec.x, Number(walkway) - spec.height, spec.imageSpec, spec.endX);
+		  enemy.update(time/1000);
+		  this.simEnemies.push(enemy);
+		}
 	  }
 	}
   }
@@ -359,38 +358,42 @@ export class Editor {
 	return this.components.timeSlider.sliderPos;
   }
 
-  addEnemy(enemy, index) {
-	if (index === null || typeof(index) === "undefined") {
-	  index = this.getTimeIndex();
+  addEnemy(walkway, enemy, timeIdx) {
+	if (timeIdx === null || typeof(timeIdx) === "undefined") {
+	  timeIdx = this.getTimeTimeIdx();
 	}
-	if (typeof this.levelData.waves[index] === "undefined" || this.levelData.waves[index] === null) {
-	  this.levelData.waves[index] = [];
+	if (typeof this.levelData.walkways[walkway][timeIdx] === "undefined" || this.levelData.walkways[walkway][timeIdx] === null) {
+	  this.levelData.walkways[walkway][timeIdx] = [];
 	}
-	this.levelData.waves[index].push(enemy);
-	console.log("DATA UPDATED", this.levelData.waves, this.undoList);
+	return this.levelData.walkways[walkway][timeIdx].push(enemy) - 1;
   }
 
   dropEnemy() {
 	this.undoList.push(this.takeDataSnapshot());
 	const enemy = this.dragObj.enemy;
 	enemy.x = this.dragObj.x;
-	enemy.y = this.enemyWalkWay - enemy.height;
-	this.enemyWalkWay = null;
+	enemy.y = Number(this.enemyWalkWay) - enemy.height;
 	const index = this.getTimeIndex();
-	this.selectedEnemy = {enemy: enemy, index: index, subindex: this.dragObj.subindex};
+	this.selectedEnemy = {
+	  enemy: enemy,
+	  index: index,
+	  walkway: this.enemyWalkWay,
+	};
 	this.selectedWalkWay = null;
-	if (this.dragObj.new) {
-	  this.addEnemy(enemy, index);
-	  const added = Object.assign({}, this.selectedEnemy);
+	if (!this.dragObj.new) {
+	  this.deleteEnemy(this.dragObj.oldWW, index, this.dragObj.subindex);
 	}
+	this.selectedEnemy.subindex = this.addEnemy(this.enemyWalkWay, enemy, index);
+	this.enemyWalkWay = null;
   }
 
   dropWP() {
 	this.undoList.push(this.takeDataSnapshot());
-	const enemy = this.levelData.waves[this.dragWP.index][this.dragWP.subindex];
+	const enemy = this.levelData.walkways[this.dragWP.walkway][this.dragWP.index][this.dragWP.subindex];
 	enemy.endX = this.dragWP.end.x + this.stageOffset;
 	this.selectedEnemy = {
 	  enemy: enemy,
+	  walkway: this.dragWP.walkway,
 	  index: this.dragWP.index,
 	  subindex: this.dragWP.subindex
 	};
@@ -400,22 +403,24 @@ export class Editor {
   takeDataSnapshot() {
 	// return deep copy of this.levelData
 	const snapshot = {
-	  waves: this.levelData.waves.map(arr => {
-		return (arr||[]).map(enemy => {
-		  return {...enemy};
-		});
-	  }),
-	  props: this.levelData.props.map(prop => {
+	  props: (this.levelData.props || []).map(prop => {
 		return {...prop};
 	  }),
-	  walkways: [...(this.levelData.walkways || [])],
+	  walkways: JSON.parse(JSON.stringify(this.levelData.walkways)),
 	};
 	console.log("Took data snapshot", snapshot);
 	return snapshot;
   }
 
-  getEnemiesForTime() {
-	return this.levelData.waves[this.getTimeIndex()] || [];
+  * getEnemiesForTime() {
+	const timeIndex = this.getTimeIndex();
+	for (const walkway of Object.keys(this.levelData.walkways).sort()) {
+	  const waves = this.levelData.walkways[walkway];
+	  const wave = waves[timeIndex] || [];
+	  for (const [i, enemySpec] of wave.entries()) {
+		yield [i, walkway, enemySpec];
+	  }
+	}
   }
 
   drawEnemy(enemy, ctx, assets) {
@@ -427,7 +432,7 @@ export class Editor {
 	// TODO: draw stage wings
 	const oldAlpha = ctx.globalAlpha;
 	ctx.drawImage(assets.levelBG, this.stageOffset, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
-	for (const walkway of (this.levelData.walkways || [])) {
+	for (const walkway of Object.keys(this.levelData.walkways)) {
 	  ctx.globalAlpha = 0.6;
 	  if (walkway === this.enemyWalkWay) {
 		ctx.fillStyle = "fuchsia";
@@ -447,7 +452,7 @@ export class Editor {
 	for (const component of Object.values(this.components)) {
 	  component.draw(ctx, assets);
 	}
-	for (const enemy of this.getEnemiesForTime()) {
+	for (const [i, walkway, enemy] of this.getEnemiesForTime()) {
 	  this.drawEnemy(enemy, ctx, assets);
 	  // draw waypoint "handle"
 	  const endY = enemy.y + enemy.height/2;
@@ -521,21 +526,22 @@ export class Editor {
 	this.onToggleHook = hook;
   }
 
-  deleteEnemy(index, subindex) {
-	if (Array.isArray(this.levelData.waves[index])) {
-	  this.levelData.waves[index].splice(subindex, 1);
+  deleteEnemy(walkway, index, subindex) {
+	if (Array.isArray(this.levelData.walkways[walkway][index])) {
+	  this.levelData.walkways[walkway][index].splice(subindex, 1);
 	}
   }
 
   deleteSelected() {
 	if (this.selectedEnemy !== null && this.getTimeIndex() === this.selectedEnemy.index) {
 	  this.undoList.push(this.takeDataSnapshot());
-	  this.deleteEnemy(this.selectedEnemy.index, this.selectedEnemy.subindex);
+	  // TODO: find walkway
+	  this.deleteEnemy(this.selectedEnemy.walkway, this.selectedEnemy.index, this.selectedEnemy.subindex);
 	  this.selectedEnemy = null;
 	  console.log("DATA UPDATED", this.levelData, this.undoList);
 	} else if (this.selectedWalkWay !== null) {
 	  this.undoList.push(this.takeDataSnapshot());
-	  this.levelData.walkways = this.levelData.walkways.filter(ww => ww !== this.selectedWalkWay);
+	  delete this.levelData.walkways[this.selectedWalkWay];
 	  this.selectedWalkWay = null;
 	}
   }
