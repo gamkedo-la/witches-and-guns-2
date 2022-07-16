@@ -694,10 +694,18 @@ class TimeSlider {
 
   draw(ctx, assets) {
 	this.leftBtn.draw(ctx, assets);
-	for (let i=7; i<ctx.canvas.width - TimeSlider.BTN_WIDTH; i+=2) {
+	for (let i=TimeSlider.BTN_WIDTH; i<ctx.canvas.width - TimeSlider.BTN_WIDTH; i+=2) {
 	  ctx.drawImage(assets.editorUI, 81, 20, 2, TimeSlider.HEIGHT, i, this.y, 2, TimeSlider.HEIGHT);
 	}
 	this.rightBtn.draw(ctx, assets);
+	ctx.fillStyle = "red";
+	for (const waves of Object.values(this.editor.levelData.walkways)) {
+	  for (const [i, wave] of waves.entries()) {
+		if ((wave || []).length) {
+		  ctx.fillRect(Math.floor(i*2) + TimeSlider.BTN_WIDTH, this.y + 2, 1, 6);
+		}
+	  }
+	}
 	ctx.fillStyle = "yellow";
 	ctx.fillRect(Math.floor(this.sliderPos*2) + TimeSlider.BTN_WIDTH, this.y + 2, 1, 6);
   }
