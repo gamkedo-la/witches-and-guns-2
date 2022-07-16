@@ -443,6 +443,10 @@ export class Editor {
 		ctx.fillStyle = "indianred";
 	  }
 	  ctx.fillRect(0, Math.round(walkway) - 10, ctx.canvas.width, 10);
+	  ctx.fillStyle = "white";
+	  ctx.globalAlpha = 0.9;
+	  const enemiesCount = this.levelData.walkways[walkway].flat().length;
+	  ctx.fillText(enemiesCount.toString(), 2, Math.round(walkway) - 1);
 	  ctx.globalAlpha = oldAlpha;
 	}
 	if (this.isAddingWalkWay && this.newWalkWay !== null) {
