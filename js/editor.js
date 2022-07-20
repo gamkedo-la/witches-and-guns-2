@@ -145,7 +145,7 @@ export class Editor {
 	this.components = {
 	  timeSlider: new TimeSlider(this),
 	  enemyPalette: new EnemyPalette(this, ToolButton.WIDTH*Editor.buttonSpecs.length/2, 184 + TimeSlider.HEIGHT),
-	  propsPalette: new PropPalette(this, (EnemyPalette.boxSize + EnemyPalette.margin)*4 + ToolButton.WIDTH*Editor.buttonSpecs.length/2, 184 + TimeSlider.HEIGHT),
+	  propPalette: new PropPalette(this, (EnemyPalette.boxSize + EnemyPalette.margin)*4 + ToolButton.WIDTH*Editor.buttonSpecs.length/2, 184 + TimeSlider.HEIGHT),
 	  stageSlider: new StageSlider(this),
 	};
 	const buttonsY = this.components.timeSlider.y + TimeSlider.HEIGHT;
@@ -166,6 +166,7 @@ export class Editor {
 	this.stageOffset = 0;
 	this.dragOffset = {x: 0, y: 0};
 	this.selectedEnemy = null;
+	this.selectedProp = null;
 	this.simEnemies = [];
 	// TODO: add limit to undoList size
 	this.undoList = [];
@@ -208,17 +209,18 @@ export class Editor {
 	  }
 	} else if (!(this.isDragging || this.isDraggingWP)) {
 	  if (input.mouseButtonHeld && (mouseY < this.components.timeSlider.y || mouseY > this.components.timeSlider.y + TimeSlider.HEIGHT)) {
-		const dragFromPalette = mouseX > this.components.enemyPalette.x && mouseX < this.components.enemyPalette.x + this.components.enemyPalette.width && mouseY > this.components.enemyPalette.y && mouseY < this.components.enemyPalette.y + this.components.enemyPalette.height;
+		const dragFromPalette = pointInRectangle(input.mousePos, this.components.enemyPalette) || pointInRectangle(input.mousePos, this.components.propPalette);
 		if (dragFromPalette) {
-		  for (const box of this.components.enemyPalette.enemyBoxes) {
-			if (mouseX > box.x && mouseX < box.x + box.width && mouseY > box.y && mouseY < box.y + box.height) {
+		  const boxes = this.components.enemyPalette.boxes.concat(this.components.propPalette.boxes);
+		  for (const box of boxes) {
+			if (pointInRectangle(input.mousePos, box)) {
 			  this.isDragging = true;
 			  this.dragObj = {
 				x: box.x,
 				y: box.y,
-				width: box.enemy.width,
-				height: box.enemy.height,
-				enemy: Object.assign({}, box.enemy),
+				width: box.entity.width,
+				height: box.entity.height,
+				entity: Object.assign({}, box.entity),
 				new: true,
 				// subindex: this.levelData.waves[timeIndex] ? this.levelData.waves[timeIndex].length - 1 : 0,
 			  };
@@ -252,7 +254,7 @@ export class Editor {
 				y: enemy.y,
 				width: enemy.width,
 				height: enemy.height,
-				enemy: enemy,
+				entity: enemy,
 				endX: enemy.x + this.stageOffset + enemy.width,
 				subindex: i,
 				oldWW: walkway,
@@ -261,6 +263,25 @@ export class Editor {
 			  this.dragOffset.x = this.dragObj.x - mouseX - this.stageOffset;
 			  this.dragOffset.y = this.dragObj.y - mouseY;
 			  break;
+			}
+		  }
+		  if (!this.isDragging) {
+			for (const [index, prop] of this.levelData.props.entries()) {
+			  if (pointInRectangle({x: mouseX + this.stageOffset, y: mouseY}, prop)) {
+				this.isDragging = true;
+				Object.assign(this.dragObj, {
+				  x: prop.x,
+				  y: prop.y,
+				  width: prop.width,
+				  height: prop.height,
+				  entity: prop,
+				  index: index,
+				  new: false,
+				});
+				this.dragOffset.x = this.dragObj.x - mouseX - this.stageOffset;
+				this.dragOffset.y = this.dragObj.y - mouseY;
+				break;
+			  }
 			}
 		  }
 		}
@@ -305,7 +326,7 @@ export class Editor {
 	  } else {
 		this.isDragging = false;
 		if (this.dragObj.x > -Editor.WING_WIDTH && this.dragObj.x + this.dragObj.width < constants.PLAYABLE_WIDTH + Editor.WING_WIDTH) {
-		  this.dropEnemy();
+		  this.dropEntity();
 		}
 	  }
 	} else if (this.isDraggingWW) {
@@ -326,6 +347,7 @@ export class Editor {
 		  }
 		  this.selectedWalkWay = this.dragWW.y.toString();
 		  this.selectedEnemy = null;
+		  this.selectedProp = null;
 		} else {
 		  console.log("Dropped walkway outside of gameplay area");
 		}
@@ -368,23 +390,51 @@ export class Editor {
 	return this.levelData.walkways[walkway][timeIdx].push(enemy) - 1;
   }
 
-  dropEnemy() {
+  addProp(prop) {
+	return this.levelData.props.push(prop) - 1;
+  }
+
+  deleteProp(index) {
+	this.levelData.props.splice(index, 1);
+  }
+
+  dropEntity() {
 	this.undoList.push(this.takeDataSnapshot());
-	const enemy = this.dragObj.enemy;
-	enemy.x = this.dragObj.x;
-	enemy.y = Number(this.enemyWalkWay) - enemy.height;
-	const index = this.getTimeIndex();
-	this.selectedEnemy = {
-	  enemy: enemy,
-	  index: index,
-	  walkway: this.enemyWalkWay,
-	};
-	this.selectedWalkWay = null;
-	if (!this.dragObj.new) {
-	  this.deleteEnemy(this.dragObj.oldWW, index, this.dragObj.subindex);
+	const entity = this.dragObj.entity;
+	entity.x = this.dragObj.x;
+	switch (entity.type) {
+	case "enemy": {
+	  entity.y = Number(this.enemyWalkWay) - entity.height;
+	  const index = this.getTimeIndex();
+	  this.selectedEnemy = {
+		enemy: entity,
+		index: index,
+		walkway: this.enemyWalkWay,
+	  };
+	  this.selectedWalkWay = null;
+	  if (!this.dragObj.new) {
+		this.deleteEnemy(this.dragObj.oldWW, index, this.dragObj.subindex);
+	  }
+	  this.selectedEnemy.subindex = this.addEnemy(this.enemyWalkWay, entity, index);
+	  this.enemyWalkWay = null;
+	  this.selectedProp = null;
+	  break;
 	}
-	this.selectedEnemy.subindex = this.addEnemy(this.enemyWalkWay, enemy, index);
-	this.enemyWalkWay = null;
+	case "prop": {
+	  entity.y = this.dragObj.y;
+	  if (!this.dragObj.new) {
+		this.deleteProp(this.dragObj.index);
+	  }
+	  const index = this.addProp(entity);
+	  this.selectedEnemy = null;
+	  this.enemyWalkWay = null;
+	  this.selectedProp = {prop: entity, index: index};
+	  break;
+	}
+	default: {
+	  console.error("Unknown entity type", entity);
+	}
+	}
   }
 
   dropWP() {
@@ -398,6 +448,7 @@ export class Editor {
 	  subindex: this.dragWP.subindex
 	};
 	this.selectedWalkWay = null;
+	this.selectedProp = null;
   }
 
   takeDataSnapshot() {
@@ -423,9 +474,9 @@ export class Editor {
 	}
   }
 
-  drawEnemy(enemy, ctx, assets) {
-	const spec = enemy.imageSpec;
-	ctx.drawImage(assets[spec.id], spec.sx, spec.sy, spec.sWidth, spec.sHeight, Math.round(enemy.x - this.stageOffset), Math.round(enemy.y), enemy.width, enemy.height);
+  drawEntity(entity, ctx, assets) {
+	const spec = entity.imageSpec;
+	ctx.drawImage(assets[spec.id], spec.sx, spec.sy, spec.sWidth, spec.sHeight, Math.round(entity.x - this.stageOffset), Math.round(entity.y), entity.width, entity.height);
   }
 
   draw(ctx, assets) {
@@ -457,7 +508,7 @@ export class Editor {
 	  component.draw(ctx, assets);
 	}
 	for (const [i, walkway, enemy] of this.getEnemiesForTime()) {
-	  this.drawEnemy(enemy, ctx, assets);
+	  this.drawEntity(enemy, ctx, assets);
 	  // draw waypoint "handle"
 	  const endY = enemy.y + enemy.height/2;
 	  if (enemy.endX) {
@@ -476,9 +527,14 @@ export class Editor {
 	ctx.globalAlpha = 0.3;
 
 	for (const enemy of this.simEnemies) {
-	  this.drawEnemy(enemy, ctx, assets);
+	  this.drawEntity(enemy, ctx, assets);
 	};
 	ctx.globalAlpha = oldAlpha;
+	for (const walkway of Object.keys(this.levelData.walkways).map(Number).sort((a, b) => a - b).map(ww => ww.toString())) {
+	  for (const prop of this.levelData.props.filter(prop => prop.y < Number(walkway))) {
+		this.drawEntity(prop, ctx, assets);
+	  }
+	}
 	if (this.isDraggingWP) {
 	  ctx.strokeStyle = "red";
 	  ctx.beginPath();
@@ -487,10 +543,10 @@ export class Editor {
 	  ctx.stroke();
 	}
 	if (this.isDragging) {
-	  ctx.fillStyle = this.dragObj.enemy.color;
+	  ctx.fillStyle = this.dragObj.entity.color;
 	  const oldAlpha = ctx.globalAlpha;
 	  ctx.globalAlpha = 0.5;
-	  this.drawEnemy(this.dragObj.enemy, ctx, assets);
+	  this.drawEntity(this.dragObj.entity, ctx, assets);
 	  ctx.globalAlpha = oldAlpha;
 	}
 	// draw buttons
@@ -501,6 +557,12 @@ export class Editor {
 	  ctx.setLineDash([2, 3]);
 	  ctx.strokeStyle = "lime";
 	  ctx.strokeRect(Math.round(this.selectedEnemy.enemy.x - this.stageOffset), Math.round(this.selectedEnemy.enemy.y), this.selectedEnemy.enemy.width, this.selectedEnemy.enemy.height);
+	  ctx.setLineDash([]);
+	}
+	if (this.selectedProp !== null) {
+	  ctx.setLineDash([2, 3]);
+	  ctx.strokeStyle = "lime";
+	  ctx.strokeRect(Math.round(this.selectedProp.prop.x - this.stageOffset), Math.round(this.selectedProp.prop.y), this.selectedProp.prop.width, this.selectedProp.prop.height);
 	  ctx.setLineDash([]);
 	}
 	if (this.isDragging) {
@@ -543,6 +605,10 @@ export class Editor {
 	  this.deleteEnemy(this.selectedEnemy.walkway, this.selectedEnemy.index, this.selectedEnemy.subindex);
 	  this.selectedEnemy = null;
 	  console.log("DATA UPDATED", this.levelData, this.undoList);
+	} else if (this.selectedProp !== null) {
+	  this.undoList.push(this.takeDataSnapshot());
+	  this.deleteProp(this.selectedProp.index);
+	  this.selectedProp = null;
 	} else if (this.selectedWalkWay !== null) {
 	  this.undoList.push(this.takeDataSnapshot());
 	  delete this.levelData.walkways[this.selectedWalkWay];
@@ -723,28 +789,28 @@ class EnemyPalette {
 	this.containerX = 426 - 32;
 	this.height = 240 - 24;
 	this.enemies = [
-	  {name: "RASPBERRY_DONUT", width: 32, height: 32, imageSpec: {
+	  {type: "enemy", name: "RASPBERRY_DONUT", width: 32, height: 32, imageSpec: {
 		id: "donutSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32}
 	  },
-	  {name: "CHOCO_DONUT", width: 32, height: 32, imageSpec: {
+	  {type: "enemy", name: "CHOCO_DONUT", width: 32, height: 32, imageSpec: {
 		id: "donutSheet", sx: 0, sy: 32, sWidth: 32, sHeight: 32}
 	  },
-	  {name: "FROSTED_DONUT", width: 32, height: 32, imageSpec: {
+	  {type: "enemy", name: "FROSTED_DONUT", width: 32, height: 32, imageSpec: {
 		id: "donutSheet", sx: 0, sy: 64, sWidth: 32, sHeight: 32
 	  }},
-	  {name: "EVIL_PRINTER", width: 32, height: 32, imageSpec: {
+	  {type: "enemy", name: "EVIL_PRINTER", width: 32, height: 32, imageSpec: {
 		id: "printerSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32
 	  }},
 	];
 	const enemyBoxX = this.containerX + EnemyPalette.margin;
-	this.enemyBoxes = this.enemies.map((enemy, i) => ({
+	this.boxes = this.enemies.map((enemy, i) => ({
 	  x: this.x + 10 + i*EnemyPalette.boxSize,
 	  y: this.y + EnemyPalette.margin,
 	  width: EnemyPalette.boxSize - EnemyPalette.margin*2,
 	  height: EnemyPalette.boxSize - EnemyPalette.margin*2,
-	  enemy: enemy,
+	  entity: enemy,
 	}));
-	this.width = EnemyPalette.boxSize*this.enemyBoxes.length + EnemyPalette.scrollBtnWidth*2;
+	this.width = EnemyPalette.boxSize*this.boxes.length + EnemyPalette.scrollBtnWidth*2;
 	this.isDragging = false;
 	this.dragObj = {};
   }
@@ -757,16 +823,16 @@ class EnemyPalette {
 	ctx.drawImage(assets.editorUI, 85, 0, EnemyPalette.scrollBtnWidth, 32, this.x, this.y, EnemyPalette.scrollBtnWidth, 32);
 	// draw enemy palette
 	ctx.fillStyle = "black";
-	ctx.fillRect(this.x + EnemyPalette.scrollBtnWidth, this.y, EnemyPalette.boxSize*this.enemyBoxes.length, EnemyPalette.boxSize);
-	for (const [i, box] of this.enemyBoxes.entries()) {
+	ctx.fillRect(this.x + EnemyPalette.scrollBtnWidth, this.y, EnemyPalette.boxSize*this.boxes.length, EnemyPalette.boxSize);
+	for (const [i, box] of this.boxes.entries()) {
 	  const offset = i*EnemyPalette.boxSize;
 	  ctx.drawImage(assets.editorUI, 71, 0, 3, EnemyPalette.boxSize, this.x + EnemyPalette.scrollBtnWidth + offset, this.y, 3, EnemyPalette.boxSize);
-	  const spec = box.enemy.imageSpec;
+	  const spec = box.entity.imageSpec;
 	  ctx.drawImage(assets[spec.id], spec.sx, spec.sy, spec.sWidth, spec.sHeight, Math.round(box.x), Math.round(box.y), box.width, box.height);
 	  ctx.drawImage(assets.editorUI, 68, 0, 3, EnemyPalette.boxSize, this.x + EnemyPalette.scrollBtnWidth + (i+1)*EnemyPalette.boxSize - 3, this.y, 3, EnemyPalette.boxSize);
 	}	
 	// draw right scroll button
-	ctx.translate(this.x + EnemyPalette.scrollBtnWidth*2 + EnemyPalette.boxSize*this.enemyBoxes.length, this.y);
+	ctx.translate(this.x + EnemyPalette.scrollBtnWidth*2 + EnemyPalette.boxSize*this.boxes.length, this.y);
 	ctx.scale(-1, 1);
 	ctx.drawImage(assets.editorUI, 85, 0, 6, 32, 0, 0, 6, 32);
 	ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -786,40 +852,40 @@ class PropPalette {
 	this.containerX = 426*2 - 32;
 	this.height = 240 - 24;
 	this.props = [
-	  {name: "GRAVE_1", width: 32, height: 32, imageSpec: {
+	  {type: "prop", name: "GRAVE_1", width: 32, height: 32, imageSpec: {
 		id: "graveyardProps", sx: 0, sy: 0, sWidth: 32, sHeight: 32}
 	  },
-	  {name: "GRAVE_2", width: 32, height: 32, imageSpec: {
+	  {type: "prop", name: "GRAVE_2", width: 32, height: 32, imageSpec: {
 		id: "graveyardProps", sx: 32, sy: 0, sWidth: 32, sHeight: 32}
 	  },
-	  {name: "GRAVE_3", width: 32, height: 32, imageSpec: {
+	  {type: "prop", name: "GRAVE_3", width: 32, height: 32, imageSpec: {
 		id: "graveyardProps", sx: 64, sy: 0, sWidth: 32, sHeight: 32}
 	  },
-	  {name: "BUSH_1", width: 32, height: 32, imageSpec: {
+	  {type: "prop", name: "BUSH_1", width: 32, height: 32, imageSpec: {
 		id: "graveyardProps", sx: 0, sy: 32, sWidth: 32, sHeight: 32}
 	  },
-	  {name: "BUSH_2", width: 32, height: 32, imageSpec: {
+	  {type: "prop", name: "BUSH_2", width: 32, height: 32, imageSpec: {
 		id: "graveyardProps", sx: 32, sy: 32, sWidth: 32, sHeight: 32}
 	  },
-	  {name: "BUSH_3", width: 32, height: 32, imageSpec: {
+	  {type: "prop", name: "BUSH_3", width: 32, height: 32, imageSpec: {
 		id: "graveyardProps", sx: 64, sy: 32, sWidth: 32, sHeight: 32}
 	  },
-	  {name: "ROCK_1", width: 32, height: 32, imageSpec: {
+	  {type: "prop", name: "ROCK_1", width: 32, height: 32, imageSpec: {
 		id: "graveyardProps", sx: 0, sy: 64, sWidth: 32, sHeight: 32}
 	  },
-	  {name: "ROCK_2", width: 32, height: 32, imageSpec: {
+	  {type: "prop", name: "ROCK_2", width: 32, height: 32, imageSpec: {
 		id: "graveyardProps", sx: 32, sy: 64, sWidth: 32, sHeight: 32}
 	  },
 	];
 	const propBoxX = this.containerX + PropPalette.margin;
-	this.propBoxes = this.props.map((prop, i) => ({
+	this.boxes = this.props.map((prop, i) => ({
 	  x: this.x + 10 + i*PropPalette.boxSize,
 	  y: this.y + PropPalette.margin,
 	  width: PropPalette.boxSize - PropPalette.margin*2,
 	  height: PropPalette.boxSize - PropPalette.margin*2,
-	  prop: prop,
+	  entity: prop,
 	}));
-	this.width = PropPalette.boxSize*this.propBoxes.length + PropPalette.scrollBtnWidth*2;
+	this.width = PropPalette.boxSize*this.boxes.length + PropPalette.scrollBtnWidth*2;
   }
 
   update(dt, input) {
@@ -830,16 +896,16 @@ class PropPalette {
 	ctx.drawImage(assets.editorUI, 85, 0, PropPalette.scrollBtnWidth, 32, this.x, this.y, PropPalette.scrollBtnWidth, 32);
 	// draw prop palette
 	ctx.fillStyle = "black";
-	ctx.fillRect(this.x + PropPalette.scrollBtnWidth, this.y, PropPalette.boxSize*this.propBoxes.length, PropPalette.boxSize);
-	for (const [i, box] of this.propBoxes.entries()) {
+	ctx.fillRect(this.x + PropPalette.scrollBtnWidth, this.y, PropPalette.boxSize*this.boxes.length, PropPalette.boxSize);
+	for (const [i, box] of this.boxes.entries()) {
 	  const offset = i*PropPalette.boxSize;
 	  ctx.drawImage(assets.editorUI, 71, 0, 3, PropPalette.boxSize, this.x + PropPalette.scrollBtnWidth + offset, this.y, 3, PropPalette.boxSize);
-	  const spec = box.prop.imageSpec;
+	  const spec = box.entity.imageSpec;
 	  ctx.drawImage(assets[spec.id], spec.sx, spec.sy, spec.sWidth, spec.sHeight, Math.round(box.x), Math.round(box.y), box.width, box.height);
 	  ctx.drawImage(assets.editorUI, 68, 0, 3, PropPalette.boxSize, this.x + PropPalette.scrollBtnWidth + (i+1)*PropPalette.boxSize - 3, this.y, 3, PropPalette.boxSize);
 	}
 	// draw right scroll button
-	ctx.translate(this.x + PropPalette.scrollBtnWidth*2 + PropPalette.boxSize*this.propBoxes.length, this.y);
+	ctx.translate(this.x + PropPalette.scrollBtnWidth*2 + PropPalette.boxSize*this.boxes.length, this.y);
 	ctx.scale(-1, 1);
 	ctx.drawImage(assets.editorUI, 85, 0, 6, 32, 0, 0, 6, 32);
 	ctx.setTransform(1, 0, 0, 1, 0, 0);
