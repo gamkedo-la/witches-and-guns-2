@@ -54,9 +54,8 @@ export class Enemy {
 	}
 	if (accTime < this.endXTime) {
 	  this.x = this.startX + this.velX*accTime;
-	} else if (accTime < this.endAttackTime) {
-	  // wait to attack
 	} else if (!this.attacked) {
+	  this.x = this.endX;
 	  const projectile = Projectile.get(
 		1.5,
 		6,
@@ -72,6 +71,8 @@ export class Enemy {
 	  if (this.x + this.width < 0 || this.x > constants.PLAYABLE_WIDTH) {
 		this.live = false;
 	  }
+	} else {
+	  this.x = this.endX;
 	}
 	// TODO: "accelerate" enemy when it's not visible on-screen
   }

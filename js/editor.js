@@ -369,6 +369,7 @@ export class Editor {
 		const time = (timeIndex - i)*constants.TIME_SLOT;
 		for (const spec of (enemySpecs || [])) {
 		  const enemy = Enemy.spawn(spec.x, Number(walkway) - spec.height, spec.imageSpec, spec.endX);
+		  enemy.attacked = true;
 		  enemy.update(time/1000);
 		  this.simEnemies.push(enemy);
 		}
