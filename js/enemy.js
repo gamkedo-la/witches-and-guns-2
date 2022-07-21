@@ -13,24 +13,24 @@ export class Enemy {
 	}
   }
 
-  static spawn(x, y, imageSpec, endX) {
+  static spawn(x, y, imageSpec, endX, timeToAttack, timeToReturn) {
 	let enemy = this.#INSTANCES.filter(e => !e.live).pop();
 	if (typeof enemy == "undefined") {
-	  enemy = new Enemy(x, y, imageSpec, endX);
+	  enemy = new Enemy(x, y, imageSpec, endX, timeToAttack, timeToReturn);
 	  this.#INSTANCES.push(enemy);
 	  console.log("Created new enemy", enemy);
 	} else {
-	  enemy.init(x, y, imageSpec, endX);
+	  enemy.init(x, y, imageSpec, endX, timeToAttack, timeToReturn);
 	  console.log("Recycled enemy", enemy);
 	}
 	return enemy;
   }
 
-  constructor(x, y, imageSpec, endX) {
-	this.init(x, y, imageSpec, endX);
+  constructor(x, y, imageSpec, endX, timeToAttack, timeToReturn) {
+	this.init(x, y, imageSpec, endX, timeToAttack, timeToReturn);
   }
 
-  init(x, y, imageSpec, endX) {
+  init(x, y, imageSpec, endX, timeToAttack, timeToReturn) {
 	this.imageSpec = imageSpec;
 	this.live = true;
 	this.startX = this.x = x;
@@ -41,7 +41,9 @@ export class Enemy {
 	this.speed = 64;
 	this.velX = Math.sign(this.endX - this.startX)*this.speed;
 	this.endXTime = (this.endX - this.startX)/this.velX;
-	this.endAttackTime = this.endXTime + 2;
+	timeToAttack = typeof(timeToAttack) === "undefined" ? 1 : (timeToAttack || 1);	// wait a second by default before attacking
+	this.endAttackTime = this.endXTime + timeToAttack;
+	this.timeToReturn = typeof(timeToReturn) === "undefined" ? 1 : (timeToReturn || 1);	// wait a second by default after attacking
 	this.attacked = false;
 	this.hitTargetHooks = [];
   }
@@ -53,21 +55,20 @@ export class Enemy {
 	if (accTime < this.endXTime) {
 	  this.x = this.startX + this.velX*accTime;
 	} else if (accTime < this.endAttackTime) {
-	  this.x = this.startX + this.velX*this.endXTime;
-	  if (!this.attacked && typeof(player) !== "undefined") {	// NOTE: player can be undefined in editor
-		const projectile = Projectile.get(
-		  1.5,
-		  6,
-		  {x: this.x + this.width/2, y: this.y + this.height/2},
-		  {x: player.avatarPos.x + Player.avatarWidth*1.5, y: player.avatarPos.y, height: Player.avatarHeight/2},
-		  1,
-		  this.hitTargetHooks,
-		);
-		console.log("SHOT", projectile);
-		this.attacked = true;
-	  }
-	} else {
-	  this.x = this.endX - this.velX*(accTime - this.endAttackTime);
+	  // wait to attack
+	} else if (!this.attacked) {
+	  const projectile = Projectile.get(
+		1.5,
+		6,
+		{x: this.x + this.width/2, y: this.y + this.height/2},
+		{x: player.avatarPos.x + Player.avatarWidth*1.5, y: player.avatarPos.y, height: Player.avatarHeight/2},
+		1,
+		this.hitTargetHooks,
+	  );
+	  console.log("SHOT", projectile);
+	  this.attacked = true;
+	} else if (accTime > this.endAttackTime + this.timeToReturn) {
+	  this.x = this.endX - this.velX*(accTime - this.endAttackTime - this.timeToReturn);
 	  if (this.x + this.width < 0 || this.x > constants.PLAYABLE_WIDTH) {
 		this.live = false;
 	  }
