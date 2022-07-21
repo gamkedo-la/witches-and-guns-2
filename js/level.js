@@ -73,6 +73,12 @@ export class Level {
 	for (const enemy of Enemy.alive()) {
 	  enemy.draw(ctx, assets, this.offset);
 	}
+	for (const walkway of Object.keys(this.levelData.walkways).map(Number).sort((a, b) => a - b).map(ww => ww.toString())) {
+	  for (const prop of this.levelData.props.filter(prop => prop.y < Number(walkway))) {
+		const spec = prop.imageSpec;
+		ctx.drawImage(assets[spec.id], spec.sx, spec.sy, spec.sWidth, spec.sHeight, Math.round(prop.x - this.offset), Math.round(prop.y), prop.width, prop.height);
+	  }
+	}
 	for (const projectile of Projectile.alive()) {
 	  projectile.draw(ctx, assets, this.offset);
 	}
