@@ -46,8 +46,30 @@ export class Level {
 	  }
 	  for (const walkway of Object.keys(this.levelData.walkways).sort()) {
 		for (const enemySpec of (this.levelData.walkways[walkway][timeIndex - 1] || [])) {
-		  const enemy = Enemy.spawn(enemySpec.x, Number(walkway) - enemySpec.height, enemySpec.imageSpec, enemySpec.endX);
-		  this.enemies[timeIndex - 1].push(enemy);
+		  const count = enemySpec.count || 1;
+		  for (let i=0; i<count; i++) {
+			const endX = enemySpec.endX + i*enemySpec.width;
+			const enemy = Enemy.spawn(
+			  enemySpec.x + i*enemySpec.width,
+			  Number(walkway) - enemySpec.height,
+			  enemySpec.imageSpec,
+			  endX,
+			  enemySpec.timeToAttack,
+			  enemySpec.timeToReturn,
+			);
+			if (i < count) {
+			  const nextEnemy = new Enemy(
+				enemySpec.x + (i + 1)*enemySpec.width,
+				Number(walkway) - enemySpec.height,
+				enemySpec.imageSpec,
+				endX + (i + 1)*enemySpec.width,
+				enemySpec.timeToAttack,
+				enemySpec.timeToReturn,
+			  );
+			  enemy.timeToAttack += enemy.endXTime - nextEnemy.endXTime;
+			}
+			this.enemies[timeIndex - 1].push(enemy);
+		  }
 		}
 	  }
 	  Level.#WAVE_TIMER = 0;

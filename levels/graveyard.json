@@ -169,8 +169,10 @@
   "walkways": {
     "150": [
       [
-        {
-          "name": "RASPBERRY_DONUT",
+		{
+		  "type": "enemy",
+          "name": "RASPBERRY_DONUT_CHAIN",
+		  "count": 3,
           "width": 32,
           "height": 32,
           "imageSpec": {
@@ -185,6 +187,7 @@
           "endX": 276.3416377322148
         },
         {
+		  "type": "enemy",
           "name": "EVIL_PRINTER",
           "width": 32,
           "height": 32,
@@ -204,6 +207,7 @@
       null,
       [
         {
+		  "type": "enemy",
           "name": "FROSTED_DONUT",
           "width": 32,
           "height": 32,
@@ -223,6 +227,7 @@
       null,
       [
         {
+		  "type": "enemy",
           "name": "CHOCO_DONUT",
           "width": 32,
           "height": 32,
@@ -242,6 +247,7 @@
     "174": [
       [
         {
+		  "type": "enemy",
           "name": "CHOCO_DONUT",
           "width": 32,
           "height": 32,
@@ -257,6 +263,7 @@
           "endX": 233.04022100007603
         },
         {
+		  "type": "enemy",
           "name": "EVIL_PRINTER",
           "width": 32,
           "height": 32,
@@ -276,6 +283,7 @@
       null,
       [
         {
+		  "type": "enemy",
           "name": "FROSTED_DONUT",
           "width": 32,
           "height": 32,
@@ -295,6 +303,7 @@
       null,
       [
         {
+		  "type": "enemy",
           "name": "CHOCO_DONUT",
           "width": 32,
           "height": 32,

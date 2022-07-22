@@ -83,9 +83,13 @@ class PlayButton extends ToolButton {
   }
 }
 
-class GroupButton extends ToolButton {
+class ChainButton extends ToolButton {
   constructor(editor, order, containerY) {
 	super(editor, ToolButton.WIDTH*2, 0, order, containerY);
+  }
+
+  action() {
+	this.editor.chainSelected();
   }
 }
 
@@ -130,7 +134,7 @@ export class Editor {
   static buttonSpecs = [
 	PlayButton,
 	TrashButton,
-	GroupButton,
+	ChainButton,
 	WalkWayButton,
 	UndoButton,
 	SaveButton,
@@ -368,10 +372,13 @@ export class Editor {
 		}
 		const time = (timeIndex - i)*constants.TIME_SLOT;
 		for (const spec of (enemySpecs || [])) {
-		  const enemy = Enemy.spawn(spec.x, Number(walkway) - spec.height, spec.imageSpec, spec.endX);
-		  enemy.attacked = true;
-		  enemy.update(time/1000);
-		  this.simEnemies.push(enemy);
+		  const count = spec.count || 1;
+		  for (let i=0; i<count; i++) {
+			const enemy = Enemy.spawn(spec.x + spec.width*i, Number(walkway) - spec.height, spec.imageSpec, spec.endX + spec.width*i);
+			enemy.attacked = true;
+			enemy.update(time/1000);
+			this.simEnemies.push(enemy);
+		  }
 		}
 	  }
 	}
@@ -475,9 +482,20 @@ export class Editor {
 	}
   }
 
-  drawEntity(entity, ctx, assets) {
+  drawEntity(entity, ctx, assets, groupIndex) {
+	groupIndex = groupIndex || 0;
 	const spec = entity.imageSpec;
-	ctx.drawImage(assets[spec.id], spec.sx, spec.sy, spec.sWidth, spec.sHeight, Math.round(entity.x - this.stageOffset), Math.round(entity.y), entity.width, entity.height);
+	ctx.drawImage(
+	  assets[spec.id],
+	  spec.sx,
+	  spec.sy,
+	  spec.sWidth,
+	  spec.sHeight,
+	  Math.round(entity.x - this.stageOffset + groupIndex*entity.width),
+	  Math.round(entity.y),
+	  entity.width,
+	  entity.height,
+	);
   }
 
   draw(ctx, assets) {
@@ -509,7 +527,10 @@ export class Editor {
 	  component.draw(ctx, assets);
 	}
 	for (const [i, walkway, enemy] of this.getEnemiesForTime()) {
-	  this.drawEntity(enemy, ctx, assets);
+	  const count = enemy.count || 1;
+	  for (let i=0; i<count; i++) {
+		this.drawEntity(enemy, ctx, assets, i);
+	  }
 	  // draw waypoint "handle"
 	  const endY = enemy.y + enemy.height/2;
 	  if (enemy.endX) {
@@ -626,6 +647,17 @@ export class Editor {
 	  this.selectedWalkWay = null;
 	} else {
 	  console.log("No further undo information");
+	}
+  }
+
+  chainSelected() {
+	if (this.selectedEnemy !== null && this.getTimeIndex() === this.selectedEnemy.index) {
+	  const walkway = this.selectedEnemy.walkway;
+	  const wave = this.selectedEnemy.index;
+	  const subindex = this.selectedEnemy.subindex;
+	  this.undoList.push(this.takeDataSnapshot());
+	  const enemySpec = this.levelData.walkways[walkway][wave][subindex];
+	  enemySpec.count = (enemySpec.count || 1) + 1;
 	}
   }
 
