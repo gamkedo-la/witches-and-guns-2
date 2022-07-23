@@ -5,6 +5,7 @@ const assetSpecs = {
 	{id: "levelBG", path: "images/background.gif"},
 	{id: "editorUI", path: "images/editorUI.png"},
 	{id: "donutSheet", path: "images/donut.png"},
+  {id: "expressoGangsterSheet", path: "images/expressoGangster.png"},
 	{id: "printerSheet", path: "images/printer.png"},
 	{id: "graveyardProps", path: "images/graveyardObjects.png"},
 	{id: "bullets", path: "images/playerBullet-10x10.png"},
