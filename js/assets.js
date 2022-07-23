@@ -7,6 +7,7 @@ const assetSpecs = {
 	{id: "donutSheet", path: "images/donut.png"},
 	{id: "printerSheet", path: "images/printer.png"},
 	{id: "graveyardProps", path: "images/graveyardObjects.png"},
+	{id: "bullets", path: "images/playerBullet-10x10.png"},
   ],
   sounds: [
 	{id: "playerShooting1", path: "sounds/player-shoot-1-WG.mp3"},

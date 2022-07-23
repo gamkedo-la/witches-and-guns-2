@@ -63,6 +63,7 @@ export class Enemy {
 		{x: player.avatarPos.x + Player.avatarWidth*1.5, y: player.avatarPos.y, height: Player.avatarHeight/2},
 		1,
 		this.hitTargetHooks,
+		{id: "bullets", sx: 12, sy: 2, sWidth: 6, sHeight: 6},
 	  );
 	  console.log("SHOT", projectile);
 	  this.attacked = true;

@@ -66,6 +66,7 @@ export class Player {
 		{x: this.reticlePos.x, y: this.reticlePos.y, height: 3},
 		10,
 		this.hitTargetHooks,
+		{id: "bullets", sx: 1, sy: 1, sWidth: 8, sHeight: 8},
 	  ));
 	  this.shotDelay = Player.timeBetweenShots;
 	  const source = game.audioCtx.createBufferSource();

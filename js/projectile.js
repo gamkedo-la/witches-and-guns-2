@@ -1,11 +1,11 @@
 export class Projectile {
   static #INSTANCES = [];
-  static get(speed, radius, initialPos, target, damage, hooks) {
+  static get(speed, radius, initialPos, target, damage, hooks, imageSpec) {
 	const deadInstances = Projectile.#INSTANCES.filter(p => !p.live);
 	if (deadInstances.length) {
-	  return deadInstances[0].recycle(speed, radius, initialPos, target, damage, hooks);
+	  return deadInstances[0].recycle(speed, radius, initialPos, target, damage, hooks, imageSpec);
 	} else {
-	  const projectile = new Projectile(speed, radius, initialPos, target, damage, hooks);
+	  const projectile = new Projectile(speed, radius, initialPos, target, damage, hooks, imageSpec);
 	  Projectile.#INSTANCES.push(projectile);
 	  return projectile;
 	}
@@ -27,8 +27,8 @@ export class Projectile {
    * @param {number} damage - damage projectile deals
    * @param {function[]} hooks - callbacks to call when projectile reaches target
    */
-  constructor(speed, radius, initialPos, target, damage, hooks) {
-	this.#init(speed, radius, initialPos, target, damage, hooks);
+  constructor(speed, radius, initialPos, target, damage, hooks, imageSpec) {
+	this.#init(speed, radius, initialPos, target, damage, hooks, imageSpec);
   }
 
   update(dt) {
@@ -42,7 +42,7 @@ export class Projectile {
 	}
   }
 
-  #init(speed, radius, initialPos, target, damage, hooks) {
+  #init(speed, radius, initialPos, target, damage, hooks, imageSpec) {
 	this.position = initialPos;
 	this.radius = radius;
 	this.target = target;
@@ -53,22 +53,20 @@ export class Projectile {
 	this.hooks = hooks;
 	this.live = true;
 	this.reachedTarget = false;
+	this.imageSpec = imageSpec;
 	return this;
   }
 
-  recycle(speed, radius, initialPos, target, damage, hooks) {
-	this.#init(speed, radius, initialPos, target, damage, hooks);
+  recycle(speed, radius, initialPos, target, damage, hooks, imageSpec) {
+	this.#init(speed, radius, initialPos, target, damage, hooks, imageSpec);
 	return this;
   }
 
   draw(ctx, assets, offset) {
-	ctx.strokeStyle = "yellow";
-	ctx.beginPath();
 	const shotDrawPos = {
 	  x: this.reachedTarget ? this.target.x : this.position.x,
 	  y: this.reachedTarget ? this.target.y : this.position.y,
 	};
-	ctx.arc(Math.round(shotDrawPos.x - offset), Math.round(shotDrawPos.y), Math.round(this.radius), 0, 2*Math.PI);
-	ctx.stroke();
+	ctx.drawImage(assets[this.imageSpec.id], this.imageSpec.sx, this.imageSpec.sy, this.imageSpec.sWidth, this.imageSpec.sHeight, Math.round(shotDrawPos.x - offset - this.imageSpec.sWidth/2), Math.round(shotDrawPos.y - this.imageSpec.sHeight*1.5), this.imageSpec.sWidth, this.imageSpec.sHeight);
   }
 }
