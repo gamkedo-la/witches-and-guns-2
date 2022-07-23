@@ -141,6 +141,7 @@ export class Editor {
   ];
   static WP_HANDLE_SIZE = 8;
   static WING_WIDTH = 64;
+  static WALKWAY_COVER_DISTANCE = 8;
   static #LEVEL_NAMES = ["graveyard"];	// NOTE: level filenames
 
   constructor(levelData) {
@@ -347,6 +348,9 @@ export class Editor {
 			  });
 			});
 			delete this.levelData.walkways[this.dragWW.old];
+			for (const prop of this.levelData.props.filter(prop => prop.y == this.dragWW.old - prop.height + Editor.WALKWAY_COVER_DISTANCE)) {
+			  prop.y = this.dragWW.y - prop.height + Editor.WALKWAY_COVER_DISTANCE;
+			}
 			this.updateSimEnemies(this.getTimeIndex());
 		  }
 		  this.selectedWalkWay = this.dragWW.y.toString();
@@ -429,7 +433,11 @@ export class Editor {
 	  break;
 	}
 	case "prop": {
-	  entity.y = this.dragObj.y;
+	  if (Math.abs(this.dragObj.y - Number(this.enemyWalkWay)) < entity.height*1.5) {
+		entity.y = Number(this.enemyWalkWay) - entity.height + Editor.WALKWAY_COVER_DISTANCE;
+	  } else {
+		entity.y = this.dragObj.y;
+	  }
 	  if (!this.dragObj.new) {
 		this.deleteProp(this.dragObj.index);
 	  }
