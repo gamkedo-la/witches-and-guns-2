@@ -54,6 +54,9 @@ export class Enemy {
 	}
 	if (accTime < this.endXTime) {
 	  this.x = this.startX + this.velX*accTime;
+	} else if (accTime < this.endAttackTime) {
+	  console.log("WAITING TO ATTACK", this);
+	  this.x = this.endX;
 	} else if (!this.attacked) {
 	  this.x = this.endX;
 	  const projectile = Projectile.get(
