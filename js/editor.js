@@ -530,7 +530,7 @@ export class Editor {
 	  ctx.fillRect(0, Math.round(walkway) - 10, ctx.canvas.width, 10);
 	  ctx.fillStyle = "white";
 	  ctx.globalAlpha = 0.9;
-	  const enemiesCount = this.levelData.walkways[walkway].flat().length;
+	  const enemiesCount = this.levelData.walkways[walkway].flat().filter(e => e !== null).reduce((acc, e) => acc + (e.count || 1), 0);
 	  ctx.fillText(enemiesCount.toString(), 2, Math.round(walkway) - 1);
 	  ctx.globalAlpha = oldAlpha;
 	}
