@@ -252,7 +252,7 @@ export class Editor {
 				end: {x: mouseX - this.stageOffset, y: enemy.y + enemy.height/2},
 			  });
 			  break;
-			} else if (pointInRectangle({x: mouseX + this.stageOffset, y: mouseY}, enemy)) {
+			} else if (pointInRectangle({x: mouseX + this.stageOffset, y: mouseY}, {x: enemy.x, y: enemy.y, width: enemy.width*(enemy.count||1), height: enemy.height})) {
 			  this.isDragging = true;
 			  Object.assign(this.dragObj, {
 				x: enemy.x,
@@ -551,7 +551,7 @@ export class Editor {
 	  if (enemy.endX) {
 		ctx.strokeStyle = "yellow";
 		ctx.beginPath();
-		ctx.moveTo(Math.round(enemy.x - this.stageOffset + enemy.width/2), Math.round(enemy.y + enemy.height/2));
+		ctx.moveTo(Math.round(enemy.x - this.stageOffset + (enemy.width*(enemy.count||1))/2), Math.round(enemy.y + enemy.height/2));
 		ctx.lineTo(Math.round(enemy.endX - this.stageOffset), Math.round(endY));
 		ctx.stroke();
 		ctx.strokeStyle = "cyan";
@@ -593,7 +593,7 @@ export class Editor {
 	if (this.selectedEnemy !== null && timeIndex === this.selectedEnemy.index) {
 	  ctx.setLineDash([2, 3]);
 	  ctx.strokeStyle = "lime";
-	  ctx.strokeRect(Math.round(this.selectedEnemy.enemy.x - this.stageOffset), Math.round(this.selectedEnemy.enemy.y), this.selectedEnemy.enemy.width, this.selectedEnemy.enemy.height);
+	  ctx.strokeRect(Math.round(this.selectedEnemy.enemy.x - this.stageOffset), Math.round(this.selectedEnemy.enemy.y), this.selectedEnemy.enemy.width*(this.selectedEnemy.enemy.count||1), this.selectedEnemy.enemy.height);
 	  ctx.setLineDash([]);
 	}
 	if (this.selectedProp !== null) {
@@ -605,7 +605,7 @@ export class Editor {
 	if (this.isDragging) {
 	  ctx.setLineDash([2, 3]);
 	  ctx.strokeStyle = "pink";
-	  ctx.strokeRect(Math.round(this.dragObj.x - this.stageOffset), Math.round(this.dragObj.y), this.dragObj.width, this.dragObj.height);
+	  ctx.strokeRect(Math.round(this.dragObj.x - this.stageOffset), Math.round(this.dragObj.y), this.dragObj.width*(this.dragObj.entity.count||1), this.dragObj.height);
 	  ctx.setLineDash([]);
 	}
 	if (this.isDraggingWW) {
