@@ -13,30 +13,30 @@ export class Enemy {
 	}
   }
 
-  static spawn(x, y, imageSpec, endX, timeToAttack, timeToReturn) {
+  static spawn(x, y, width, height, imageSpec, endX, timeToAttack, timeToReturn) {
 	let enemy = this.#INSTANCES.filter(e => !e.live).pop();
 	if (typeof enemy == "undefined") {
-	  enemy = new Enemy(x, y, imageSpec, endX, timeToAttack, timeToReturn);
+	  enemy = new Enemy(x, y, width, height, imageSpec, endX, timeToAttack, timeToReturn);
 	  this.#INSTANCES.push(enemy);
 	  console.log("Created new enemy", enemy);
 	} else {
-	  enemy.init(x, y, imageSpec, endX, timeToAttack, timeToReturn);
+	  enemy.init(x, y, width, height, imageSpec, endX, timeToAttack, timeToReturn);
 	  console.log("Recycled enemy", enemy);
 	}
 	return enemy;
   }
 
-  constructor(x, y, imageSpec, endX, timeToAttack, timeToReturn) {
-	this.init(x, y, imageSpec, endX, timeToAttack, timeToReturn);
+  constructor(x, y, width, height, imageSpec, endX, timeToAttack, timeToReturn) {
+	this.init(x, y, width, height, imageSpec, endX, timeToAttack, timeToReturn);
   }
 
-  init(x, y, imageSpec, endX, timeToAttack, timeToReturn) {
+  init(x, y, width, height, imageSpec, endX, timeToAttack, timeToReturn) {
 	this.imageSpec = imageSpec;
 	this.live = true;
 	this.startX = this.x = x;
 	this.y = y;
-	this.width = 32;
-	this.height = 32;
+	this.width = width;
+	this.height = height;
 	this.endX = endX;
 	this.speed = 64;
 	this.velX = Math.sign(this.endX - this.startX)*this.speed;

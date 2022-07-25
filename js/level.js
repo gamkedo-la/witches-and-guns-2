@@ -52,6 +52,8 @@ export class Level {
 			const enemy = Enemy.spawn(
 			  enemySpec.x + i*enemySpec.width,
 			  Number(walkway) - enemySpec.height,
+			  enemySpec.width,
+			  enemySpec.height,
 			  enemySpec.imageSpec,
 			  endX,
 			  enemySpec.timeToAttack,
@@ -61,6 +63,8 @@ export class Level {
 			  const nextEnemy = new Enemy(
 				enemySpec.x + (i + 1)*enemySpec.width,
 				Number(walkway) - enemySpec.height,
+				enemySpec.width,
+				enemySpec.height,
 				enemySpec.imageSpec,
 				endX + (i + 1)*enemySpec.width,
 				enemySpec.timeToAttack,

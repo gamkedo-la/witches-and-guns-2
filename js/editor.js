@@ -378,7 +378,14 @@ export class Editor {
 		for (const spec of (enemySpecs || [])) {
 		  const count = spec.count || 1;
 		  for (let i=0; i<count; i++) {
-			const enemy = Enemy.spawn(spec.x + spec.width*i, Number(walkway) - spec.height, spec.imageSpec, spec.endX + spec.width*i);
+			const enemy = Enemy.spawn(
+			  spec.x + spec.width*i,
+			  Number(walkway) - spec.height,
+			  spec.width,
+			  spec.height,
+			  spec.imageSpec,
+			  spec.endX + spec.width*i,
+			);
 			enemy.attacked = true;
 			enemy.update(time/1000);
 			this.simEnemies.push(enemy);
