@@ -1,6 +1,7 @@
 import {constants} from "./constants.js";
 import {Enemy} from "./enemy.js";
 import {Projectile} from "./projectile.js";
+import {Prop} from "./prop.js";
 
 function lerp(from, to, amount) {
     return (1 - amount) * from + amount * to;
@@ -16,7 +17,11 @@ export class Level {
 	this.width = width;
 	this.offset = 0;	// number of pixels camera has moved to the right
 	this.enemies = [];
+	this.props = data.props.map(
+	  propSpec => Prop.spawn(propSpec.x, propSpec.y, propSpec.width, propSpec.height, propSpec.imageSpec)
+	);
 	this.player = player;
+	this.entitiesToDraw = [];
   }
 
   reset(data) {
@@ -26,6 +31,9 @@ export class Level {
 	this.offset = 0;
 	for (const enemy of Enemy.alive()) {
 	  enemy.live = false;
+	}
+	for (const prop of this.props) {
+	  prop.live = true;
 	}
   }
 
@@ -100,9 +108,8 @@ export class Level {
 	  enemy.draw(ctx, assets, this.offset);
 	}
 	for (const walkway of Object.keys(this.levelData.walkways).map(Number).sort((a, b) => a - b).map(ww => ww.toString())) {
-	  for (const prop of this.levelData.props.filter(prop => prop.y < Number(walkway))) {
-		const spec = prop.imageSpec;
-		ctx.drawImage(assets[spec.id], spec.sx, spec.sy, spec.sWidth, spec.sHeight, Math.round(prop.x - this.offset), Math.round(prop.y), prop.width, prop.height);
+	  for (const prop of this.props.filter(prop => prop.live && prop.y < Number(walkway))) {
+		prop.draw(ctx, assets, this.offset);
 	  }
 	}
 	for (const projectile of Projectile.alive()) {
