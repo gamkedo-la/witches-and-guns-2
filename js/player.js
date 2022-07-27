@@ -59,14 +59,16 @@ export class Player {
 	  this.isShooting = false;
 	} else if (this.shotDelay <= 0) {
 	  this.isShooting = true;
-	  this.shots.push(Projectile.get(
-		8,
-		Player.avatarWidth/2,
-		{x: this.avatarPos.x + Player.avatarWidth/2, y: this.avatarPos.y},
-		{x: this.reticlePos.x, y: this.reticlePos.y, height: 3},
-		10,
+	  this.shots.push(Projectile.spawn(
+		this.avatarPos.x + Player.avatarWidth/2,	// starting x
+		this.avatarPos.y,	// starting y
+		Player.avatarWidth/2,	// width (radius)
+		Player.avatarWidth/2,	// height (not used)
+		{id: "bullets", sx: 1, sy: 1, sWidth: 8, sHeight: 8},	// image spec
+		{x: this.reticlePos.x, y: this.reticlePos.y, height: 3},	// target position
+		8,	// speed
+		10,	// damage
 		this.hitTargetHooks,
-		{id: "bullets", sx: 1, sy: 1, sWidth: 8, sHeight: 8},
 	  ));
 	  this.shotDelay = Player.timeBetweenShots;
 	  const source = game.audioCtx.createBufferSource();
