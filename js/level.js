@@ -99,21 +99,14 @@ export class Level {
 	for (const projectile of Projectile.alive()) {
 	  projectile.update(dt);
 	}
+	this.entitiesToDraw = Array.from(Enemy.alive()).concat(Array.from(Prop.alive())).sort((e1, e2) => e1.y - e2.y).concat(Array.from(Projectile.alive()));
 	// TODO: reset when timer reaches max
   }
 
   draw(ctx, assets) {
 	ctx.drawImage(assets.levelBG, Math.round(this.offset), 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
-	for (const enemy of Enemy.alive()) {
-	  enemy.draw(ctx, assets, this.offset);
-	}
-	for (const walkway of Object.keys(this.levelData.walkways).map(Number).sort((a, b) => a - b).map(ww => ww.toString())) {
-	  for (const prop of this.props.filter(prop => prop.live && prop.y < Number(walkway))) {
-		prop.draw(ctx, assets, this.offset);
-	  }
-	}
-	for (const projectile of Projectile.alive()) {
-	  projectile.draw(ctx, assets, this.offset);
+	for (const entity of this.entitiesToDraw) {
+	  entity.draw(ctx, assets, this.offset);
 	}
   }
 }
