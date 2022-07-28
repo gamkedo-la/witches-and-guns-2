@@ -51,10 +51,12 @@ export class Player {
 	this.shots = this.shots.filter(shot => shot.live);
 	if (!input.shoot) {
 	  if (input.left) {
-		this.avatarPos.x = Math.max(0, this.avatarPos.x - Player.avatarSpeed*dt);
+        let boost = input.dodgeLeftUntil>performance.now() ? constants.DODGE_SPEED_BOOST : 1;
+        this.avatarPos.x = Math.max(0, this.avatarPos.x - Player.avatarSpeed*dt*boost);
 	  }
 	  if (input.right) {
-		this.avatarPos.x = Math.min(level.width - Player.avatarWidth, this.avatarPos.x + Player.avatarSpeed*dt);
+        let boost = input.dodgeRightUntil>performance.now() ? constants.DODGE_SPEED_BOOST : 1;
+		this.avatarPos.x = Math.min(level.width - Player.avatarWidth, this.avatarPos.x + Player.avatarSpeed*dt*boost);
 	  }
 	  this.isShooting = false;
 	} else if (this.shotDelay <= 0) {
@@ -86,6 +88,9 @@ export class Player {
 	  }, Player.reticleSpeed);
 	  this.reticlePos.x += vel.x*dt;
 	  this.reticlePos.y += vel.y*dt;
+      // possible dodge due to a double tap
+      if (input.dodgeRight) {
+      }
 	}
 	const screenX = this.avatarPos.x - level.offset;
 	if (screenX > constants.VIEWABLE_WIDTH*(2/3)) {
