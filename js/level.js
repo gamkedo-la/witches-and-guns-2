@@ -29,6 +29,7 @@ export class Level {
 	Level.#WAVE_TIMER = 0;
 	this.levelData = data;
 	this.offset = 0;
+	this.enemies = [];
 	for (const enemy of Enemy.alive()) {
 	  enemy.live = false;
 	}
