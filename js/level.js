@@ -79,7 +79,6 @@ export class Level {
 				enemySpec.timeToAttack,
 				enemySpec.timeToReturn,
 			  );
-			  enemy.timeToAttack += enemy.endXTime - nextEnemy.endXTime;
 			}
 			this.enemies[timeIndex - 1].push(enemy);
 		  }
@@ -100,6 +99,7 @@ export class Level {
 	for (const projectile of Projectile.alive()) {
 	  projectile.update(dt);
 	}
+	// TODO: filter out off-screen entities
 	this.entitiesToDraw = Array.from(Enemy.alive()).concat(Array.from(Prop.alive())).sort((e1, e2) => e1.y - e2.y).concat(Array.from(Projectile.alive()));
 	// TODO: reset when timer reaches max
   }

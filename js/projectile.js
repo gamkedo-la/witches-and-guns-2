@@ -2,10 +2,6 @@ import {Entity} from "./entity.js";
 
 export class Projectile extends Entity {
   static INSTANCES = [];
-  constructor(x, y, width, height, imageSpec, target, speed, damage, hooks) {
-	super(x, y, width, height, imageSpec, target, speed, damage, hooks);
-	this.init(x, y, width, height, imageSpec, target, speed, damage, hooks);
-  }
 
   init(x, y, width, height, imageSpec, target, speed, damage, hooks) {
 	super.init(x, y, width, height, imageSpec, target, speed, damage, hooks);

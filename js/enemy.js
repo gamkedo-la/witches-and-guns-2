@@ -6,10 +6,6 @@ import {Projectile} from "./projectile.js";
 
 export class Enemy extends Entity {
   static INSTANCES = [];
-  constructor(x, y, width, height, imageSpec, endX, timeToAttack, timeToReturn) {
-	super(x, y, width, height, imageSpec, endX, timeToAttack, timeToReturn);
-	this.init(x, y, width, height, imageSpec, endX, timeToAttack, timeToReturn);
-  }
 
   init(x, y, width, height, imageSpec, endX, timeToAttack, timeToReturn) {
 	super.init(x, y, width, height, imageSpec, timeToAttack, timeToReturn);
