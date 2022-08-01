@@ -27,6 +27,7 @@ export class Input {
 	case " ":
 	  this.shoot = value;
 	  break;
+	case "a":
 	case "ArrowLeft":
 	  this.left = value;
 
@@ -45,6 +46,7 @@ export class Input {
       }
 
       break;
+	case "d":
 	case "ArrowRight":
 	  this.right = value;
 
@@ -63,9 +65,11 @@ export class Input {
       }
 
 	  break;
+	case "w":
 	case "ArrowUp":
 	  this.up = value;
 	  break;
+	case "s":
 	case "ArrowDown":
 	  this.down = value;
 	  break;
