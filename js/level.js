@@ -99,15 +99,21 @@ export class Level {
 	for (const projectile of Projectile.alive()) {
 	  projectile.update(dt);
 	}
-	// TODO: filter out off-screen entities
-	this.entitiesToDraw = Array.from(Enemy.alive()).concat(Array.from(Prop.alive())).sort((e1, e2) => e1.y - e2.y).concat(Array.from(Projectile.alive()));
+	this.activeEntities = Array.from(Enemy.alive()).concat(Array.from(Prop.alive())).sort((e1, e2) => e1.y - e2.y).concat(Array.from(Projectile.alive()));
 	// TODO: reset when timer reaches max
   }
 
   draw(ctx, assets) {
+	// TODO: filter out off-screen entities
 	ctx.drawImage(assets.levelBG, Math.round(this.offset), 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
-	for (const entity of this.entitiesToDraw) {
+	for (const entity of this.activeEntities) {
 	  entity.draw(ctx, assets, this.offset);
+	}
+  }
+
+  blast(ctx, assets) {
+	for (const entity of this.activeEntities) {
+	  entity.blast(ctx, assets);
 	}
   }
 }

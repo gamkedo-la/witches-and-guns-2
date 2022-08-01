@@ -616,6 +616,9 @@ export class Editor {
 	}
   }
 
+  blast(ctx, assets) {
+  }
+
   toggle() {
 	this.enabled = !this.enabled;
 	if (this.enabled) {

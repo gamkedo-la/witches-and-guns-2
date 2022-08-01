@@ -31,9 +31,21 @@ export class Entity {
 	this.width = width;
 	this.height = height;
 	this.imageSpec = imageSpec;
+	this.blastQueue = [];
   }
 
   draw(ctx, assets, offset) {
 	ctx.drawImage(assets[this.imageSpec.id], this.imageSpec.sx, this.imageSpec.sy, this.imageSpec.sWidth, this.imageSpec.sHeight, Math.round(this.x - offset), Math.round(this.y), this.width, this.height);
   }
+
+  blast(ctx, assets) {
+	while (this.blastQueue.length > 0) {
+	  const soundSpec = this.blastQueue.pop();
+	  const source = ctx.createBufferSource();
+	  source.buffer = assets[soundSpec];
+	  source.connect(ctx.destination);
+	  source.start();
+	}
+  }
+
 }

@@ -45,6 +45,7 @@ export class Player {
 	this.hitTargetHooks = [Player.onHitTarget];
 	this.isShooting = false;
 	this.shootingSound = "playerShooting1";
+	this.blastQueue = [];
   }
 
   update(dt, input, level, game) {
@@ -72,12 +73,9 @@ export class Player {
 		10,	// damage
 		this.hitTargetHooks,
 	  ));
-	  this.shotDelay = Player.timeBetweenShots;
-	  const source = game.audioCtx.createBufferSource();
-	  source.buffer = game.assets.sounds[this.shootingSound];
+	  this.blastQueue.push(this.shootingSound);
 	  this.shootingSound = this.shootingSound == "playerShooting1" ? "playerShooting2" : "playerShooting1";
-	  source.connect(game.audioCtx.destination);
-	  source.start();
+	  this.shotDelay = Player.timeBetweenShots;
 	}
 	this.shotDelay -= dt;
 	const cv = Player.getAxis(input.up, input.down, input.left, input.right);
@@ -119,5 +117,15 @@ export class Player {
 	ctx.arc(Math.round(this.reticlePos.x - offset), Math.round(this.reticlePos.y), Math.round(Player.avatarWidth), 0, 2*Math.PI);
 	ctx.stroke();
 	ctx.drawImage(assets.player, 50, 0, 20, 32, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), 20, 32);
+  }
+
+  blast(ctx, assets) {
+	while (this.blastQueue.length > 0) {
+	  const soundSpec = this.blastQueue.pop();
+	  const source = ctx.createBufferSource();
+	  source.buffer = assets[soundSpec];
+	  source.connect(ctx.destination);
+	  source.start();
+	}
   }
 }

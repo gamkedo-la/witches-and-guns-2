@@ -47,6 +47,15 @@ class Game {
 	}
   }
 
+  blast() {
+	if (this.editor.enabled) {
+	  this.editor.blast(this.audioCtx, this.assets.sounds);
+	} else {
+	  this.currentLevel.blast(this.audioCtx, this.assets.sounds);
+	  this.player.blast(this.audioCtx, this.assets.sounds);
+	}
+  }
+
   getAnimationFrameCallback() {
 	const game = this;
 	const runGameStep = function(browserTimeStamp) {
@@ -54,6 +63,7 @@ class Game {
 	  while (Game.dt > Game.updateStep) {
 		Game.dt -= Game.updateStep;
 		game.update(Game.updateStep);
+		game.blast();
 	  }
 	  game.draw();
 	  Game.last = browserTimeStamp;
