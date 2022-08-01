@@ -32,7 +32,7 @@ export class Player {
 	for (const enemy of Enemy.alive()) {
 	  const dist = Math.sqrt(Math.pow(enemy.x + enemy.width/2 - shot.target.x, 2) + Math.pow(enemy.y + enemy.height/2 - shot.target.y, 2));
 		if (dist <= 16) {
-		  enemy.live = false;
+		  enemy.hurt(5);
 		}
 	}
   }

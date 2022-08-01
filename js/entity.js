@@ -31,9 +31,15 @@ export class Entity {
 	this.width = width;
 	this.height = height;
 	this.imageSpec = imageSpec;
+	this.hp = 10;
 	this.blastQueue = [];
   }
 
+  update(accTime, player) {
+	if (this.hp <= 0) {
+	  this.die();
+	}
+  }
   draw(ctx, assets, offset) {
 	ctx.drawImage(assets[this.imageSpec.id], this.imageSpec.sx, this.imageSpec.sy, this.imageSpec.sWidth, this.imageSpec.sHeight, Math.round(this.x - offset), Math.round(this.y), this.width, this.height);
   }
@@ -48,4 +54,11 @@ export class Entity {
 	}
   }
 
+  hurt(damage) {
+	this.hp -= damage;
+  }
+
+  die() {
+	this.live = false;
+  }
 }

@@ -22,6 +22,7 @@ export class Enemy extends Entity {
   }
 
   update(accTime, player) {
+	super.update(accTime, player);
 	if (!this.live) {
 	  return;
 	}
