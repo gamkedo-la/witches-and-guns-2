@@ -21,7 +21,7 @@ export class Level {
 	  propSpec => Prop.spawn(propSpec.x, propSpec.y, propSpec.width, propSpec.height, propSpec.imageSpec)
 	);
 	this.player = player;
-	this.entitiesToDraw = [];
+	this.activeEntities = [];
   }
 
   reset(data) {
