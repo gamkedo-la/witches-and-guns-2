@@ -171,7 +171,7 @@
       [
 		{
 		  "type": "enemy",
-          "name": "RASPBERRY_DONUT_CHAIN",
+          "name": "RASPBERRY_DONUT",
 		  "count": 3,
           "width": 32,
           "height": 32,

@@ -58,6 +58,7 @@ export class Level {
 		  const count = enemySpec.count || 1;
 		  for (let i=0; i<count; i++) {
 			const endX = enemySpec.endX + i*enemySpec.width;
+			const sfx = typeof(Enemy.KINDS[enemySpec.kind]) == "undefined" ? Enemy.KINDS[enemySpec.name].sfx : Enemy.KINDS[enemySpec.kind].sfx;
 			const enemy = Enemy.spawn(
 			  enemySpec.x + i*enemySpec.width,
 			  Number(walkway) - enemySpec.height,
@@ -65,6 +66,7 @@ export class Level {
 			  enemySpec.height,
 			  enemySpec.imageSpec,
 			  endX,
+			  sfx,
 			  enemySpec.timeToAttack,
 			  enemySpec.timeToReturn,
 			);

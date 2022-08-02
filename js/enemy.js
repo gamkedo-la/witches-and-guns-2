@@ -6,8 +6,30 @@ import {Projectile} from "./projectile.js";
 
 export class Enemy extends Entity {
   static INSTANCES = [];
+  static KINDS = {
+	RASPBERRY_DONUT: {
+	  imageSpec: {id: "donutSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32},
+	  sfx: {death: "donutDeath"}
+	},
+	CHOCO_DONUT: {
+	  imageSpec: {id: "donutSheet", sx: 0, sy: 32, sWidth: 32, sHeight: 32},
+	  sfx: {death: "donutDeath"}
+	},
+	FROSTED_DONUT: {
+	  imageSpec: {id: "donutSheet", sx: 0, sy: 64, sWidth: 32, sHeight: 32},
+	  sfx: {death: "donutDeath"}
+	},
+	ESPRESSO: {
+	  imageSpec: {id: "expressoGangsterSheet", sx: 0, sy: 0, sWidth: 45, sHeight: 32},
+	  sfx: {death: "espressoDeath"}
+	},
+	EVIL_PRINTER: {
+	  imageSpec: {id: "printerSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32},
+	  sfx: {death: "printerDeath"}
+	}
+  };
 
-  init(x, y, width, height, imageSpec, endX, timeToAttack, timeToReturn) {
+  init(x, y, width, height, imageSpec, endX, sfx, timeToAttack, timeToReturn) {
 	super.init(x, y, width, height, imageSpec, timeToAttack, timeToReturn);
 	this.startX = x;
 	this.endX = endX;
@@ -19,6 +41,7 @@ export class Enemy extends Entity {
 	this.timeToReturn = typeof(timeToReturn) === "undefined" ? 1 : (timeToReturn || 1);	// wait a second by default after attacking
 	this.attacked = false;
 	this.hitTargetHooks = [];
+	this.sfx = sfx;
   }
 
   update(accTime, player) {
