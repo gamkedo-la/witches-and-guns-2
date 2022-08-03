@@ -32,12 +32,23 @@ export class Enemy extends Entity {
   init(x, y, width, height, imageSpec, endX, sfx, timeToAttack, timeToReturn) {
 	super.init(x, y, width, height, imageSpec, timeToAttack, timeToReturn);
 	this.startX = x;
-	this.endX = endX;
-	this.speed = 64;
-	this.velX = Math.sign(this.endX - this.startX)*this.speed;
-	this.endXTime = (this.endX - this.startX)/this.velX;
+	this.endX = endX || this.startX;
+	this.walkSpeed = 64;
+	this.popOutSpeed = 48;
+	this.startY = y;
+	if (this.endX == this.startX) {	// pop out enemy
+	  this.endY = this.y - this.height/2;
+	  this.velX = 0;
+	  this.velY = Math.sign(this.endY - this.startY)*this.popOutSpeed;
+	  this.endMoveTime = (this.endY - this.startY)/this.velY;
+	} else {
+	  this.endY = this.y;
+	  this.velY = 0;
+	  this.velX = Math.sign(this.endX - this.startX)*this.walkSpeed;
+	  this.endMoveTime = (this.endX - this.startX)/this.velX;
+	}
 	timeToAttack = typeof(timeToAttack) === "undefined" ? 1 : (timeToAttack || 1);	// wait a second by default before attacking
-	this.endAttackTime = this.endXTime + timeToAttack;
+	this.endAttackTime = this.endMoveTime + timeToAttack;
 	this.timeToReturn = typeof(timeToReturn) === "undefined" ? 1 : (timeToReturn || 1);	// wait a second by default after attacking
 	this.attacked = false;
 	this.hitTargetHooks = [];
@@ -49,13 +60,16 @@ export class Enemy extends Entity {
 	if (!this.live) {
 	  return;
 	}
-	if (accTime < this.endXTime) {
+	if (accTime < this.endMoveTime) {
 	  this.x = this.startX + this.velX*accTime;
+	  this.y = this.startY + this.velY*accTime;
 	} else if (accTime < this.endAttackTime) {
 	  console.log("WAITING TO ATTACK", this);
 	  this.x = this.endX;
+	  this.y = this.endY;
 	} else if (!this.attacked) {
 	  this.x = this.endX;
+	  this.y = this.endY;
 	  const projectile = Projectile.spawn(
 		this.x + this.width/2,	// starting x
 		this.y + this.height/2,	// starting y
@@ -71,12 +85,10 @@ export class Enemy extends Entity {
 	  this.attacked = true;
 	} else if (accTime > this.endAttackTime + this.timeToReturn) {
 	  this.x = this.endX - this.velX*(accTime - this.endAttackTime - this.timeToReturn);
-	  if (this.x + this.width < 0 || this.x > constants.PLAYABLE_WIDTH) {
+	  this.y = this.endY - this.velY*(accTime - this.endAttackTime - this.timeToReturn);
+	  if (this.x + this.width < 0 || this.x > constants.PLAYABLE_WIDTH || this.y > this.startY) {
 		this.live = false;
 	  }
-	} else {
-	  this.x = this.endX;
 	}
-	// TODO: "accelerate" enemy when it's not visible on-screen
   }
 }
