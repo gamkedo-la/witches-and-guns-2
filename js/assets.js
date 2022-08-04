@@ -19,6 +19,9 @@ const assetSpecs = {
   ],
   levels: [
 	{id: "graveyard", path: "levels/graveyard.json"},
+	{id: "level1", path: "levels/level2.json"},
+	{id: "level2", path: "levels/level3.json"},
+	{id: "level3", path: "levels/level4.json"},
   ],
 };
 
@@ -37,9 +40,14 @@ async function loadSound(spec, audioCtx) {
 }
 
 async function loadLevel(spec) {
-  const response = await fetch(spec.path);
-  const data = await response.json();
-  return [spec.id, data];
+  try {
+	const response = await fetch(spec.path);
+	const data = await response.json();
+	return [spec.id, data];
+  } catch (e) {
+	console.error("Failed to load", spec, ", ERROR:", e);
+	return [spec.id, {background: "levelBG", props: [], walkways: {}}];
+  }
 }
 
 export function loadAssets(audioCtx) {
