@@ -144,9 +144,9 @@ export class Editor {
   static WALKWAY_COVER_DISTANCE = 8;
   static #LEVEL_NAMES = ["graveyard"];	// NOTE: level filenames
 
-  constructor(levelData) {
+  constructor(levelsData, hooks) {
 	this.enabled = true;
-	this.onToggleHook = () => {};
+	this.hooks = hooks;
 	this.components = {
 	  timeSlider: new TimeSlider(this),
 	  enemyPalette: new EnemyPalette(this, ToolButton.WIDTH*Editor.buttonSpecs.length/2, 184 + TimeSlider.HEIGHT),
@@ -175,7 +175,7 @@ export class Editor {
 	this.simEnemies = [];
 	// TODO: add limit to undoList size
 	this.undoList = [];
-	this.levelData = levelData || {
+	this.levelData = levelsData.graveyard || {
 	  props: [],
 	  walkways: {
 		// y positions of walkways: [enemy waves inside walkway]
@@ -195,6 +195,14 @@ export class Editor {
   }
 
   update(dt, input) {
+	if (input.justReleasedKeys.has(Input.EDIT)) {
+	  this.toggle();
+	  return;
+	}
+	if (input.justReleasedKeys.has("Escape")) {
+	  this.exit();
+	  return;
+	}
 	const mouseX = input.mousePos.x;
 	const mouseY = input.mousePos.y;
 	const timeIndex = this.getTimeIndex();
@@ -623,13 +631,14 @@ export class Editor {
 	this.enabled = !this.enabled;
 	if (this.enabled) {
 	  this.updateSimEnemies(this.components.timeSlider.sliderPos);
+	  this.hooks.edit(this.levelData);
 	} else {
-	  this.onToggleHook(this.takeDataSnapshot());
+	  this.hooks.play(this.takeDataSnapshot());
 	}
   }
 
-  onToggle(hook) {
-	this.onToggleHook = hook;
+  exit() {
+	this.hooks.exit();
   }
 
   deleteEnemy(walkway, index, subindex) {

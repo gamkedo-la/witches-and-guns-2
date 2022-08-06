@@ -7,9 +7,9 @@ export class Input {
 	this.up = this.down = this.left = this.right = this.shoot = false;
     this.rightReleaseTime = this.leftReleaseTime = this.dodgeLeftUntil = this.dodgeRightUntil = 0; // timestamps
 	this.edit = false;
-	this.onReleaseHooks = {};
 	this.mousePos = {x: null, y: null};
 	this.mouseButtonHeld = false;
+	this.justReleasedKeys = new Set();
 	const input = this;
 	document.addEventListener("keydown", event => input.keyPress(event));
 	document.addEventListener("keyup", event => input.keyRelease(event));
@@ -98,18 +98,8 @@ export class Input {
 	  return;
 	}
 	event.preventDefault();
+	this.justReleasedKeys.add(event.key);
 	this.flipInputState(event.key, false);
-	for (const hook of (this.onReleaseHooks[event.key] || [])) {
-	  hook(event);
-	}
-  }
-
-  onRelease(key, hook) {
-	if (typeof this.onReleaseHooks[key] === "undefined") {
-	  this.onReleaseHooks[key] = [hook];
-	} else {
-	  this.onReleaseHooks[key].push(hook);
-	}
   }
 
   updateMousePos(event) {

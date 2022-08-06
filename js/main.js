@@ -16,19 +16,18 @@ class Game {
 	this.audioCtx = audioCtx;
 	this.assets = loadedAssets;
 	this.input = new Input(canvas);
-	this.editor = new Editor(loadedAssets.levels.graveyard);
-	this.editor.onToggle(data => this.currentLevel.reset(data));
-	this.input.onRelease(Input.EDIT, event =>  this.editor.toggle());
-	this.player = new Player({x: 100, y: this.ctx.canvas.height - Player.avatarHeight});
-	this.currentLevel = new Level(loadedAssets.levels.graveyard, this.assets.images.levelBG.width, this.ctx.canvas.height, this.player);
-	const creditsScene = new CreditsScene();
-	this.menu = new MenuScene(this.input, {
+	this.editor = new Editor(loadedAssets.levels, {
+	  play: levelData => this.scene = new PlayTestScene(levelData, this.editor),
+	  edit: levelData => this.scene = this.editor,
+	  exit: () => this.scene = this.menu,
+	});
+	const creditsScene = new CreditsScene({exit: () => this.scene = this.menu});
+	this.menu = new MenuScene({
 	  play: () => this.scene = new GamePlayScene(this.assets.levels.graveyard),
 	  editor: () => this.scene = this.editor,
 	  credits: () => this.scene = creditsScene,
 	});
 	this.scene = this.menu;
-	this.input.onRelease("Escape", event => this.scene = this.menu);
   }
 
   start() {
@@ -37,6 +36,7 @@ class Game {
 
   update(dt) {
 	this.scene.update(dt, this.input);
+	this.input.justReleasedKeys.clear();
   }
 
   draw() {
@@ -81,29 +81,29 @@ window.onload = function() {
 
 
 class MenuScene {
-  constructor(input, options) {
+  constructor(options) {
 	this.options = options;
 	this.selectedIndex = 0;
+  }
+
+  update(dt, input) {
 	const numOptions = Object.keys(this.options).length;
-	input.onRelease("ArrowDown", event => {
+	if (input.justReleasedKeys.has("ArrowDown")) {
 	  this.selectedIndex++;
 	  this.selectedIndex = this.selectedIndex % numOptions;
-	});
-	input.onRelease("ArrowUp", event => {
+	}
+	if (input.justReleasedKeys.has("ArrowUp")) {
 	  this.selectedIndex--;
 	  if (this.selectedIndex < 0) {
 		this.selectedIndex = numOptions + this.selectedIndex;
 	  } else {
 		this.selectedIndex = this.selectedIndex % numOptions;
 	  }
-	});
-	input.onRelease("Enter", event => {
+	}
+	if (input.justReleasedKeys.has("Enter")) {
 	  const option = Object.keys(this.options)[this.selectedIndex];
 	  this.options[option]();
-	});
-  }
-
-  update(dt, input) {
+	}
   }
 
   draw(ctx, assets) {
@@ -137,6 +137,7 @@ class GamePlayScene {
   constructor(levelData) {
 	this.player = new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight});
 	this.currentLevel = new Level(levelData, constants.PLAYABLE_WIDTH, constants.VIEWABLE_HEIGHT, this.player);
+	this.currentLevel.reset(levelData);
   }
 
   update(dt, input) {
@@ -155,11 +156,36 @@ class GamePlayScene {
   }
 }
 
-class CreditsScene {
-  constructor() {
+
+class PlayTestScene extends GamePlayScene {
+  constructor(levelData, editor) {
+	super(levelData);
+	this.editor = editor;
   }
 
   update(dt, input) {
+	if (input.justReleasedKeys.has(Input.EDIT)) { 
+	  this.editor.toggle();
+	  return;
+	}
+	super.update(dt, input);
+  }
+}
+
+
+class CreditsScene {
+  constructor(hooks) {
+	this.hooks = hooks;
+  }
+
+  exit() {
+	this.hooks.exit();
+  }
+
+  update(dt, input) {
+	if (input.justReleasedKeys.has("Escape")) {
+	  this.exit();
+	}
   }
 
   draw(ctx, assets) {
