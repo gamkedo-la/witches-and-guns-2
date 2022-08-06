@@ -48,7 +48,7 @@ export class Player {
 	this.blastQueue = [];
   }
 
-  update(dt, input, level, game) {
+  update(dt, input, level) {
 	this.shots = this.shots.filter(shot => shot.live);
 	if (!input.shoot) {
 	  if (input.left) {
