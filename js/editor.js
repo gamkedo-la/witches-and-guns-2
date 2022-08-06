@@ -175,7 +175,10 @@ export class Editor {
 	this.simEnemies = [];
 	// TODO: add limit to undoList size
 	this.undoList = [];
-	this.levelData = levelsData.graveyard || {
+	this.levels = levelsData;
+	this.currentLevelIdx = 0;
+	const levelKey = Object.keys(this.levels)[this.currentLevelIdx];
+	this.levelData = levelsData[levelKey] || {
 	  props: [],
 	  walkways: {
 		// y positions of walkways: [enemy waves inside walkway]
@@ -201,6 +204,30 @@ export class Editor {
 	}
 	if (input.justReleasedKeys.has("Escape")) {
 	  this.exit();
+	  return;
+	}
+	const levelArray = Object.values(this.levels);
+	if (input.justReleasedKeys.has("PageDown")) {
+	  this.currentLevelIdx = (this.currentLevelIdx + 1) % levelArray.length;
+	  this.levelData = levelArray[this.currentLevelIdx];
+	  console.log("CHANGED TO LEVEL", Object.keys(this.levels)[this.currentLevelIdx]);
+	  this.selectedWalkWay = null;
+	  this.selectedEnemy = null;
+	  this.selectedProp = null;
+	  return;
+	}
+	if (input.justReleasedKeys.has("PageUp")) {
+	  this.currentLevelIdx--;
+	  if (this.currentLevelIdx < 0) {
+		this.currentLevelIdx = levelArray.length + this.currentLevelIdx;
+	  } else {
+		this.currentLevelIdx %= levelArray.length;
+	  }
+	  this.levelData = levelArray[this.currentLevelIdx];
+	  console.log("CHANGED TO LEVEL", Object.keys(this.levels)[this.currentLevelIdx]);
+	  this.selectedWalkWay = null;
+	  this.selectedEnemy = null;
+	  this.selectedProp = null;
 	  return;
 	}
 	const mouseX = input.mousePos.x;
