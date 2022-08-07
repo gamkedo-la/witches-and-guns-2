@@ -91,4 +91,9 @@ export class Enemy extends Entity {
 	  }
 	}
   }
+
+  hurt(damage) {
+	super.hurt(damage);
+	this.blastQueue.push(this.sfx.death);
+  }
 }
