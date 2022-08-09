@@ -95,6 +95,8 @@ export class Enemy extends Entity {
 
   hurt(damage) {
 	super.hurt(damage);
-	this.blastQueue.push(this.sfx.death);
+	if (this.hp <= 0) {
+	  this.blastQueue.push(this.sfx.death);
+	}
   }
 }
