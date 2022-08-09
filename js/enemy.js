@@ -82,6 +82,7 @@ export class Enemy extends Entity {
 		this.hitTargetHooks,
 	  );
 	  console.log("SHOT", projectile);
+	  this.blastQueue.push("enemyShoot");
 	  this.attacked = true;
 	} else if (accTime > this.endAttackTime + this.timeToReturn) {
 	  this.x = this.endX - this.velX*(accTime - this.endAttackTime - this.timeToReturn);

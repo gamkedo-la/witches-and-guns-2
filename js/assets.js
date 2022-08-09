@@ -16,6 +16,7 @@ const assetSpecs = {
 	{id: "donutDeath", path: "sounds/zombie-doughnut-death-short.mp3"},
 	{id: "printerDeath", path: "sounds/possessed-printer-death-WG.mp3"},
 	{id: "espressoDeath", path: "sounds/espresso-gangster-death-reverb.mp3"},
+	{id: "enemyShoot", path: "sounds/enemy_shoot.wav"},
   ],
   levels: [
 	{id: "graveyard", path: "levels/graveyard.json"},
