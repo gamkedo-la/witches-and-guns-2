@@ -22,8 +22,9 @@ class Game {
 	  exit: () => this.scene = this.menu,
 	});
 	const creditsScene = new CreditsScene({exit: () => this.scene = this.menu});
+	const gamePlayScene = new GamePlayScene(this.assets.levels);
 	this.menu = new MenuScene({
-	  play: () => this.scene = new GamePlayScene(this.assets.levels.graveyard),
+	  play: () => this.scene = gamePlayScene,
 	  editor: () => this.scene = this.editor,
 	  credits: () => this.scene = creditsScene,
 	});
@@ -133,33 +134,109 @@ class MenuScene {
   }
 }
 
-class GamePlayScene {
-  constructor(levelData) {
-	this.player = new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight});
-	this.currentLevel = new Level(levelData, constants.PLAYABLE_WIDTH, constants.VIEWABLE_HEIGHT, this.player);
-	this.currentLevel.reset(levelData);
+
+class LevelScene {
+  constructor(player, levelData, parent) {
+	this.player = player;
+	this.level = new Level(levelData, constants.PLAYABLE_WIDTH, constants.VIEWABLE_HEIGHT, this.player);
+	this.level.reset(levelData);
+	this.parent = parent;
   }
 
   update(dt, input) {
-	this.currentLevel.update(dt, input);
-	this.player.update(dt, input, this.currentLevel);
+	this.level.update(dt, input);
+	if (this.level.finished) {
+	  this.parent.tallyUp();
+	  return;
+	}
+	this.player.update(dt, input, this.level);
   }
 
   draw(ctx, assets) {
-	this.currentLevel.draw(ctx, assets);
-	this.player.draw(ctx, assets, this.currentLevel.offset);
+	this.level.draw(ctx, assets);
+	this.player.draw(ctx, assets, this.level.offset);
   }
 
   blast(ctx, assets) {
-	this.currentLevel.blast(ctx, assets);
+	this.level.blast(ctx, assets);
 	this.player.blast(ctx, assets);
+  }
+}
+
+class TallyUpScene {
+  constructor(parent) {
+	this.parent = parent;
+	this.timer = 0;
+  }
+
+  update(dt, input) {
+	this.timer += dt;
+	if (this.timer > 3) {
+	  this.parent.loadNextLevel();
+	  return;
+	}
+  }
+
+  draw(ctx, assets) {
+	ctx.fillStyle = "black";
+	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+	ctx.fillStyle = "cyan";
+	const oldAlign = ctx.textAlign;
+	const oldFont = ctx.oldFont;
+	ctx.textAlign = "center";
+	ctx.font = "bold 24px serif";
+	const midX = Math.round(ctx.canvas.width/2);
+	ctx.fillText("TALLY UP", midX, Math.round(ctx.canvas.height*0.4));
+	ctx.fillText("HERE", midX, Math.round(ctx.canvas.height*0.6));
+	ctx.textAlign = oldAlign;
+	ctx.oldFont = oldFont;
+  }
+
+  blast(ctx, assets) {
+  }
+}
+
+class GamePlayScene {
+  constructor(levels, hooks) {
+	this.player = new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight});
+	this.levels = levels;
+	this.nextLevelIdx = 0;
+	this.loadNextLevel();
+	this.hooks = hooks;
+  }
+
+  tallyUp() {
+	this.subscene = new TallyUpScene(this);
+  }
+
+  loadNextLevel() {
+	const levelId = Object.keys(this.levels)[this.nextLevelIdx];
+	this.subscene = new LevelScene(this.player, this.levels[levelId], this);
+	console.log("LOADED LEVEL", levelId);
+	this.nextLevelIdx = (this.nextLevelIdx + 1) % Object.keys(this.levels).length;
+  }
+
+  update(dt, input) {
+	this.subscene.update(dt, input);
+  }
+
+  draw(ctx, assets) {
+	this.subscene.draw(ctx, assets);
+  }
+
+  blast(ctx, assets) {
+	this.subscene.blast(ctx, assets);
+  }
+
+  exit() {
+	this.hooks.exit();
   }
 }
 
 
 class PlayTestScene extends GamePlayScene {
-  constructor(levelData, editor) {
-	super(levelData);
+  constructor(levelData, hooks, editor) {
+	super(levelData, hooks);
 	this.editor = editor;
   }
 
