@@ -11,6 +11,7 @@ export class Level {
   static #TIMER = 0;
   static #WAVE_TIMER = 0;
   static #SCROLL_SPEED = 256;
+  static #LEVEL_TIME = 10;
 
   constructor(data, width, height, player) {
 	this.levelData = data;
@@ -22,6 +23,7 @@ export class Level {
 	);
 	this.player = player;
 	this.activeEntities = [];
+	this.finished = false;
   }
 
   reset(data) {
@@ -47,6 +49,11 @@ export class Level {
 
   update(dt) {
 	Level.#TIMER += dt;
+	if (Level.#LEVEL_TIME - Level.#TIMER <= 0) {
+	  console.log("LEVEL FINISHED!!");
+	  this.finished = true;
+	  return;
+	}
 	Level.#WAVE_TIMER += dt;
 	const timeIndex = Math.floor(Level.#TIMER*1000/constants.TIME_SLOT);
 	if (Level.#WAVE_TIMER*1000 > constants.TIME_SLOT) {
@@ -111,6 +118,15 @@ export class Level {
 	for (const entity of this.activeEntities) {
 	  entity.draw(ctx, assets, this.offset);
 	}
+	const oldAlign = ctx.textAlign;
+	const oldFont = ctx.oldFont;
+	ctx.fillStyle = "white";
+	ctx.font = "bold 18px sans";
+	ctx.textAlign = "center";
+	const timerStr = (Math.round(Level.#LEVEL_TIME - Level.#TIMER)).toString().padStart(2, "0");
+	ctx.fillText(timerStr, Math.round(ctx.canvas.width/2), 16);
+	ctx.textAlign = oldAlign;
+	ctx.font = oldFont;
   }
 
   blast(ctx, assets) {
