@@ -23,7 +23,12 @@ export class Level {
 	);
 	this.player = player;
 	this.activeEntities = [];
+	this.levelTimerDisabled = false;
 	this.finished = false;
+  }
+
+  disableLevelTimer() {
+	this.levelTimerDisabled = true;
   }
 
   reset(data) {
@@ -38,18 +43,21 @@ export class Level {
 	for (const prop of this.props) {
 	  prop.live = true;
 	}
+	this.levelTimerDisabled = false;
+	this.finished = false;
   }
 
   scrollLeft(dt) {
 	this.offset = Math.max(0, this.offset - Level.#SCROLL_SPEED*dt);
   }
+
   scrollRight(dt) {
 	this.offset = Math.min(this.offset + Level.#SCROLL_SPEED*dt, this.width - constants.VIEWABLE_WIDTH);
   }
 
   update(dt) {
 	Level.#TIMER += dt;
-	if (Level.#LEVEL_TIME - Level.#TIMER <= 0) {
+	if (!this.levelTimerDisabled && Level.#LEVEL_TIME - Level.#TIMER <= 0) {
 	  console.log("LEVEL FINISHED!!");
 	  this.finished = true;
 	  return;
@@ -117,6 +125,9 @@ export class Level {
 	ctx.drawImage(assets.levelBG, Math.round(this.offset), 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
 	for (const entity of this.activeEntities) {
 	  entity.draw(ctx, assets, this.offset);
+	}
+	if (this.levelTimerDisabled) {
+	  return;
 	}
 	const oldAlign = ctx.textAlign;
 	const oldFont = ctx.oldFont;

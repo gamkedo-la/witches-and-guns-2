@@ -17,7 +17,7 @@ class Game {
 	this.assets = loadedAssets;
 	this.input = new Input(canvas);
 	this.editor = new Editor(loadedAssets.levels, {
-	  play: levelData => this.scene = new PlayTestScene(levelData, this.editor),
+	  play: levelData => this.scene = new PlayTestScene(new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight}), levelData, this.editor),
 	  edit: levelData => this.scene = this.editor,
 	  exit: () => this.scene = this.menu,
 	});
@@ -146,7 +146,7 @@ class LevelScene {
   update(dt, input) {
 	this.level.update(dt, input);
 	if (this.level.finished) {
-	  this.parent.tallyUp();
+	  this.exit();
 	  return;
 	}
 	this.player.update(dt, input, this.level);
@@ -160,6 +160,10 @@ class LevelScene {
   blast(ctx, assets) {
 	this.level.blast(ctx, assets);
 	this.player.blast(ctx, assets);
+  }
+
+  exit() {
+	this.parent.tallyUp();
   }
 }
 
@@ -234,18 +238,22 @@ class GamePlayScene {
 }
 
 
-class PlayTestScene extends GamePlayScene {
-  constructor(levelData, hooks, editor) {
-	super(levelData, hooks);
-	this.editor = editor;
+class PlayTestScene extends LevelScene {
+  constructor(player, levelData, editor) {
+	super(player, levelData, editor);
+	this.level.disableLevelTimer();
   }
 
   update(dt, input) {
 	if (input.justReleasedKeys.has(Input.EDIT)) { 
-	  this.editor.toggle();
+	  this.exit();
 	  return;
 	}
 	super.update(dt, input);
+  }
+
+  exit() {
+	this.parent.toggle();
   }
 }
 
