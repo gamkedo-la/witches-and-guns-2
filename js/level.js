@@ -108,10 +108,22 @@ export class Level {
 	// TODO: reset when timer reaches max
   }
 
+  // render moon, stars, sky, trees, etc with parallax layers
+  drawBG(ctx, assets) {
+
+    ctx.drawImage(assets.levelBG,  Math.round(this.offset/5), 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.drawImage(assets.levelBG2, Math.round(this.offset/4)+12, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.drawImage(assets.levelBG3, Math.round(this.offset/3)-13, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.drawImage(assets.levelBG4, Math.round(this.offset/2)+7, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  }
+
   draw(ctx, assets) {
-	// TODO: filter out off-screen entities
-	ctx.drawImage(assets.levelBG, Math.round(this.offset), 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
-	for (const entity of this.activeEntities) {
+    
+    this.drawBG(ctx,assets);
+	
+    // TODO: filter out off-screen entities
+    for (const entity of this.activeEntities) {
 	  entity.draw(ctx, assets, this.offset);
 	}
 	if (this.levelTimerDisabled) {
