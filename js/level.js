@@ -85,18 +85,6 @@ export class Level {
 			  enemySpec.timeToAttack,
 			  enemySpec.timeToReturn,
 			);
-			if (i < count) {
-			  const nextEnemy = new Enemy(
-				enemySpec.x + (i + 1)*enemySpec.width,
-				Number(walkway) - enemySpec.height,
-				enemySpec.width,
-				enemySpec.height,
-				enemySpec.imageSpec,
-				endX + (i + 1)*enemySpec.width,
-				enemySpec.timeToAttack,
-				enemySpec.timeToReturn,
-			  );
-			}
 			this.enemies[timeIndex - 1].push(enemy);
 		  }
 		}
