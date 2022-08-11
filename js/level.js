@@ -25,10 +25,15 @@ export class Level {
 	this.activeEntities = [];
 	this.levelTimerDisabled = false;
 	this.finished = false;
+	this.maxTimeIndex = this.getMaxTimeIndex();
   }
 
   disableLevelTimer() {
 	this.levelTimerDisabled = true;
+  }
+
+  getMaxTimeIndex() {
+	return Math.max(...Object.values(this.levelData.walkways).map(walkway => walkway.findLastIndex(wave => wave !== null && wave.length > 0)));
   }
 
   reset(data) {
@@ -45,6 +50,7 @@ export class Level {
 	}
 	this.levelTimerDisabled = false;
 	this.finished = false;
+	this.maxTimeIndex = this.getMaxTimeIndex();
   }
 
   scrollLeft(dt) {
@@ -105,7 +111,11 @@ export class Level {
 	  projectile.update(dt);
 	}
 	this.activeEntities = Array.from(Enemy.alive()).concat(Array.from(Prop.alive())).sort((e1, e2) => e1.y - e2.y).concat(Array.from(Projectile.alive()));
-	// TODO: reset when timer reaches max
+	// reset when timer reaches max
+	if (timeIndex >= this.maxTimeIndex && Array.from(Enemy.alive()).length <= 0) {
+	  Level.#TIMER = 0;
+	  Level.#WAVE_TIMER = 0;
+	}
   }
 
   // render moon, stars, sky, trees, etc with parallax layers
