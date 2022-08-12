@@ -115,6 +115,7 @@ export class Level {
 	if (timeIndex >= this.maxTimeIndex && Array.from(Enemy.alive()).length <= 0) {
 	  Level.#TIMER = 0;
 	  Level.#WAVE_TIMER = 0;
+	  this.enemies = [];
 	}
   }
 
