@@ -12,9 +12,17 @@ export class Level {
   static #WAVE_TIMER = 0;
   static #SCROLL_SPEED = 256;
   static #LEVEL_TIME = 10;
+  static #BACKGROUNDS_MAP = {
+	graveyard: ["graveyardBG"],
+	default: ["levelBG", "levelBG2", "levelBG3", "levelBG4"],
+  }
 
   constructor(data, width, height, player) {
 	this.levelData = data;
+	this.backgrounds = Level.#BACKGROUNDS_MAP[data.name] || Level.#BACKGROUNDS_MAP.default;
+	if (this.backgrounds.length < 4) {
+	  this.backgrounds = this.backgrounds.concat(Array(4 - this.backgrounds.length).fill("transparentBG"));
+	}
 	this.width = width;
 	this.offset = 0;	// number of pixels camera has moved to the right
 	this.enemies = [];
@@ -122,10 +130,10 @@ export class Level {
   // render moon, stars, sky, trees, etc with parallax layers
   drawBG(ctx, assets) {
 
-    ctx.drawImage(assets.levelBG,  Math.round(this.offset/5), 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.drawImage(assets.levelBG2, Math.round(this.offset/4)+12, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.drawImage(assets.levelBG3, Math.round(this.offset/3)-13, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.drawImage(assets.levelBG4, Math.round(this.offset/2)+7, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.drawImage(assets[this.backgrounds[0]],  Math.round(this.offset/5), 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.drawImage(assets[this.backgrounds[1]], Math.round(this.offset/4)+12, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.drawImage(assets[this.backgrounds[2]], Math.round(this.offset/3)-13, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.drawImage(assets[this.backgrounds[3]], Math.round(this.offset/2)+7, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
 
   }
 
