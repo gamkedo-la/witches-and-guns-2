@@ -512,6 +512,7 @@ export class Editor {
   takeDataSnapshot() {
 	// return deep copy of this.levelData
 	const snapshot = {
+	  name: Object.keys(this.levels)[this.currentLevelIdx],
 	  props: (this.levelData.props || []).map(prop => {
 		return {...prop};
 	  }),
@@ -716,7 +717,7 @@ export class Editor {
   }
 
   async save() {	// TODO: lock editor during save
-	const newHandle = await window.showSaveFilePicker();
+	const newHandle = await window.showSaveFilePicker({suggestedName: `${Object.keys(this.levels)[this.currentLevelIdx]}.json`});
 	const writableStream = await newHandle.createWritable();
 	const data = JSON.stringify(this.takeDataSnapshot(), null, 2);
 	const blob = new Blob([data], {type: "application/json"});
