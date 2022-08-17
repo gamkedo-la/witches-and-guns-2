@@ -1,6 +1,7 @@
 import {constants} from "./constants.js";
 import {Enemy} from "./enemy.js";
 import {Input} from "./input.js";
+import {pointInRectangle} from "./utils.js";
 
 
 class Button {
@@ -732,10 +733,6 @@ export class Editor {
 	  this.newWalkWay = null;
 	}
   }
-}
-
-function pointInRectangle(point, rectangle) {
-  return point.x > rectangle.x && point.y > rectangle.y && point.x < rectangle.x + rectangle.width && point.y < rectangle.y + rectangle.height;
 }
 
 class StageSlider {
