@@ -19,7 +19,7 @@ export class Projectile extends Entity {
   update(dt) {
 	this.x += this.velocity.x*dt;
 	this.y += this.velocity.y*dt;
-	this.reachedTarget = this.velocity.y > 0 ? this.y > this.target.y + this.target.height : this.y < this.target.y;
+	this.reachedTarget = this.velocity.y > 0 ? this.y > this.target.y + this.target.height/8 : this.y < this.target.y;
 	if (this.reachedTarget) {
 	  this.live = false;
 	  this.hooks.forEach(hook => hook(dt, this));

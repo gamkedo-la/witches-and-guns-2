@@ -64,7 +64,7 @@ export class Enemy extends Entity {
 	  this.x = this.startX + this.velX*accTime;
 	  this.y = this.startY + this.velY*accTime;
 	} else if (accTime < this.endAttackTime) {
-	  console.log("WAITING TO ATTACK", this);
+	  // wait to attack
 	  this.x = this.endX;
 	  this.y = this.endY;
 	} else if (!this.attacked) {
@@ -76,8 +76,8 @@ export class Enemy extends Entity {
 		1.5,	// width (radius)
 		1.5,	// height (not used)
 		{id: "bullets", sx: 12, sy: 2, sWidth: 6, sHeight: 6},	// image spec
-		{x: player.avatarPos.x + Player.avatarWidth*1.5, y: player.avatarPos.y, height: Player.avatarHeight/2},	// target position
-		6,	// speed
+		{x: player.avatarPos.x + Player.avatarWidth/2, y: player.avatarPos.y + Player.avatarHeight/2, height: Player.avatarHeight/2},	// target position
+		1,	// speed
 		1,	// damage
 		this.hitTargetHooks,
 	  );
