@@ -22,9 +22,8 @@ class Game {
 	  exit: () => this.scene = this.menu,
 	});
 	const creditsScene = new CreditsScene({exit: () => this.scene = this.menu});
-	const gamePlayScene = new GamePlayScene(this.assets.levels);
 	this.menu = new MenuScene({
-	  play: () => this.scene = gamePlayScene,
+	  play: () => this.scene = new GamePlayScene(this.assets.levels),
 	  editor: () => this.scene = this.editor,
 	  credits: () => this.scene = creditsScene,
 	});
