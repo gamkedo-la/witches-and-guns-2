@@ -23,7 +23,7 @@ class Game {
 	});
 	const creditsScene = new CreditsScene({exit: () => this.scene = this.menu});
 	this.menu = new MenuScene({
-	  play: () => this.scene = new GamePlayScene(this.assets.levels),
+	  play: () => this.scene = new GamePlayScene(this, this.assets.levels),
 	  editor: () => this.scene = this.editor,
 	  credits: () => this.scene = creditsScene,
 	});
@@ -145,10 +145,13 @@ class LevelScene {
   update(dt, input) {
 	this.level.update(dt, input);
 	if (this.level.finished) {
-	  this.exit();
+	  this.onFinishedLevel();
 	  return;
 	}
 	this.player.update(dt, input, this.level);
+	if (this.player.lives <= 0) {
+	  this.onPlayerLost();
+	}
   }
 
   draw(ctx, assets) {
@@ -161,8 +164,12 @@ class LevelScene {
 	this.player.blast(ctx, assets);
   }
 
-  exit() {
+  onFinishedLevel() {
 	this.parent.tallyUp();
+  }
+
+  onPlayerLost() {
+	this.parent.gameOver();
   }
 }
 
@@ -200,16 +207,20 @@ class TallyUpScene {
 }
 
 class GamePlayScene {
-  constructor(levels, hooks) {
+  constructor(game, levels) {
+	this.game = game;
 	this.player = new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight});
 	this.levels = levels;
 	this.nextLevelIdx = 0;
 	this.loadNextLevel();
-	this.hooks = hooks;
   }
 
   tallyUp() {
 	this.subscene = new TallyUpScene(this);
+  }
+
+  gameOver() {
+	this.subscene = new GameOverScene({exit: () => this.game.scene = this.game.menu});
   }
 
   loadNextLevel() {
@@ -230,10 +241,6 @@ class GamePlayScene {
   blast(ctx, assets) {
 	this.subscene.blast(ctx, assets);
   }
-
-  exit() {
-	this.hooks.exit();
-  }
 }
 
 
@@ -253,6 +260,10 @@ class PlayTestScene extends LevelScene {
 
   exit() {
 	this.parent.toggle();
+  }
+
+  onPlayerLost() {
+	this.player.lives = 10;
   }
 }
 
@@ -283,6 +294,40 @@ class CreditsScene {
 	const midX = Math.round(ctx.canvas.width/2);
 	ctx.fillText("CREDITS", midX, Math.round(ctx.canvas.height/3));
 	ctx.fillText("HERE", midX, Math.round(ctx.canvas.height/2));
+  }
+
+  blast(ctx, assets) {
+  }
+}
+
+class GameOverScene {
+  constructor(hooks) {
+	this.hooks = hooks;
+	this.timer = 0;
+  }
+
+  exit() {
+	this.hooks.exit();
+  }
+
+  update(dt, input) {
+	this.timer += dt;
+	if (this.timer > 4) {
+	  this.exit();
+	}
+  }
+
+  draw(ctx, assets) {
+	ctx.fillStyle = "firebrick";
+	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+	ctx.fillStyle = "lightyellow";
+	const oldAlign = ctx.textAlign;
+	const oldFont = ctx.oldFont;
+	ctx.textAlign = "center";
+	ctx.font = "bold 24px serif";
+	const midX = Math.round(ctx.canvas.width/2);
+	ctx.fillText("GAME", midX, Math.round(ctx.canvas.height/3));
+	ctx.fillText("OVER", midX, Math.round(ctx.canvas.height/2));
   }
 
   blast(ctx, assets) {

@@ -2,6 +2,7 @@ import {constants} from "./constants.js";
 import {Entity} from "./entity.js";
 import {Player} from "./player.js";
 import {Projectile} from "./projectile.js";
+import {pointInRectangle} from "./utils.js";
 
 
 export class Enemy extends Entity {
@@ -51,7 +52,6 @@ export class Enemy extends Entity {
 	this.endAttackTime = this.endMoveTime + timeToAttack;
 	this.timeToReturn = typeof(timeToReturn) === "undefined" ? 1 : (timeToReturn || 1);	// wait a second by default after attacking
 	this.attacked = false;
-	this.hitTargetHooks = [];
 	this.sfx = sfx;
   }
 
@@ -79,9 +79,12 @@ export class Enemy extends Entity {
 		{x: player.avatarPos.x + Player.avatarWidth/2, y: player.avatarPos.y + Player.avatarHeight/2, height: Player.avatarHeight/2},	// target position
 		1,	// speed
 		1,	// damage
-		this.hitTargetHooks,
+		[(dt, shot) => {
+		  if (pointInRectangle(shot, Object.assign({width: Player.avatarWidth, height: Player.avatarHeight}, player.avatarPos))) {
+			player.die(this, shot);
+		  }
+		}],
 	  );
-	  console.log("SHOT", projectile);
 	  this.blastQueue.push("enemyShoot");
 	  this.attacked = true;
 	} else if (accTime > this.endAttackTime + this.timeToReturn) {

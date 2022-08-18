@@ -4,7 +4,7 @@ import {constants} from "./constants.js";
 
 export class Player {
   static avatarHeight = 32;
-  static avatarWidth = 8;
+  static avatarWidth = 20;
   static reticleSpeed = 270;
   static avatarSpeed = 120;
   static timeBetweenShots = 1/9;
@@ -38,6 +38,7 @@ export class Player {
   }
 
   constructor(startPos) {
+	this.lives = 4;
 	this.avatarPos = {x: 100, y: startPos.y};
 	this.reticlePos = {x: startPos.x + 4, y: startPos.y - 100};
 	this.shots = [];
@@ -49,6 +50,9 @@ export class Player {
   }
 
   update(dt, input, level) {
+	if (this.lives <= 0) {
+	  return;
+	}
 	this.shots = this.shots.filter(shot => shot.live);
 	if (!input.shoot) {
 	  if (input.left) {
@@ -65,10 +69,10 @@ export class Player {
 	  this.shots.push(Projectile.spawn(
 		this.avatarPos.x + Player.avatarWidth/2,	// starting x
 		this.avatarPos.y,	// starting y
-		Player.avatarWidth/2,	// width (radius)
-		Player.avatarWidth/2,	// height (not used)
+		Player.avatarWidth/4,	// width (radius)
+		Player.avatarWidth/4,	// height (not used)
 		{id: "bullets", sx: 1, sy: 1, sWidth: 8, sHeight: 8},	// image spec
-		{x: this.reticlePos.x, y: this.reticlePos.y, height: 3},	// target position
+		{x: this.reticlePos.x, y: this.reticlePos.y, width: 3, height: 3},	// target position
 		8,	// speed
 		10,	// damage
 		this.hitTargetHooks,
@@ -114,7 +118,7 @@ export class Player {
   draw(ctx, assets, offset) {
 	ctx.strokeStyle = this.isShooting ? "lime" : "red";
 	ctx.beginPath();
-	ctx.arc(Math.round(this.reticlePos.x - offset), Math.round(this.reticlePos.y), Math.round(Player.avatarWidth), 0, 2*Math.PI);
+	ctx.arc(Math.round(this.reticlePos.x - offset), Math.round(this.reticlePos.y), Math.round(Player.avatarWidth/2), 0, 2*Math.PI);
 	ctx.stroke();
 	ctx.drawImage(assets.player, 50, 0, 20, 32, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), 20, 32);
   }
@@ -127,5 +131,13 @@ export class Player {
 	  source.connect(ctx.destination);
 	  source.start();
 	}
+  }
+
+  die(enemy, shot) {
+	if (this.lives <= 0) {
+	  return;
+	}
+	this.lives--;
+	console.log("KILLED BY", enemy, "WITH", shot, "LIVES REMAINING", this.lives);
   }
 }
