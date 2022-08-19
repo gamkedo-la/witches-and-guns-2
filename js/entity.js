@@ -33,15 +33,34 @@ export class Entity {
 	this.imageSpec = imageSpec;
 	this.hp = 10;
 	this.blastQueue = [];
+	this.beingHurt = false;
   }
 
   update(accTime, player) {
 	if (this.hp <= 0) {
 	  this.die();
 	}
+	if (this.beingHurt && performance.now() - this.hurtTime >= 90) {
+	  this.beingHurt = false;
+	}
   }
+
   draw(ctx, assets, offset) {
-	ctx.drawImage(assets[this.imageSpec.id], this.imageSpec.sx, this.imageSpec.sy, this.imageSpec.sWidth, this.imageSpec.sHeight, Math.round(this.x - offset), Math.round(this.y), this.width, this.height);
+	if (!this.live) {
+	  return;
+	}
+	const canvas = document.createElement("canvas");
+	canvas.width = this.width;
+	canvas.height = this.height;
+	const newCtx = canvas.getContext("2d");
+	newCtx.drawImage(assets[this.imageSpec.id], this.imageSpec.sx, this.imageSpec.sy, this.imageSpec.sWidth, this.imageSpec.sHeight, 0, 0, this.width, this.height);
+	if (this.beingHurt) {
+	  newCtx.globalCompositeOperation = "source-atop";
+	  newCtx.fillStyle = "red";
+	  newCtx.globalAlpha = 0.6;
+	  newCtx.fillRect(0, 0, this.width, this.height);
+	}
+	ctx.drawImage(canvas, this.imageSpec.sx, this.imageSpec.sy, this.imageSpec.sWidth, this.imageSpec.sHeight, Math.round(this.x - offset), Math.round(this.y), this.width, this.height);
   }
 
   blast(ctx, assets) {
@@ -55,7 +74,11 @@ export class Entity {
   }
 
   hurt(damage) {
-	this.hp -= damage;
+	if (this.live && !this.beingHurt) {
+	  this.hp -= damage;
+	  this.beingHurt = true;
+	  this.hurtTime = performance.now();
+	}
   }
 
   die() {
