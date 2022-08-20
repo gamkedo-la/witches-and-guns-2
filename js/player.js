@@ -1,6 +1,7 @@
 import {Enemy} from "./enemy.js";
 import {Projectile} from "./projectile.js";
 import {constants} from "./constants.js";
+import {getSortedActiveEntities} from "./utils.js";
 
 export class Player {
   static avatarHeight = 32;
@@ -29,10 +30,11 @@ export class Player {
 
   // TODO: move to game code
   static onHitTarget = function(dt, shot) {
-	for (const enemy of Enemy.alive()) {
-	  const dist = Math.sqrt(Math.pow(enemy.x + enemy.width/2 - shot.target.x, 2) + Math.pow(enemy.y + enemy.height/2 - shot.target.y, 2));
+	for (const entity of getSortedActiveEntities().reverse()) {
+	  const dist = Math.sqrt(Math.pow(entity.x + entity.width/2 - shot.target.x, 2) + Math.pow(entity.y + entity.height/2 - shot.target.y, 2));
 		if (dist <= 16) {
-		  enemy.hurt(5);
+		  entity.hurt(5);
+		  break;
 		}
 	}
   }
@@ -121,6 +123,8 @@ export class Player {
 	ctx.arc(Math.round(this.reticlePos.x - offset), Math.round(this.reticlePos.y), Math.round(Player.avatarWidth/2), 0, 2*Math.PI);
 	ctx.stroke();
 	ctx.drawImage(assets.player, 50, 0, 20, 32, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), 20, 32);
+	ctx.strokeStyle = "green";
+	ctx.strokeRect(Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), Player.avatarWidth, Player.avatarHeight);
   }
 
   blast(ctx, assets) {

@@ -2,6 +2,7 @@ import {constants} from "./constants.js";
 import {Enemy} from "./enemy.js";
 import {Projectile} from "./projectile.js";
 import {Prop} from "./prop.js";
+import {getSortedActiveEntities} from "./utils.js";
 
 function lerp(from, to, amount) {
     return (1 - amount) * from + amount * to;
@@ -105,6 +106,9 @@ export class Level {
 	  }
 	  Level.#WAVE_TIMER = 0;
 	}
+	for (const prop of Prop.alive()) {
+	  prop.update(dt);
+	}
 	for (let i=0; i<=timeIndex; i++) {
 	  if (typeof this.enemies[i] === "undefined") {
 		continue;
@@ -118,7 +122,7 @@ export class Level {
 	for (const projectile of Projectile.alive()) {
 	  projectile.update(dt);
 	}
-	this.activeEntities = Array.from(Enemy.alive()).concat(Array.from(Prop.alive())).sort((e1, e2) => e1.y - e2.y).concat(Array.from(Projectile.alive()));
+	this.activeEntities = getSortedActiveEntities();
 	// reset when timer reaches max
 	if (timeIndex >= this.maxTimeIndex && Array.from(Enemy.alive()).length <= 0) {
 	  Level.#TIMER = 0;
