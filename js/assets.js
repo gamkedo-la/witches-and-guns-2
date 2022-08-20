@@ -7,7 +7,7 @@ const assetSpecs = {
 	{id: "levelBG3", path: "images/background3.gif"},
 	{id: "levelBG4", path: "images/background4.gif"},
 	{id: "transparentBG", path: "images/background-transparent.gif"},
-	{id: "graveyardBG", path: "images/WIP_Friday_13AUG_2022.png"},
+	{id: "graveyardBG", path: "images/mountaingraveyard23final.png"},
 	{id: "editorUI", path: "images/editorUI.png"},
 	{id: "donutSheet", path: "images/donut.png"},
     {id: "expressoGangsterSheet", path: "images/expressoGangster.png"},
