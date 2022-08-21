@@ -51,8 +51,8 @@ export class Level {
 	this.levelData = data;
 	this.offset = 0;
 	this.enemies = [];
-	for (const enemy of Enemy.alive()) {
-	  enemy.live = false;
+	for (const entity of getSortedActiveEntities()) {
+	  entity.live = false;
 	}
 	for (const prop of this.props) {
 	  prop.live = true;
@@ -105,6 +105,11 @@ export class Level {
 		}
 	  }
 	  Level.#WAVE_TIMER = 0;
+	  // reset when timer reaches max
+	  if (timeIndex >= this.maxTimeIndex && Array.from(Enemy.alive()).length <= 0) {
+		Level.#TIMER = 0;
+		this.enemies = [];
+	  }
 	}
 	for (const prop of Prop.alive()) {
 	  prop.update(dt);
@@ -123,12 +128,6 @@ export class Level {
 	  projectile.update(dt);
 	}
 	this.activeEntities = getSortedActiveEntities();
-	// reset when timer reaches max
-	if (timeIndex >= this.maxTimeIndex && Array.from(Enemy.alive()).length <= 0) {
-	  Level.#TIMER = 0;
-	  Level.#WAVE_TIMER = 0;
-	  this.enemies = [];
-	}
   }
 
   // render moon, stars, sky, trees, etc with parallax layers
