@@ -95,6 +95,7 @@ export class Level {
 			  enemySpec.width,
 			  enemySpec.height,
 			  enemySpec.imageSpec,
+			  enemySpec.bounty,
 			  endX,
 			  sfx,
 			  enemySpec.timeToAttack,

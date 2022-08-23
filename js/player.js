@@ -28,24 +28,30 @@ export class Player {
 	return {x: f*vel.x, y: f*vel.y};
   }
 
-  // TODO: move to game code
-  static onHitTarget = function(dt, shot) {
-	for (const entity of getSortedActiveEntities().reverse()) {
-	  const dist = Math.sqrt(Math.pow(entity.x + entity.width/2 - shot.target.x, 2) + Math.pow(entity.y + entity.height/2 - shot.target.y, 2));
+  getHitTargetHook() {
+	const player = this;
+	const hook = function(dt, shot) {
+	  for (const entity of getSortedActiveEntities().reverse()) {
+		const dist = Math.sqrt(Math.pow(entity.x + entity.width/2 - shot.target.x, 2) + Math.pow(entity.y + entity.height/2 - shot.target.y, 2));
 		if (dist <= 16) {
 		  entity.hurt(5);
+		  if (entity.hp <= 0) {
+			player.score += entity.bounty;
+		  }
 		  break;
 		}
-	}
+	  }
+	};
+	return hook;
   }
 
   constructor(startPos) {
 	this.lives = 4;
+	this.score = 0;
 	this.avatarPos = {x: 100, y: startPos.y};
 	this.reticlePos = {x: startPos.x + 4, y: startPos.y - 100};
 	this.shots = [];
 	this.shotDelay = 0;
-	this.hitTargetHooks = [Player.onHitTarget];
 	this.isShooting = false;
 	this.shootingSound = "playerShooting1";
 	this.blastQueue = [];
@@ -77,7 +83,7 @@ export class Player {
 		{x: this.reticlePos.x, y: this.reticlePos.y, width: 3, height: 3},	// target position
 		8,	// speed
 		10,	// damage
-		this.hitTargetHooks,
+		[this.getHitTargetHook()],
 	  ));
 	  this.blastQueue.push(this.shootingSound);
 	  this.shootingSound = this.shootingSound == "playerShooting1" ? "playerShooting2" : "playerShooting1";
@@ -125,6 +131,19 @@ export class Player {
 	ctx.drawImage(assets.player, 50, 0, 20, 32, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), 20, 32);
 	ctx.strokeStyle = "green";
 	ctx.strokeRect(Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), Player.avatarWidth, Player.avatarHeight);
+	this.drawScore(ctx, assets);
+  }
+
+  drawScore(ctx, assets) {
+	const oldAlign = ctx.textAlign;
+	const oldFont = ctx.oldFont;
+	ctx.fillStyle = "white";
+	ctx.font = "16px sans";
+	ctx.textAlign = "right";
+	const scoreStr = (this.score).toString().padStart(8, "0");
+	ctx.fillText(scoreStr, Math.round(ctx.canvas.width/4), 16);
+	ctx.textAlign = oldAlign;
+	ctx.font = oldFont;
   }
 
   blast(ctx, assets) {

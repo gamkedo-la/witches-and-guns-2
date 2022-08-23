@@ -24,7 +24,7 @@ export class Entity {
 	this.init(x, y, width, height, imageSpec, ...rest);
   }
 
-  init(x, y, width, height, imageSpec, ...rest) {
+  init(x, y, width, height, imageSpec, bounty, ...rest) {
 	this.live = true;
 	this.x = x;
 	this.y = y;
@@ -34,6 +34,7 @@ export class Entity {
 	this.hp = 10;
 	this.blastQueue = [];
 	this.beingHurt = false;
+	this.bounty = bounty || 10;
   }
 
   update(accTime, player) {
