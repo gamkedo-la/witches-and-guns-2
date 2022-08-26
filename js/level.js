@@ -2,6 +2,8 @@ import {constants} from "./constants.js";
 import {Enemy} from "./enemy.js";
 import {Projectile} from "./projectile.js";
 import {Prop} from "./prop.js";
+import {Item} from "./item.js";
+import {getSortedActiveEntities} from "./utils.js";
 
 function lerp(from, to, amount) {
     return (1 - amount) * from + amount * to;
@@ -50,8 +52,8 @@ export class Level {
 	this.levelData = data;
 	this.offset = 0;
 	this.enemies = [];
-	for (const enemy of Enemy.alive()) {
-	  enemy.live = false;
+	for (const entity of getSortedActiveEntities()) {
+	  entity.live = false;
 	}
 	for (const prop of this.props) {
 	  prop.live = true;
@@ -94,6 +96,7 @@ export class Level {
 			  enemySpec.width,
 			  enemySpec.height,
 			  enemySpec.imageSpec,
+			  enemySpec.bounty,
 			  endX,
 			  sfx,
 			  enemySpec.timeToAttack,
@@ -104,6 +107,17 @@ export class Level {
 		}
 	  }
 	  Level.#WAVE_TIMER = 0;
+	  // reset when timer reaches max
+	  if (timeIndex >= this.maxTimeIndex && Array.from(Enemy.alive()).length <= 0) {
+		Level.#TIMER = 0;
+		this.enemies = [];
+	  }
+	}
+	for (const prop of Prop.alive()) {
+	  prop.update(dt);
+	}
+	for (const item of Item.alive()) {
+	  item.update(dt);
 	}
 	for (let i=0; i<=timeIndex; i++) {
 	  if (typeof this.enemies[i] === "undefined") {
@@ -118,13 +132,7 @@ export class Level {
 	for (const projectile of Projectile.alive()) {
 	  projectile.update(dt);
 	}
-	this.activeEntities = Array.from(Enemy.alive()).concat(Array.from(Prop.alive())).sort((e1, e2) => e1.y - e2.y).concat(Array.from(Projectile.alive()));
-	// reset when timer reaches max
-	if (timeIndex >= this.maxTimeIndex && Array.from(Enemy.alive()).length <= 0) {
-	  Level.#TIMER = 0;
-	  Level.#WAVE_TIMER = 0;
-	  this.enemies = [];
-	}
+	this.activeEntities = getSortedActiveEntities();
   }
 
   // render moon, stars, sky, trees, etc with parallax layers

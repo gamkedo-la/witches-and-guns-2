@@ -420,6 +420,7 @@ export class Editor {
 			  spec.width,
 			  spec.height,
 			  spec.imageSpec,
+			  spec.bounty,
 			  spec.endX + spec.width*i,
 			);
 			enemy.attacked = true;

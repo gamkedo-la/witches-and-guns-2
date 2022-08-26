@@ -3,6 +3,7 @@ import {Entity} from "./entity.js";
 import {Player} from "./player.js";
 import {Projectile} from "./projectile.js";
 import {pointInRectangle} from "./utils.js";
+import {Item} from "./item.js";
 
 
 export class Enemy extends Entity {
@@ -10,28 +11,33 @@ export class Enemy extends Entity {
   static KINDS = {
 	RASPBERRY_DONUT: {
 	  imageSpec: {id: "donutSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32},
-	  sfx: {death: "donutDeath"}
+	  sfx: {death: "donutDeath"},
+	  bounty: 10,
 	},
 	CHOCO_DONUT: {
 	  imageSpec: {id: "donutSheet", sx: 0, sy: 32, sWidth: 32, sHeight: 32},
-	  sfx: {death: "donutDeath"}
+	  sfx: {death: "donutDeath"},
+	  bounty: 10,
 	},
 	FROSTED_DONUT: {
 	  imageSpec: {id: "donutSheet", sx: 0, sy: 64, sWidth: 32, sHeight: 32},
-	  sfx: {death: "donutDeath"}
+	  sfx: {death: "donutDeath"},
+	  bounty: 10,
 	},
 	ESPRESSO: {
 	  imageSpec: {id: "expressoGangsterSheet", sx: 0, sy: 0, sWidth: 45, sHeight: 32},
-	  sfx: {death: "espressoDeath"}
+	  sfx: {death: "espressoDeath"},
+	  bounty: 20,
 	},
 	EVIL_PRINTER: {
 	  imageSpec: {id: "printerSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32},
-	  sfx: {death: "printerDeath"}
+	  sfx: {death: "printerDeath"},
+	  bounty: 30,
 	}
   };
 
-  init(x, y, width, height, imageSpec, endX, sfx, timeToAttack, timeToReturn) {
-	super.init(x, y, width, height, imageSpec, timeToAttack, timeToReturn);
+  init(x, y, width, height, imageSpec, bounty, endX, sfx, timeToAttack, timeToReturn) {
+	super.init(x, y, width, height, imageSpec, bounty, timeToAttack, timeToReturn);
 	this.startX = x;
 	this.endX = endX || this.startX;
 	this.walkSpeed = 64;
@@ -101,5 +107,10 @@ export class Enemy extends Entity {
 	if (this.hp <= 0) {
 	  this.blastQueue.push(this.sfx.death);
 	}
+  }
+
+  die() {
+	Item.spawn(this.x, this.y, 15, 23, {id: "gems", sx: 0, sy: 0, sWidth: 15, sHeight: 23});
+	super.die();
   }
 }
