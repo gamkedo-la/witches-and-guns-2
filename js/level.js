@@ -2,6 +2,7 @@ import {constants} from "./constants.js";
 import {Enemy} from "./enemy.js";
 import {Projectile} from "./projectile.js";
 import {Prop} from "./prop.js";
+import {Item} from "./item.js";
 import {getSortedActiveEntities} from "./utils.js";
 
 function lerp(from, to, amount) {
@@ -114,6 +115,9 @@ export class Level {
 	}
 	for (const prop of Prop.alive()) {
 	  prop.update(dt);
+	}
+	for (const item of Item.alive()) {
+	  item.update(dt);
 	}
 	for (let i=0; i<=timeIndex; i++) {
 	  if (typeof this.enemies[i] === "undefined") {

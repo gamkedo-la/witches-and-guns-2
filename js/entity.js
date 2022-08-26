@@ -34,6 +34,7 @@ export class Entity {
 	this.hp = 10;
 	this.blastQueue = [];
 	this.beingHurt = false;
+	this.enableHurtFX = true;
 	this.bounty = bounty || 10;
   }
 
@@ -51,7 +52,7 @@ export class Entity {
 	  return;
 	}
 	ctx.drawImage(assets[this.imageSpec.id], this.imageSpec.sx, this.imageSpec.sy, this.imageSpec.sWidth, this.imageSpec.sHeight, Math.round(this.x - offset), Math.round(this.y), this.width, this.height);
-	if (this.beingHurt) {
+	if (this.beingHurt && this.enableHurtFX) {
 	  const oldCompOp = this.globalCompositeOperation;
 	  ctx.globalCompositeOperation = "source-over";
 	  ctx.fillStyle = "red";

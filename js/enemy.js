@@ -3,6 +3,7 @@ import {Entity} from "./entity.js";
 import {Player} from "./player.js";
 import {Projectile} from "./projectile.js";
 import {pointInRectangle} from "./utils.js";
+import {Item} from "./item.js";
 
 
 export class Enemy extends Entity {
@@ -106,5 +107,10 @@ export class Enemy extends Entity {
 	if (this.hp <= 0) {
 	  this.blastQueue.push(this.sfx.death);
 	}
+  }
+
+  die() {
+	Item.spawn(this.x, this.y, 15, 23, {id: "gems", sx: 0, sy: 0, sWidth: 15, sHeight: 23});
+	super.die();
   }
 }
