@@ -59,6 +59,7 @@ export class Enemy extends Entity {
 	this.timeToReturn = typeof(timeToReturn) === "undefined" ? 1 : (timeToReturn || 1);	// wait a second by default after attacking
 	this.attacked = false;
 	this.sfx = sfx;
+	this.itemDropChance = Math.random();
   }
 
   update(accTime, player) {
@@ -110,7 +111,9 @@ export class Enemy extends Entity {
   }
 
   die() {
-	Item.spawn(this.x, this.y, 15, 23, {id: "gems", sx: 0, sy: 0, sWidth: 15, sHeight: 23});
+	if (this.itemDropChance >= 0.5) {
+	  Item.spawn(this.x, this.y, 15, 23, {id: "gems", sx: 0, sy: 0, sWidth: 15, sHeight: 23});
+	}
 	super.die();
   }
 }
