@@ -18,7 +18,9 @@ export class Item extends Entity {
 	if (this.wasHit) {
 	  this.vel.y += Item.GRAVITY*dt;
 	  this.y += this.vel.y*dt;
-	  if (this.y > constants.VIEWABLE_HEIGHT - this.height - 2);
+	}
+	if (this.y > constants.VIEWABLE_HEIGHT - this.height - 2) {
+	  this.y = constants.VIEWABLE_HEIGHT - this.height - 2;
 	}
   }
   
