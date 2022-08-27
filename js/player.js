@@ -1,7 +1,8 @@
 import {Enemy} from "./enemy.js";
 import {Projectile} from "./projectile.js";
 import {constants} from "./constants.js";
-import {getSortedActiveEntities} from "./utils.js";
+import {getSortedActiveEntities, pointInRectangle} from "./utils.js";
+import {Item} from "./item.js";
 
 export class Player {
   static avatarHeight = 32;
@@ -120,6 +121,14 @@ export class Player {
 	}
 	if (this.reticlePos.y  > constants.VIEWABLE_HEIGHT - Player.avatarHeight) {
 	  this.reticlePos.y = constants.VIEWABLE_HEIGHT - Player.avatarHeight;
+	}
+	const avatarRect = Object.assign({width: Player.avatarWidth, height: Player.avatarHeight}, this.avatarPos);
+	for (const item of Item.alive()) {
+	  const itemMidPoint = {x: item.x + item.width/2, y: item.y + item.height/2};
+	  if (pointInRectangle(itemMidPoint, avatarRect)) {
+		// TODO: apply power-up here
+		item.die();
+	  }
 	}
   }
 
