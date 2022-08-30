@@ -98,7 +98,6 @@ export class Entity {
 	  this.hurtTime = performance.now();
 	  if (this.imageSpec.animations && this.imageSpec.animations.hurt) {
 		this.currentAnimation = new Animation(this.imageSpec.animations.hurt);
-		console.log("USING HURT ANIMATION", this.currentAnimation);
 	  }
 	}
   }
@@ -106,7 +105,6 @@ export class Entity {
   die() {
 	if (this.imageSpec.animations && this.imageSpec.animations.death) {
 	  this.currentAnimation = new Animation(this.imageSpec.animations.death);
-	  console.log("USING DEATH ANIMATION", this.currentAnimation);
 	}
 	this.live = false;
 	this.beingHurt = false;
