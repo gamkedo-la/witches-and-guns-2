@@ -33,6 +33,9 @@ export class Player {
 	const player = this;
 	const hook = function(dt, shot) {
 	  for (const entity of getSortedActiveEntities().reverse()) {
+		if (!entity.live) {
+		  continue;
+		}
 		const dist = Math.sqrt(Math.pow(entity.x + entity.width/2 - shot.target.x, 2) + Math.pow(entity.y + entity.height/2 - shot.target.y, 2));
 		if (dist <= 16) {
 		  entity.hurt(5);

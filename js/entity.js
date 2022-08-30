@@ -1,22 +1,24 @@
+import {Animation} from "./animation.js";
+
 export class Entity {
   // NOTE: INSTANCES static attribute must be provided by subclasses
   static alive = function* () {
 	for (const entity of this.INSTANCES) {
-	  if (entity.live) {
+	  if (entity.needsUpdate) {
 		yield entity;
 	  }
 	}
   }
 
   static spawn(...args) {
-	let entity = this.INSTANCES.filter(e => !e.live).pop();
+	let entity = this.INSTANCES.filter(e => !(e.live || e.needsUpdate)).pop();
 	if (typeof entity == "undefined") {
 	  entity = new this(...args);
 	  this.INSTANCES.push(entity);
 	  console.log("Created new entity", entity);
 	} else {
+	  console.log("Recycling entity", entity);
 	  entity.init(...args);
-	  console.log("Recycled entity", entity);
 	}
 	return entity;
   }
@@ -26,6 +28,7 @@ export class Entity {
 
   init(x, y, width, height, imageSpec, bounty, ...rest) {
 	this.live = true;
+	this.needsUpdate = true;
 	this.x = x;
 	this.y = y;
 	this.width = width;
@@ -36,18 +39,31 @@ export class Entity {
 	this.beingHurt = false;
 	this.enableHurtFX = true;
 	this.bounty = bounty || 10;
+	this.currentAnimation = null;
+	this.prevAccTime = 0;
+	this.hp = 10;
   }
 
   update(accTime, player) {
-	if (this.hp <= 0) {
+	const dt = accTime - this.prevAccTime;
+	this.prevAccTime = accTime;
+	if (this.live && this.hp <= 0) {
 	  this.die();
 	}
 	if (this.beingHurt && performance.now() - this.hurtTime >= 90) {
 	  this.beingHurt = false;
 	}
+	if (this.currentAnimation !== null) {
+	  this.currentAnimation.update(dt);
+	}
+	this.needsUpdate = this.live || (this.currentAnimation !== null && this.currentAnimation.playing);
   }
 
   draw(ctx, assets, offset) {
+	if (this.currentAnimation !== null && this.currentAnimation.playing) {
+	  this.currentAnimation.draw(ctx, assets, this.x - offset, this.y);
+	  return;
+	}
 	if (!this.live) {
 	  return;
 	}
@@ -80,10 +96,19 @@ export class Entity {
 	  this.hp -= damage;
 	  this.beingHurt = true;
 	  this.hurtTime = performance.now();
+	  if (this.imageSpec.animations && this.imageSpec.animations.hurt) {
+		this.currentAnimation = new Animation(this.imageSpec.animations.hurt);
+		console.log("USING HURT ANIMATION", this.currentAnimation);
+	  }
 	}
   }
 
   die() {
+	if (this.imageSpec.animations && this.imageSpec.animations.death) {
+	  this.currentAnimation = new Animation(this.imageSpec.animations.death);
+	  console.log("USING DEATH ANIMATION", this.currentAnimation);
+	}
 	this.live = false;
+	this.beingHurt = false;
   }
 }

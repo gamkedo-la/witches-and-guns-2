@@ -10,27 +10,72 @@ export class Enemy extends Entity {
   static INSTANCES = [];
   static KINDS = {
 	RASPBERRY_DONUT: {
-	  imageSpec: {id: "donutSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32},
+	  imageSpec: {
+		id: "donutSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32, animations: {
+		  death: [
+			{id: "donutSheet", sx: 32, sy: 0, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 64, sy: 0, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 96, sy: 0, sWidth: 32, sHeight: 32, time: 100},
+			{id: "donutSheet", sx: 128, sy: 0, sWidth: 32, sHeight: 32, time: 1000},
+		  ],
+		  hurt: [
+			{id: "donutSheet", sx: 160, sy: 0, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 192, sy: 0, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 224, sy: 0, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 256, sy: 0, sWidth: 32, sHeight: 32, time: 90},
+		  ],
+		},
+	  },
 	  sfx: {death: "donutDeath"},
 	  bounty: 10,
 	},
 	CHOCO_DONUT: {
-	  imageSpec: {id: "donutSheet", sx: 0, sy: 32, sWidth: 32, sHeight: 32},
+	  imageSpec: {
+		id: "donutSheet", sx: 0, sy: 32, sWidth: 32, sHeight: 32, animations: {
+		  death: [
+			{id: "donutSheet", sx: 32, sy: 32, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 64, sy: 32, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 96, sy: 32, sWidth: 32, sHeight: 32, time: 100},
+			{id: "donutSheet", sx: 128, sy: 32, sWidth: 32, sHeight: 32, time: 1000},
+		  ],
+		  hurt: [
+			{id: "donutSheet", sx: 160, sy: 32, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 192, sy: 32, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 224, sy: 32, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 256, sy: 32, sWidth: 32, sHeight: 32, time: 90},
+		  ],
+		},
+	  },
 	  sfx: {death: "donutDeath"},
 	  bounty: 10,
 	},
 	FROSTED_DONUT: {
-	  imageSpec: {id: "donutSheet", sx: 0, sy: 64, sWidth: 32, sHeight: 32},
+	  imageSpec: {
+		id: "donutSheet", sx: 0, sy: 64, sWidth: 32, sHeight: 32, animations: {
+		  death: [
+			{id: "donutSheet", sx: 32, sy: 64, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 64, sy: 64, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 96, sy: 64, sWidth: 32, sHeight: 32, time: 100},
+			{id: "donutSheet", sx: 128, sy: 64, sWidth: 32, sHeight: 32, time: 1000},
+		  ],
+		  hurt: [
+			{id: "donutSheet", sx: 160, sy: 64, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 192, sy: 64, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 224, sy: 64, sWidth: 32, sHeight: 32, time: 90},
+			{id: "donutSheet", sx: 256, sy: 64, sWidth: 32, sHeight: 32, time: 90},
+		  ],
+		},
+	  },
 	  sfx: {death: "donutDeath"},
 	  bounty: 10,
 	},
 	ESPRESSO: {
-	  imageSpec: {id: "expressoGangsterSheet", sx: 0, sy: 0, sWidth: 45, sHeight: 32},
+	  imageSpec: {id: "expressoGangsterSheet", sx: 0, sy: 0, sWidth: 45, sHeight: 32, animations: {}},
 	  sfx: {death: "espressoDeath"},
 	  bounty: 20,
 	},
 	EVIL_PRINTER: {
-	  imageSpec: {id: "printerSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32},
+	  imageSpec: {id: "printerSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32, animations: {}},
 	  sfx: {death: "printerDeath"},
 	  bounty: 30,
 	}
@@ -99,6 +144,7 @@ export class Enemy extends Entity {
 	  this.y = this.endY - this.velY*(accTime - this.endAttackTime - this.timeToReturn);
 	  if (this.x + this.width < 0 || this.x > constants.PLAYABLE_WIDTH || this.y > this.startY) {
 		this.live = false;
+		this.needsUpdate = false;
 	  }
 	}
   }

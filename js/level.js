@@ -85,7 +85,8 @@ export class Level {
 		this.enemies[timeIndex - 1] = [];
 	  }
 	  for (const walkway of Object.keys(this.levelData.walkways).sort()) {
-		for (const enemySpec of (this.levelData.walkways[walkway][timeIndex - 1] || [])) {
+		for (const enemyRef of (this.levelData.walkways[walkway][timeIndex - 1] || [])) {
+		  const enemySpec = Object.assign(enemyRef, Enemy.KINDS[enemyRef.name] || {});
 		  const count = enemySpec.count || 1;
 		  for (let i=0; i<count; i++) {
 			const endX = enemySpec.endX + i*enemySpec.width;
@@ -113,19 +114,20 @@ export class Level {
 		this.enemies = [];
 	  }
 	}
-	for (const prop of Prop.alive()) {
-	  prop.update(dt);
-	}
-	for (const item of Item.alive()) {
-	  item.update(dt);
-	}
 	for (let i=0; i<=timeIndex; i++) {
+	  const accTime = Level.#TIMER - i*constants.TIME_SLOT/1000;
+	  for (const prop of Prop.alive()) {
+		prop.update(accTime, this.player);
+	  }
+	  for (const item of Item.alive()) {
+		item.update(accTime, this.player);
+	  }
 	  if (typeof this.enemies[i] === "undefined") {
 		continue;
 	  }
 	  for (const enemy of this.enemies[i]) {
-		if (enemy.live) {
-		  enemy.update(Level.#TIMER - i*constants.TIME_SLOT/1000, this.player);
+		if (enemy.needsUpdate) {
+		  enemy.update(accTime, this.player);
 		}
 	  }
 	}
