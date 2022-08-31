@@ -144,6 +144,7 @@ export class Player {
 	ctx.strokeStyle = "green";
 	ctx.strokeRect(Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), Player.avatarWidth, Player.avatarHeight);
 	this.drawScore(ctx, assets);
+	this.drawLives(ctx, assets);
   }
 
   drawScore(ctx, assets) {
@@ -153,7 +154,21 @@ export class Player {
 	ctx.font = "16px sans";
 	ctx.textAlign = "right";
 	const scoreStr = (this.score).toString().padStart(8, "0");
-	ctx.fillText(scoreStr, Math.round(ctx.canvas.width/4), 16);
+	ctx.fillText(scoreStr, Math.round(ctx.canvas.width/3.5), 16);
+	ctx.textAlign = oldAlign;
+	ctx.font = oldFont;
+  }
+
+  drawLives(ctx, assets) {
+	const oldAlign = ctx.textAlign;
+	const oldFont = ctx.oldFont;
+	ctx.textAlign = "left";
+	ctx.font = "10px sans";
+	ctx.fillStyle = "pink";
+	ctx.fillText("1P:", 4, 16);
+	ctx.font = "bold 12px sans";
+	ctx.fillStyle = "white";
+	ctx.fillText(this.lives.toString(), 24, 16);
 	ctx.textAlign = oldAlign;
 	ctx.font = oldFont;
   }
