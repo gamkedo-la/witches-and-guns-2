@@ -1,6 +1,7 @@
 import {Input} from "./input.js";
 import {Player} from "./player.js";
 import {Level} from "./level.js";
+import {BossFight} from "./bossfight.js";
 import {Editor} from "./editor.js";
 import {loadAssets} from "./assets.js";
 import {constants} from "./constants.js";
@@ -137,14 +138,19 @@ class MenuScene {
 class LevelScene {
   constructor(player, levelData, parent) {
 	this.player = player;
-	this.level = new Level(levelData, constants.PLAYABLE_WIDTH, constants.VIEWABLE_HEIGHT, this.player);
-	this.level.reset(levelData);
 	this.parent = parent;
+	this.loadLevel(levelData);
   }
 
+  loadLevel(levelData) {
+	this.level = new Level(levelData, constants.PLAYABLE_WIDTH, constants.VIEWABLE_HEIGHT, this.player);
+	this.level.reset(levelData);
+  }
+  
   update(dt, input) {
 	this.level.update(dt, input);
 	if (this.level.finished) {
+	  console.log("LEVEL FINISHED", this.level);
 	  this.onFinishedLevel();
 	  return;
 	}
@@ -165,13 +171,26 @@ class LevelScene {
   }
 
   onFinishedLevel() {
-	this.parent.tallyUp();
+	this.parent.bossFight();
   }
 
   onPlayerLost() {
 	this.parent.gameOver();
   }
 }
+
+
+class BossFightScene extends LevelScene {
+  loadLevel(levelData) {
+	this.level = new BossFight(levelData, constants.PLAYABLE_WIDTH, constants.VIEWABLE_HEIGHT, this.player);
+	this.level.reset(levelData);
+  }
+
+  onFinishedLevel() {
+	this.parent.tallyUp();
+  }
+}
+
 
 class TallyUpScene {
   constructor(parent) {
@@ -215,6 +234,11 @@ class GamePlayScene {
 	this.loadNextLevel();
   }
 
+  bossFight() {
+	this.subscene = new BossFightScene(this.player, this.subscene.level.levelData, this);
+	console.log("BOSS FIGHT", this.subscene);
+  }
+  
   tallyUp() {
 	this.subscene = new TallyUpScene(this);
   }

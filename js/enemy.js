@@ -113,35 +113,13 @@ export class Enemy extends Entity {
 	  return;
 	}
 	if (accTime < this.endMoveTime) {
-	  this.x = this.startX + this.velX*accTime;
-	  this.y = this.startY + this.velY*accTime;
+	  this.move(accTime);
 	} else if (accTime < this.endAttackTime) {
-	  // wait to attack
-	  this.x = this.endX;
-	  this.y = this.endY;
+	  this.waitToAttack(accTime);
 	} else if (!this.attacked) {
-	  this.x = this.endX;
-	  this.y = this.endY;
-	  const projectile = Projectile.spawn(
-		this.x + this.width/2,	// starting x
-		this.y + this.height/2,	// starting y
-		1.5,	// width (radius)
-		1.5,	// height (not used)
-		{id: "bullets", sx: 12, sy: 2, sWidth: 6, sHeight: 6},	// image spec
-		{x: player.avatarPos.x + Player.avatarWidth/2, y: player.avatarPos.y + Player.avatarHeight/2, height: Player.avatarHeight/2},	// target position
-		1,	// speed
-		1,	// damage
-		[(dt, shot) => {
-		  if (pointInRectangle(shot, Object.assign({width: Player.avatarWidth, height: Player.avatarHeight}, player.avatarPos))) {
-			player.die(this, shot);
-		  }
-		}],
-	  );
-	  this.blastQueue.push("enemyShoot");
-	  this.attacked = true;
+	  this.attack(accTime, player);
 	} else if (accTime > this.endAttackTime + this.timeToReturn) {
-	  this.x = this.endX - this.velX*(accTime - this.endAttackTime - this.timeToReturn);
-	  this.y = this.endY - this.velY*(accTime - this.endAttackTime - this.timeToReturn);
+	  this.moveBack(accTime);
 	  if (this.x + this.width < 0 || this.x > constants.PLAYABLE_WIDTH || this.y > this.startY) {
 		this.live = false;
 		this.needsUpdate = false;
@@ -149,6 +127,43 @@ export class Enemy extends Entity {
 	}
   }
 
+  attack(accTime, player) {
+	this.x = this.endX;
+	this.y = this.endY;
+	Projectile.spawn(
+	  this.x + this.width/2,	// starting x
+	  this.y + this.height/2,	// starting y
+	  1.5,	// width (radius)
+	  1.5,	// height (not used)
+	  {id: "bullets", sx: 12, sy: 2, sWidth: 6, sHeight: 6},	// image spec
+	  {x: player.avatarPos.x + Player.avatarWidth/2, y: player.avatarPos.y + Player.avatarHeight/2, height: Player.avatarHeight/2},	// target position
+	  1,	// speed
+	  1,	// damage
+	  [(dt, shot) => {
+		if (pointInRectangle(shot, Object.assign({width: Player.avatarWidth, height: Player.avatarHeight}, player.avatarPos))) {
+		  player.die(this, shot);
+		}
+	  }],
+	);
+	this.blastQueue.push("enemyShoot");
+	this.attacked = true;
+  }
+
+  move(accTime) {
+	this.x = this.startX + this.velX*accTime;
+	this.y = this.startY + this.velY*accTime;
+  }
+
+  moveBack(accTime) {
+	this.x = this.endX - this.velX*(accTime - this.endAttackTime - this.timeToReturn);
+	this.y = this.endY - this.velY*(accTime - this.endAttackTime - this.timeToReturn);
+  }
+
+  waitToAttack(accTime) {
+	this.x = this.endX;
+	this.y = this.endY;
+  }
+  
   hurt(damage) {
 	super.hurt(damage);
 	if (this.hp <= 0) {
@@ -161,5 +176,16 @@ export class Enemy extends Entity {
 	  Item.spawn(this.x, this.y, 15, 23, {id: "gems", sx: 0, sy: 0, sWidth: 15, sHeight: 23});
 	}
 	super.die();
+  }
+}
+
+
+export class Boss extends Enemy {
+  static INSTANCES = [];
+
+  move() {
+  }
+
+  moveBack() {
   }
 }
