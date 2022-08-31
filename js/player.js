@@ -10,6 +10,8 @@ export class Player {
   static reticleSpeed = 270;
   static avatarSpeed = 120;
   static timeBetweenShots = 1/9;
+  static timeToRespawn = 3;
+  static respawnInvincibilityTime = 2;
 
   static getAxis = function(up, down, left, right) {
 	let axis = { x: 0, y: 0 };
@@ -59,11 +61,27 @@ export class Player {
 	this.isShooting = false;
 	this.shootingSound = "playerShooting1";
 	this.blastQueue = [];
+	this.wasKilled = false;
+	this.respawnTimer = 0;
+	this.respawning = true;
+	this.invincibleTimer = 0;
   }
 
   update(dt, input, level) {
 	if (this.lives <= 0) {
 	  return;
+	}
+	if (this.wasKilled) {
+	  if (this.respawnTimer < Player.timeToRespawn) {
+		this.respawnTimer += dt;
+	  } else {
+		this.respawnTimer = 0;
+		this.wasKilled = false;
+		this.invincibleTimer = Player.respawnInvincibilityTime;
+	  }
+	}
+	if (this.invincibleTimer > 0) {
+	  this.invincibleTimer -= dt;
 	}
 	this.shots = this.shots.filter(shot => shot.live);
 	if (!input.shoot) {
@@ -136,15 +154,22 @@ export class Player {
   }
 
   draw(ctx, assets, offset) {
+	this.drawScore(ctx, assets);
+	this.drawLives(ctx, assets);
+	if (this.wasKilled) {
+	  ctx.drawImage(assets.player, 100, 6, 19, 25, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y + 5), 19, 25);
+	  return;
+	}
 	ctx.strokeStyle = this.isShooting ? "lime" : "red";
 	ctx.beginPath();
 	ctx.arc(Math.round(this.reticlePos.x - offset), Math.round(this.reticlePos.y), Math.round(Player.avatarWidth/2), 0, 2*Math.PI);
 	ctx.stroke();
+	const oldAlpha = ctx.globalAlpha;
+	if (this.invincibleTimer > 0 && this.invincibleTimer % 0.5 > 0.2) {
+	  ctx.globalAlpha = 0.01;
+	}
 	ctx.drawImage(assets.player, 50, 0, 20, 32, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), 20, 32);
-	ctx.strokeStyle = "green";
-	ctx.strokeRect(Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), Player.avatarWidth, Player.avatarHeight);
-	this.drawScore(ctx, assets);
-	this.drawLives(ctx, assets);
+	ctx.globalAlpha = oldAlpha;
   }
 
   drawScore(ctx, assets) {
@@ -183,11 +208,16 @@ export class Player {
 	}
   }
 
-  die(enemy, shot) {
-	if (this.lives <= 0) {
+  takeShot(enemy, shot) {
+	if (this.lives <= 0 || this.wasKilled || this.invincibleTimer > 0) {
 	  return;
 	}
+	console.log("HIT BY", enemy, "WITH", shot, "LIVES REMAINING", this.lives);
+	this.die();
+  }
+
+  die() {
 	this.lives--;
-	console.log("KILLED BY", enemy, "WITH", shot, "LIVES REMAINING", this.lives);
+	this.wasKilled = true;
   }
 }

@@ -130,6 +130,10 @@ export class Enemy extends Entity {
   attack(accTime, player) {
 	this.x = this.endX;
 	this.y = this.endY;
+	this.attacked = true;
+	if (player.wasKilled) {
+	  return;
+	}
 	Projectile.spawn(
 	  this.x + this.width/2,	// starting x
 	  this.y + this.height/2,	// starting y
@@ -141,12 +145,11 @@ export class Enemy extends Entity {
 	  1,	// damage
 	  [(dt, shot) => {
 		if (pointInRectangle(shot, Object.assign({width: Player.avatarWidth, height: Player.avatarHeight}, player.avatarPos))) {
-		  player.die(this, shot);
+		  player.takeShot(this, shot);
 		}
 	  }],
 	);
 	this.blastQueue.push("enemyShoot");
-	this.attacked = true;
   }
 
   move(accTime) {
