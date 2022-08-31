@@ -54,9 +54,11 @@ export class Level {
 	this.enemies = [];
 	for (const entity of getSortedActiveEntities()) {
 	  entity.live = false;
+	  entity.needsUpdate = false;
 	}
 	for (const prop of this.props) {
 	  prop.live = true;
+	  prop.needsUpdate = true;
 	}
 	this.levelTimerDisabled = false;
 	this.finished = false;
