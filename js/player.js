@@ -73,6 +73,7 @@ export class Player {
 	if (this.wasKilled) {
 	  if (this.respawnTimer < Player.timeToRespawn) {
 		this.respawnTimer += dt;
+		return;
 	  } else {
 		this.respawnTimer = 0;
 		this.wasKilled = false;
