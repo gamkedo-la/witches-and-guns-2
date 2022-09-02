@@ -9,7 +9,6 @@ export class Player {
   static avatarWidth = 20;
   static reticleSpeed = 270;
   static avatarSpeed = 120;
-  static timeBetweenShots = 1/9;
   static timeToRespawn = 3;
   static respawnInvincibilityTime = 2;
 
@@ -59,12 +58,12 @@ export class Player {
 	this.shots = [];
 	this.shotDelay = 0;
 	this.isShooting = false;
-	this.shootingSound = "playerShooting1";
 	this.blastQueue = [];
 	this.wasKilled = false;
 	this.respawnTimer = 0;
 	this.respawning = true;
 	this.invincibleTimer = 0;
+	this.gun = new Gun();
   }
 
   update(dt, input, level) {
@@ -96,20 +95,15 @@ export class Player {
 	  this.isShooting = false;
 	} else if (this.shotDelay <= 0) {
 	  this.isShooting = true;
-	  this.shots.push(Projectile.spawn(
+	  const shots = this.gun.fire(
 		this.avatarPos.x + Player.avatarWidth/2,	// starting x
 		this.avatarPos.y,	// starting y
-		Player.avatarWidth/4,	// width (radius)
-		Player.avatarWidth/4,	// height (not used)
-		{id: "bullets", sx: 1, sy: 1, sWidth: 8, sHeight: 8},	// image spec
-		{x: this.reticlePos.x, y: this.reticlePos.y, width: 3, height: 3},	// target position
-		8,	// speed
-		10,	// damage
+		{x: this.reticlePos.x, y: this.reticlePos.y, width: 3, height: 3},	// target rectangle
 		[this.getHitTargetHook()],
-	  ));
-	  this.blastQueue.push(this.shootingSound);
-	  this.shootingSound = this.shootingSound == "playerShooting1" ? "playerShooting2" : "playerShooting1";
-	  this.shotDelay = Player.timeBetweenShots;
+	  );
+	  this.shots.push(...shots);
+	  this.blastQueue.push(this.gun.shootingSound);
+	  this.shotDelay = this.gun.timeBetweenShots;
 	}
 	this.shotDelay -= dt;
 	const cv = Player.getAxis(input.up, input.down, input.left, input.right);
@@ -162,7 +156,7 @@ export class Player {
 	}
 	ctx.strokeStyle = this.isShooting ? "lime" : "red";
 	ctx.beginPath();
-	ctx.arc(Math.round(this.reticlePos.x - offset), Math.round(this.reticlePos.y), Math.round(Player.avatarWidth/2), 0, 2*Math.PI);
+	this.gun.drawReticle(ctx, assets, this.reticlePos.x - offset, this.reticlePos.y);
 	ctx.stroke();
 	const oldAlpha = ctx.globalAlpha;
 	if (this.invincibleTimer > 0 && this.invincibleTimer % 0.5 > 0.2) {
@@ -219,5 +213,26 @@ export class Player {
   die() {
 	this.lives--;
 	this.wasKilled = true;
+  }
+}
+
+
+class Gun {
+  constructor() {
+	this.timeBetweenShots = 1/9;
+	this.speed = 8;
+	this.damage = 10;
+	this.imageSpec = {id: "bullets", sx: 1, sy: 1, sWidth: 8, sHeight: 8};
+	this.bulletWidth = Player.avatarWidth/4;
+	this.bulletHeight = Player.avatarWidth/4;
+	this.shootingSound = "playerShooting1";
+  }
+
+  fire(x, y, target, hitTargetHooks) {
+	return [Projectile.spawn(x, y, this.bulletWidth, this.bulletHeight, this.imageSpec, target, this.speed, this.damage, hitTargetHooks)];
+  }
+
+  drawReticle(ctx, assets, x, y) {
+	ctx.arc(Math.round(x), Math.round(y), Math.round(Player.avatarWidth/2), 0, 2*Math.PI);
   }
 }
