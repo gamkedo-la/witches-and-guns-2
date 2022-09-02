@@ -236,3 +236,54 @@ class Gun {
 	ctx.arc(Math.round(x), Math.round(y), Math.round(Player.avatarWidth/2), 0, 2*Math.PI);
   }
 }
+
+
+class ShotGun extends Gun {
+  constructor() {
+	super();
+	this.timeBetweenShots = 1/5;
+	this.speed = 10;
+	this.damage = 6;
+	this.imageSpec = {id: "bullets", sx: 1, sy: 1, sWidth: 8, sHeight: 8};
+	this.bulletWidth = Player.avatarWidth/5;
+	this.bulletHeight = Player.avatarWidth/5;
+	this.shootingSound = "playerShooting1";
+  }
+
+  fire(x, y, target, hitTargetHooks) {
+	return [
+	  Projectile.spawn(
+		x, y, this.bulletWidth, this.bulletHeight,
+		this.imageSpec,
+		{x: target.x - 4, y: target.y - 2, width: target.width, height: target.height},
+		this.speed, this.damage,
+		hitTargetHooks,
+	  ),
+	  Projectile.spawn(
+		x, y, this.bulletWidth, this.bulletHeight,
+		this.imageSpec,
+		{x: target.x + 4, y: target.y - 2, width: target.width, height: target.height},
+		this.speed, this.damage,
+		hitTargetHooks,
+	  ),
+	  Projectile.spawn(
+		x, y, this.bulletWidth, this.bulletHeight,
+		this.imageSpec,
+		{x: target.x - 4, y: target.y + 2, width: target.width, height: target.height},
+		this.speed, this.damage,
+		hitTargetHooks,
+	  ),
+	  Projectile.spawn(
+		x, y, this.bulletWidth, this.bulletHeight,
+		this.imageSpec,
+		{x: target.x + 4, y: target.y + 2, width: target.width, height: target.height},
+		this.speed, this.damage,
+		hitTargetHooks,
+	  ),
+	];
+  }
+
+  drawReticle(ctx, assets, x, y) {
+	ctx.strokeRect(Math.round(x), Math.round(y), Math.round(Player.avatarWidth), Math.round(Player.avatarWidth/1.5));
+  }
+}
