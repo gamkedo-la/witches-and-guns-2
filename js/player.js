@@ -154,11 +154,11 @@ export class Player {
 	if (this.wasKilled) {
 	  ctx.drawImage(assets.player, 100, 6, 19, 25, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y + 5), 19, 25);
 	  return;
+	} else {
+	  ctx.strokeStyle = this.isShooting ? "lime" : "red";
+	  ctx.beginPath();
+	  this.gun.drawReticle(ctx, assets, this.reticlePos.x - offset, this.reticlePos.y);
 	}
-	ctx.strokeStyle = this.isShooting ? "lime" : "red";
-	ctx.beginPath();
-	this.gun.drawReticle(ctx, assets, this.reticlePos.x - offset, this.reticlePos.y);
-	ctx.stroke();
 	const oldAlpha = ctx.globalAlpha;
 	if (this.invincibleTimer > 0 && this.invincibleTimer % 0.5 > 0.2) {
 	  ctx.globalAlpha = 0.01;
@@ -235,6 +235,7 @@ class Gun {
 
   drawReticle(ctx, assets, x, y) {
 	ctx.arc(Math.round(x), Math.round(y), Math.round(Player.avatarWidth/2), 0, 2*Math.PI);
+	ctx.stroke();
   }
 }
 
