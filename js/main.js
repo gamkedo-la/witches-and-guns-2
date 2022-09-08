@@ -193,9 +193,10 @@ class BossFightScene extends LevelScene {
 
 
 class TallyUpScene {
-  constructor(parent) {
+  constructor(parent, stats) {
 	this.parent = parent;
 	this.timer = 0;
+	this.stats = Object.assign({}, stats);
   }
 
   update(dt, input) {
@@ -215,8 +216,18 @@ class TallyUpScene {
 	ctx.textAlign = "center";
 	ctx.font = "bold 24px serif";
 	const midX = Math.round(ctx.canvas.width/2);
-	ctx.fillText("TALLY UP", midX, Math.round(ctx.canvas.height*0.4));
-	ctx.fillText("HERE", midX, Math.round(ctx.canvas.height*0.6));
+	ctx.fillText("LEVEL FINISHED", midX, 24);
+	ctx.textAlign = "left";
+	ctx.font = "20px serif";
+	ctx.fillText("KILLS", 12, 48);
+	ctx.fillText("VANDALISM", 12, 64);
+	ctx.fillText("ITEMS", 12, 80);
+
+	ctx.textAlign = "right";
+	const countersX = ctx.canvas.width - 16;
+	ctx.fillText(this.stats.kills.toString(), countersX , 48);
+	ctx.fillText(this.stats.vandalism.toString(), countersX, 64);
+	ctx.fillText(this.stats.items.toString(), countersX, 80);
 	ctx.textAlign = oldAlign;
 	ctx.oldFont = oldFont;
   }
@@ -240,7 +251,7 @@ class GamePlayScene {
   }
   
   tallyUp() {
-	this.subscene = new TallyUpScene(this);
+	this.subscene = new TallyUpScene(this, this.player.levelStats);
   }
 
   gameOver() {
@@ -249,6 +260,7 @@ class GamePlayScene {
 
   loadNextLevel() {
 	const levelId = Object.keys(this.levels)[this.nextLevelIdx];
+	this.player.resetLevelStats();
 	this.subscene = new LevelScene(this.player, this.levels[levelId], this);
 	console.log("LOADED LEVEL", levelId);
 	this.nextLevelIdx = (this.nextLevelIdx + 1) % Object.keys(this.levels).length;

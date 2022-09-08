@@ -3,6 +3,7 @@ import {Projectile} from "./projectile.js";
 import {constants} from "./constants.js";
 import {getSortedActiveEntities, pointInRectangle} from "./utils.js";
 import {Item} from "./item.js";
+import {Prop} from "./prop.js";
 
 export class Player {
   static avatarHeight = 32;
@@ -42,6 +43,11 @@ export class Player {
 		  entity.hurt(5);
 		  if (entity.hp <= 0) {
 			player.score += entity.bounty;
+			if (entity instanceof Enemy) {
+			  player.levelStats.kills++;
+			} else if (entity instanceof Prop) {
+			  player.levelStats.vandalism++;
+			}
 		  }
 		  break;
 		}
@@ -64,6 +70,17 @@ export class Player {
 	this.respawning = true;
 	this.invincibleTimer = 0;
 	this.gun = new Gun();
+	this.levelStats = {
+	  kills: 0,
+	  items: 0,
+	  vandalism: 0,
+	};
+  }
+
+  resetLevelStats() {
+	this.levelStats.kills = 0;
+	this.levelStats.items = 0;
+	this.levelStats.vandalism = 0;
   }
 
   update(dt, input, level) {
@@ -144,6 +161,7 @@ export class Player {
 	  if (pointInRectangle(itemMidPoint, avatarRect)) {
 		// TODO: apply power-up here
 		item.die();
+		this.levelStats.items++;
 	  }
 	}
   }
