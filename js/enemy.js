@@ -75,7 +75,21 @@ export class Enemy extends Entity {
 	  bounty: 20,
 	},
 	EVIL_PRINTER: {
-	  imageSpec: {id: "printerSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32, animations: {}},
+	  imageSpec: {id: "printerSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32, animations: {
+		death: [
+		  {id: "printerSheet", sx: 32, sy: 0, sWidth: 32, sHeight: 32, time: 90},
+		  {id: "printerSheet", sx: 64, sy: 0, sWidth: 32, sHeight: 32, time: 90},
+		  {id: "printerSheet", sx: 96, sy: 0, sWidth: 32, sHeight: 32, time: 100},
+		  {id: "printerSheet", sx: 128, sy: 0, sWidth: 32, sHeight: 32, time: 1000},
+		],
+		hurt: [
+		  {id: "printerSheet", sx: 160, sy: 0, sWidth: 32, sHeight: 32, time: 90},
+		  {id: "printerSheet", sx: 192, sy: 0, sWidth: 32, sHeight: 32, time: 90},
+		  {id: "printerSheet", sx: 224, sy: 0, sWidth: 32, sHeight: 32, time: 90},
+		  {id: "printerSheet", sx: 256, sy: 0, sWidth: 32, sHeight: 32, time: 90},
+		  {id: "printerSheet", sx: 288, sy: 0, sWidth: 32, sHeight: 32, time: 90},
+		],
+	  }},
 	  sfx: {death: "printerDeath", shoot: "printerShoot"},
 	  bounty: 30,
 	}
