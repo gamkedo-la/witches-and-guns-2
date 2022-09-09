@@ -76,7 +76,7 @@ export class Enemy extends Entity {
 	},
 	EVIL_PRINTER: {
 	  imageSpec: {id: "printerSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32, animations: {}},
-	  sfx: {death: "printerDeath"},
+	  sfx: {death: "printerDeath", shoot: "printerShoot"},
 	  bounty: 30,
 	}
   };
@@ -149,7 +149,7 @@ export class Enemy extends Entity {
 		}
 	  }],
 	);
-	this.blastQueue.push("enemyShoot");
+	this.blastQueue.push(this.sfx.shoot || "enemyShoot");
   }
 
   move(accTime) {
