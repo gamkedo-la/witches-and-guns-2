@@ -267,7 +267,7 @@ class ShotGun extends Gun {
 	this.imageSpec = {id: "bullets", sx: 1, sy: 1, sWidth: 8, sHeight: 8};
 	this.bulletWidth = Player.avatarWidth/5;
 	this.bulletHeight = Player.avatarWidth/5;
-	this.shootingSound = "playerShooting1";
+	this.shootingSound = "explosion2";
   }
 
   fire(x, y, target, hitTargetHooks) {
