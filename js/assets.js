@@ -15,6 +15,7 @@ const assetSpecs = {
 	{id: "graveyardProps", path: "images/graveyardObjects.png"},
 	{id: "bullets", path: "images/playerBullet-10x10.png"},
 	{id: "gems", path: "images/gems.png"},
+	{id: "toaster", path: "images/toasterBat.png"},
   ],
   sounds: [
 	{id: "playerShooting1", path: "sounds/player-shoot-1-WG.mp3"},

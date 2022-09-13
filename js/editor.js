@@ -897,6 +897,9 @@ class EnemyPalette {
 	  {type: "enemy", name: "EVIL_PRINTER", width: 32, height: 32, imageSpec: {
 		id: "printerSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32
 	  }},
+	  {type: "enemy", name: "TOASTER_BAT", width: 32, height: 32, imageSpec: {
+		id: "toaster", sx: 0, sy: 0, sWidth: 32, sHeight: 32
+	  }},
 	];
 	const enemyBoxX = this.containerX + EnemyPalette.margin;
 	this.boxes = [];
