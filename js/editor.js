@@ -1,5 +1,6 @@
 import {constants} from "./constants.js";
 import {Enemy} from "./enemy.js";
+import {Prop} from "./prop.js";
 import {Input} from "./input.js";
 import {pointInRectangle} from "./utils.js";
 
@@ -131,6 +132,24 @@ class SaveButton extends ToolButton {
   }
 }
 
+const EDITABLE_ENEMIES = Object.entries(Enemy.KINDS).map(([name, data]) => {
+  return {
+	type: "enemy",
+	name: name,
+	width: data.imageSpec.sWidth,
+	height: data.imageSpec.sHeight,
+	imageSpec: data.imageSpec,
+  };
+});
+const EDITABLE_PROPS = Object.entries(Prop.KINDS).map(([name, data]) => {
+  return {
+	type: "prop",
+	name: name,
+	width: data.imageSpec.sWidth,
+	height: data.imageSpec.sHeight,
+	imageSpec: data.imageSpec,
+  };
+});
 export class Editor {
   static buttonSpecs = [
 	PlayButton,
@@ -150,8 +169,8 @@ export class Editor {
 	this.hooks = hooks;
 	this.components = {
 	  timeSlider: new TimeSlider(this),
-	  enemyPalette: new EnemyPalette(this, ToolButton.WIDTH*Editor.buttonSpecs.length/2, 184 + TimeSlider.HEIGHT),
-	  propPalette: new PropPalette(this, (EnemyPalette.boxSize + EnemyPalette.margin)*4 + ToolButton.WIDTH*Editor.buttonSpecs.length/2, 184 + TimeSlider.HEIGHT),
+	  enemyPalette: new Palette(this, ToolButton.WIDTH*Editor.buttonSpecs.length/2, 184 + TimeSlider.HEIGHT, 144, 240 - 4, EDITABLE_ENEMIES),
+	  propPalette: new Palette(this, ToolButton.WIDTH*Editor.buttonSpecs.length/2 + 144, 184 + TimeSlider.HEIGHT, constants.VIEWABLE_WIDTH - (ToolButton.WIDTH*Editor.buttonSpecs.length/2 + 144), 240 - 4, EDITABLE_PROPS),
 	  stageSlider: new StageSlider(this),
 	};
 	const buttonsY = this.components.timeSlider.y + TimeSlider.HEIGHT;
@@ -863,172 +882,83 @@ class TimeSlider {
   }
 }
 
-class EnemyPalette {
-  static margin = 4;
+class Palette {
   static boxSize = 32;
   static scrollBtnWidth = 6;
-  
-  constructor(editor, x, y) {
+  static margin = 4;
+
+  constructor(editor, x, y, width, height, entitySpecs) {
 	this.editor = editor;
 	this.x = x;
 	this.y = y;
-	this.containerX = 426 - 32;
-	this.width = 144;
-	this.height = 240 - 24;
+	this.width = width;
+	this.height = height;
+	this.entitySpecs = entitySpecs;
 	this.innerRect = {
-	  x: this.x + EnemyPalette.scrollBtnWidth,
+	  x: this.x + Palette.scrollBtnWidth,
 	  y: this.y,
-	  width: this.width - EnemyPalette.scrollBtnWidth*2,
+	  width: this.width - Palette.scrollBtnWidth*2,
 	  height: this.height,
 	};
-	this.enemies = [
-	  {type: "enemy", name: "RASPBERRY_DONUT", width: 32, height: 32, imageSpec: {
-		id: "donutSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32}
-	  },
-	  {type: "enemy", name: "CHOCO_DONUT", width: 32, height: 32, imageSpec: {
-		id: "donutSheet", sx: 0, sy: 32, sWidth: 32, sHeight: 32}
-	  },
-	  {type: "enemy", name: "FROSTED_DONUT", width: 32, height: 32, imageSpec: {
-		id: "donutSheet", sx: 0, sy: 64, sWidth: 32, sHeight: 32
-	  }},
-	  {type: "enemy", name: "ESPRESSO", width: 45, height: 32, imageSpec: {
-		id: "expressoGangsterSheet", sx: 0, sy: 0, sWidth: 45, sHeight: 32}
-	  },
-	  {type: "enemy", name: "EVIL_PRINTER", width: 32, height: 32, imageSpec: {
-		id: "printerSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32
-	  }},
-	  {type: "enemy", name: "TOASTER_BAT", width: 32, height: 32, imageSpec: {
-		id: "toaster", sx: 0, sy: 0, sWidth: 32, sHeight: 32
-	  }},
-	];
-	const enemyBoxX = this.containerX + EnemyPalette.margin;
 	this.boxes = [];
 	this.isDragging = false;
 	this.dragObj = {};
 	this.offset = 0;
-	const scrollStep = Math.round(EnemyPalette.boxSize*0.6);
-	this.leftScrollBtn = new Button(this.x, this.y, EnemyPalette.scrollBtnWidth, 32, 85, 0, false);
+	const scrollStep = Math.round(Palette.boxSize*0.6);
+	this.leftScrollBtn = new Button(this.x, this.y, Palette.scrollBtnWidth, 32, 85, 0, false);
 	this.leftScrollBtn.onClick(() => {
 	  this.offset -= scrollStep;
 	  this.offset = Math.max(this.offset, 0);
 	  this.updateBoxes();
 	});
-	this.rightScrollBtn = new Button(this.x + this.width - EnemyPalette.scrollBtnWidth, this.y, EnemyPalette.scrollBtnWidth, 32, 85, 0, true);
+	this.rightScrollBtn = new Button(this.x + this.width - Palette.scrollBtnWidth, this.y, Palette.scrollBtnWidth, 32, 85, 0, true);
 	this.rightScrollBtn.onClick(() => {
 	  this.offset += scrollStep;
-	  this.offset = Math.min(this.offset, EnemyPalette.boxSize*this.boxes.length - this.innerRect.width);
+	  this.offset = Math.min(this.offset, Palette.boxSize*this.boxes.length - this.innerRect.width);
 	  this.updateBoxes();
 	});
 	this.updateBoxes();
   }
 
   updateBoxes() {
-	this.boxes = this.enemies.map((enemy, i) => ({
-	  x: this.x + 10 + i*EnemyPalette.boxSize - this.offset,
-	  y: this.y + EnemyPalette.margin,
-	  width: EnemyPalette.boxSize - EnemyPalette.margin*2,
-	  height: EnemyPalette.boxSize - EnemyPalette.margin*2,
-	  entity: enemy,
+	this.boxes = this.entitySpecs.map((entity, i) => ({
+	  x: this.x + 10 + i*Palette.boxSize - this.offset,
+	  y: this.y + Palette.margin,
+	  width: Palette.boxSize - Palette.margin*2,
+	  height: Palette.boxSize - Palette.margin*2,
+	  entity: entity,
 	}));
   }
+
   update(dt, input) {
 	this.leftScrollBtn.update(dt, input);
 	this.rightScrollBtn.update(dt, input);
   }
 
   draw(ctx, assets) {
-	// draw enemy palette
+	// draw palette
 	ctx.fillStyle = "black";
-	ctx.fillRect(this.x + EnemyPalette.scrollBtnWidth, this.y, EnemyPalette.boxSize*this.boxes.length, EnemyPalette.boxSize);
+	ctx.fillRect(this.x + Palette.scrollBtnWidth, this.y, Palette.boxSize*this.boxes.length, Palette.boxSize);
 	for (const [i, box] of this.boxes.entries()) {
-	  const offset = i*EnemyPalette.boxSize - this.offset;
-	  ctx.drawImage(assets.editorUI, 71, 0, 3, EnemyPalette.boxSize, Math.round(this.x + EnemyPalette.scrollBtnWidth + offset), this.y, 3, EnemyPalette.boxSize);
+	  if (box.x + box.width < this.x + Palette.scrollBtnWidth || box.x > this.x + this.width) {
+		continue;
+	  }
+	  const offset = i*Palette.boxSize - this.offset;
 	  const spec = box.entity.imageSpec;
-	  ctx.drawImage(assets[spec.id], spec.sx, spec.sy, spec.sWidth, spec.sHeight, Math.round(box.x), Math.round(box.y), box.width, box.height);
-	  ctx.drawImage(assets.editorUI, 68, 0, 3, EnemyPalette.boxSize, Math.round(this.x + EnemyPalette.scrollBtnWidth + (i+1)*EnemyPalette.boxSize - 3 - this.offset), this.y, 3, EnemyPalette.boxSize);
+	  let d = 0;
+	  if (box.x < this.x + Palette.scrollBtnWidth) {
+		d = this.x + Palette.scrollBtnWidth - box.x - Palette.margin;
+	  } else if (box.x + box.width > this.x + this.width) {
+		d = this.x + this.width - box.width - box.x + Palette.margin;
+	  } else {
+		ctx.drawImage(assets.editorUI, 71, 0, 3, Palette.boxSize, Math.round(this.x + Palette.scrollBtnWidth + offset), this.y, 3, Palette.boxSize);
+		ctx.drawImage(assets.editorUI, 68, 0, 3, Palette.boxSize, Math.round(this.x + Palette.scrollBtnWidth + (i+1)*Palette.boxSize - 3 - this.offset), this.y, 3, Palette.boxSize);
+	  }
+	  ctx.drawImage(assets[spec.id], spec.sx + d, spec.sy, spec.sWidth - d, spec.sHeight, Math.round(box.x + d), Math.round(box.y), box.width - d, box.height);
 	}
 	// draw left scroll button
 	this.leftScrollBtn.draw(ctx, assets);
 	// draw right scroll button
 	this.rightScrollBtn.draw(ctx, assets);
-  }
-}
-
-
-class PropPalette {
-  static margin = 4;
-  static boxSize = 32;
-  static scrollBtnWidth = 6;
-
-  constructor(editor, x, y) {
-	this.editor = editor;
-	this.x = x;
-	this.y = y;
-	this.containerX = 426*2 - 32;
-	this.height = 240 - 24;
-	this.props = [
-	  {type: "prop", name: "GRAVE_1", width: 32, height: 32, imageSpec: {
-		id: "graveyardProps", sx: 0, sy: 0, sWidth: 32, sHeight: 32}
-	  },
-	  {type: "prop", name: "GRAVE_2", width: 32, height: 32, imageSpec: {
-		id: "graveyardProps", sx: 32, sy: 0, sWidth: 32, sHeight: 32}
-	  },
-	  {type: "prop", name: "GRAVE_3", width: 32, height: 32, imageSpec: {
-		id: "graveyardProps", sx: 64, sy: 0, sWidth: 32, sHeight: 32}
-	  },
-	  {type: "prop", name: "BUSH_1", width: 32, height: 32, imageSpec: {
-		id: "graveyardProps", sx: 0, sy: 32, sWidth: 32, sHeight: 32}
-	  },
-	  {type: "prop", name: "BUSH_2", width: 32, height: 32, imageSpec: {
-		id: "graveyardProps", sx: 32, sy: 32, sWidth: 32, sHeight: 32}
-	  },
-	  {type: "prop", name: "BUSH_3", width: 32, height: 32, imageSpec: {
-		id: "graveyardProps", sx: 64, sy: 32, sWidth: 32, sHeight: 32}
-	  },
-	  {type: "prop", name: "ROCK_1", width: 32, height: 32, imageSpec: {
-		id: "graveyardProps", sx: 0, sy: 64, sWidth: 32, sHeight: 32}
-	  },
-	  {type: "prop", name: "ROCK_2", width: 32, height: 32, imageSpec: {
-		id: "graveyardProps", sx: 32, sy: 64, sWidth: 32, sHeight: 32}
-	  },
-	];
-	const propBoxX = this.containerX + PropPalette.margin;
-	this.boxes = this.props.map((prop, i) => ({
-	  x: this.x + 10 + i*PropPalette.boxSize,
-	  y: this.y + PropPalette.margin,
-	  width: PropPalette.boxSize - PropPalette.margin*2,
-	  height: PropPalette.boxSize - PropPalette.margin*2,
-	  entity: prop,
-	}));
-	this.width = PropPalette.boxSize*this.boxes.length + PropPalette.scrollBtnWidth*2;
-	this.innerRect = {
-	  x: this.x + PropPalette.scrollBtnWidth,
-	  y: this.y,
-	  width: this.width - PropPalette.scrollBtnWidth*2,
-	  height: this.height,
-	};
-  }
-
-  update(dt, input) {
-  }
-
-  draw(ctx, assets) {
-	// draw left scroll button
-	ctx.drawImage(assets.editorUI, 85, 0, PropPalette.scrollBtnWidth, 32, this.x, this.y, PropPalette.scrollBtnWidth, 32);
-	// draw prop palette
-	ctx.fillStyle = "black";
-	ctx.fillRect(this.x + PropPalette.scrollBtnWidth, this.y, PropPalette.boxSize*this.boxes.length, PropPalette.boxSize);
-	for (const [i, box] of this.boxes.entries()) {
-	  const offset = i*PropPalette.boxSize;
-	  ctx.drawImage(assets.editorUI, 71, 0, 3, PropPalette.boxSize, this.x + PropPalette.scrollBtnWidth + offset, this.y, 3, PropPalette.boxSize);
-	  const spec = box.entity.imageSpec;
-	  ctx.drawImage(assets[spec.id], spec.sx, spec.sy, spec.sWidth, spec.sHeight, Math.round(box.x), Math.round(box.y), box.width, box.height);
-	  ctx.drawImage(assets.editorUI, 68, 0, 3, PropPalette.boxSize, this.x + PropPalette.scrollBtnWidth + (i+1)*PropPalette.boxSize - 3, this.y, 3, PropPalette.boxSize);
-	}
-	// draw right scroll button
-	ctx.translate(this.x + PropPalette.scrollBtnWidth*2 + PropPalette.boxSize*this.boxes.length, this.y);
-	ctx.scale(-1, 1);
-	ctx.drawImage(assets.editorUI, 85, 0, 6, 32, 0, 0, 6, 32);
-	ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 }

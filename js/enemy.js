@@ -9,6 +9,12 @@ import {Item} from "./item.js";
 export class Enemy extends Entity {
   static INSTANCES = [];
   static KINDS = {
+	TOASTER_BAT: {
+	  imageSpec: {
+		id: "toaster", sx: 0, sy: 0, sWidth: 32, sHeight: 32
+	  },
+	  bounty: 10,
+	},
 	RASPBERRY_DONUT: {
 	  imageSpec: {
 		id: "donutSheet", sx: 0, sy: 0, sWidth: 32, sHeight: 32, animations: {
