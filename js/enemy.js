@@ -77,7 +77,7 @@ export class Enemy extends Entity {
 	},
 	ESPRESSO: {
 	  imageSpec: {id: "expressoGangsterSheet", sx: 0, sy: 0, sWidth: 45, sHeight: 32, animations: {}},
-	  sfx: {death: "espressoDeath", shoot: "explosion1"},
+	  sfx: {death: "espressoDeath", shoot: "espressoAttack1"},
 	  bounty: 20,
 	},
 	EVIL_PRINTER: {
