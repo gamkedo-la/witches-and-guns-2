@@ -6,8 +6,8 @@ import {Item} from "./item.js";
 import {Prop} from "./prop.js";
 
 export class Player {
-  static avatarHeight = 32;
-  static avatarWidth = 20;
+  static avatarHeight = 49;
+  static avatarWidth = 28;
   static reticleSpeed = 270;
   static avatarSpeed = 120;
   static timeToRespawn = 3;
@@ -69,12 +69,13 @@ export class Player {
 	this.respawnTimer = 0;
 	this.respawning = true;
 	this.invincibleTimer = 0;
-	this.gun = new Gun();
+	this.gun = new ShotGun();
 	this.levelStats = {
 	  kills: 0,
 	  items: 0,
 	  vandalism: 0,
 	};
+	this.facing = 'front';
   }
 
   resetLevelStats() {
@@ -164,6 +165,13 @@ export class Player {
 		this.levelStats.items++;
 	  }
 	}
+	if (input.right) {
+	  this.facing = 'right';
+	} else if (input.left) {
+	  this.facing = 'left';
+	} else {
+	  this.facing = 'front';
+	}
   }
 
   draw(ctx, assets, offset) {
@@ -177,11 +185,25 @@ export class Player {
 	  ctx.beginPath();
 	  this.gun.drawReticle(ctx, assets, this.reticlePos.x - offset, this.reticlePos.y);
 	}
+	this.drawAvatar(ctx, assets, offset);
+  }
+
+  drawAvatar(ctx, assets, offset) {
 	const oldAlpha = ctx.globalAlpha;
 	if (this.invincibleTimer > 0 && this.invincibleTimer % 0.5 > 0.2) {
 	  ctx.globalAlpha = 0.01;
 	}
-	ctx.drawImage(assets.player, 50, 0, 20, 32, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), 20, 32);
+	switch (this.facing) {
+	case "left":
+	  ctx.drawImage(assets.player, 65, 0, 35, 49, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), 35, 49);
+	  break;
+	case "right":
+	  ctx.drawImage(assets.player, 30, 0, 35, 49, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), 35, 49);
+	  break;
+	case "front":
+	default:
+	  ctx.drawImage(assets.player, 0, 0, 28, 49, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), 28, 49); 
+	}
 	ctx.globalAlpha = oldAlpha;
   }
 
