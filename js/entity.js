@@ -15,9 +15,7 @@ export class Entity {
 	if (typeof entity == "undefined") {
 	  entity = new this(...args);
 	  this.INSTANCES.push(entity);
-	  console.log("Created new entity", entity);
 	} else {
-	  console.log("Recycling entity", entity);
 	  entity.init(...args);
 	}
 	return entity;
