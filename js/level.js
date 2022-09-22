@@ -14,14 +14,14 @@ export class Level {
   static #WAVE_TIMER = 0;
   static #SCROLL_SPEED = 256;
   static #LEVEL_TIME = 10;
-  static #BACKGROUNDS_MAP = {
+  static BACKGROUNDS_MAP = {
 	graveyard: ["graveyardBG"],
 	default: ["levelBG", "levelBG2", "levelBG3", "levelBG4"],
   }
 
   constructor(data, width, height, player) {
 	this.levelData = data;
-	this.backgrounds = Level.#BACKGROUNDS_MAP[data.name] || Level.#BACKGROUNDS_MAP.default;
+	this.backgrounds = Level.BACKGROUNDS_MAP[data.name] || Level.BACKGROUNDS_MAP.default;
 	if (this.backgrounds.length < 4) {
 	  this.backgrounds = this.backgrounds.concat(Array(4 - this.backgrounds.length).fill("transparentBG"));
 	}

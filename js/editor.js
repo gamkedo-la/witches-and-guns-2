@@ -1,5 +1,6 @@
 import {constants} from "./constants.js";
 import {Enemy} from "./enemy.js";
+import {Level} from "./level.js";
 import {Prop} from "./prop.js";
 import {Input} from "./input.js";
 import {pointInRectangle} from "./utils.js";
@@ -573,7 +574,9 @@ export class Editor {
   draw(ctx, assets) {
 	// TODO: draw stage wings
 	const oldAlpha = ctx.globalAlpha;
-	ctx.drawImage(assets.levelBG, this.stageOffset, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
+	const levelKey = Object.keys(this.levels)[this.currentLevelIdx];
+	const backgroundImg = assets[(Level.BACKGROUNDS_MAP[levelKey] || Level.BACKGROUNDS_MAP.default)[0]];
+	ctx.drawImage(backgroundImg, this.stageOffset, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
 	for (const walkway of Object.keys(this.levelData.walkways)) {
 	  ctx.globalAlpha = 0.6;
 	  if (walkway === this.enemyWalkWay) {
