@@ -110,14 +110,21 @@ class MenuScene {
   draw(ctx, assets) {
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-	ctx.fillStyle = "orange";
+	const midX = Math.round(ctx.canvas.width/2);
+
+    ctx.drawImage(assets.menuBG,-180+Math.cos(performance.now()/4000)*180,0);
+    ctx.drawImage(assets.logo,midX-assets.logo.width/2,0);
+
+
+    ctx.fillStyle = "orange";
 	const oldAlign = ctx.textAlign;
 	const oldFont = ctx.oldFont;
-	ctx.textAlign = "center";
+	/*
+    ctx.textAlign = "center";
 	ctx.font = "bold 24px serif";
-	const midX = Math.round(ctx.canvas.width/2);
 	ctx.fillText("INCREDIBLY WELL", midX, Math.round(ctx.canvas.height/4));
 	ctx.fillText("PRODUCED LOGO", midX, Math.round(ctx.canvas.height/3));
+    */
 	ctx.font = "12px sans";
 	ctx.textAlign = "left";
 	for (const [i, label] of Object.keys(this.options).entries()) {
