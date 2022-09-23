@@ -3,51 +3,6 @@
   "props": [
     {
       "type": "prop",
-      "name": "GRAVE_1",
-      "width": 32,
-      "height": 32,
-      "imageSpec": {
-        "id": "graveyardProps",
-        "sx": 0,
-        "sy": 0,
-        "sWidth": 32,
-        "sHeight": 32
-      },
-      "x": 111.74779477947796,
-      "y": 151.90184049079755
-    },
-    {
-      "type": "prop",
-      "name": "GRAVE_3",
-      "width": 32,
-      "height": 32,
-      "imageSpec": {
-        "id": "graveyardProps",
-        "sx": 64,
-        "sy": 0,
-        "sWidth": 32,
-        "sHeight": 32
-      },
-      "x": 252.80356435643563,
-      "y": 152.8834355828221
-    },
-    {
-      "type": "prop",
-      "name": "GRAVE_1",
-      "width": 32,
-      "height": 32,
-      "imageSpec": {
-        "id": "graveyardProps",
-        "sx": 0,
-        "sy": 0,
-        "sWidth": 32,
-        "sHeight": 32
-      },
-      "x": 520.7067866786679,
-      "y": 151.90184049079755
-    },
-    {
-      "type": "prop",
       "name": "ROCK_1",
       "width": 32,
       "height": 32,
@@ -93,21 +48,6 @@
     },
     {
       "type": "prop",
-      "name": "BUSH_3",
-      "width": 32,
-      "height": 32,
-      "imageSpec": {
-        "id": "graveyardProps",
-        "sx": 64,
-        "sy": 32,
-        "sWidth": 32,
-        "sHeight": 32
-      },
-      "x": 540.5816381638163,
-      "y": 130.79754601226998
-    },
-    {
-      "type": "prop",
       "name": "BUSH_2",
       "width": 32,
       "height": 32,
@@ -119,7 +59,7 @@
         "sHeight": 32
       },
       "x": 493.366804680468,
-      "y": 131.77914110429447
+      "y": 131.14711729622266
     },
     {
       "type": "prop",
@@ -133,23 +73,8 @@
         "sWidth": 32,
         "sHeight": 32
       },
-      "x": 429.66059405940587,
-      "y": 131.28834355828218
-    },
-    {
-      "type": "prop",
-      "name": "BUSH_2",
-      "width": 32,
-      "height": 32,
-      "imageSpec": {
-        "id": "graveyardProps",
-        "sx": 32,
-        "sy": 32,
-        "sWidth": 32,
-        "sHeight": 32
-      },
-      "x": 359.86891089108906,
-      "y": 128.83435582822082
+      "x": 429.1834564649571,
+      "y": 131.14711729622266
     },
     {
       "type": "prop",
@@ -163,17 +88,706 @@
         "sWidth": 32,
         "sHeight": 32
       },
-      "x": 399.5058831758823,
-      "y": 150
+      "x": 394.73450723139433,
+      "y": 159.19284294234592
+    },
+    {
+      "type": "prop",
+      "name": "GRAVE_3",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 64,
+        "sy": 0,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 253.2807019508844,
+      "y": 159.19284294234592
+    },
+    {
+      "type": "prop",
+      "name": "GRAVE_1",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 0,
+        "sy": 0,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 112.22493237392676,
+      "y": 159.19284294234592
+    },
+    {
+      "type": "prop",
+      "name": "ROCK_2",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 32,
+        "sy": 64,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": -5.030149236753104,
+      "y": 159.19284294234592
+    },
+    {
+      "type": "prop",
+      "name": "BUSH_2",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 32,
+        "sy": 32,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 7.995791094796608,
+      "y": 131.14711729622266
+    },
+    {
+      "type": "prop",
+      "name": "BUSH_3",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 64,
+        "sy": 32,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 163.812996854259,
+      "y": 131.14711729622266
+    },
+    {
+      "type": "prop",
+      "name": "GRAVE_2",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 32,
+        "sy": 0,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 158.19878983037503,
+      "y": 159.19284294234592
+    },
+    {
+      "type": "prop",
+      "name": "GRAVE_3",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 64,
+        "sy": 0,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 128.11318104855118,
+      "y": 131.14711729622266
+    },
+    {
+      "type": "prop",
+      "name": "ROCK_1",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 0,
+        "sy": 64,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 282.5943175404593,
+      "y": 131.14711729622266
+    },
+    {
+      "type": "prop",
+      "name": "BUSH_1",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 0,
+        "sy": 32,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 289.1789003469503,
+      "y": 159.19284294234592
+    },
+    {
+      "type": "prop",
+      "name": "BUSH_1",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 0,
+        "sy": 32,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 219.03967396297742,
+      "y": 159.19284294234592
+    },
+    {
+      "type": "prop",
+      "name": "GRAVE_1",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 0,
+        "sy": 0,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 464.1659817364856,
+      "y": 159.19284294234592
+    },
+    {
+      "type": "prop",
+      "name": "BUSH_3",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 64,
+        "sy": 32,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 315.61126238120926,
+      "y": 131.14711729622266
+    },
+    {
+      "type": "prop",
+      "name": "GRAVE_1",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 0,
+        "sy": 0,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 227.77127094061595,
+      "y": 131.14711729622266
+    },
+    {
+      "type": "prop",
+      "name": "ROCK_2",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 32,
+        "sy": 64,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 393.06151039319576,
+      "y": 131.14711729622266
+    },
+    {
+      "type": "prop",
+      "name": "GRAVE_2",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 32,
+        "sy": 0,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 62.01578558209336,
+      "y": 131.14711729622266
+    },
+    {
+      "type": "prop",
+      "name": "BUSH_1",
+      "width": 32,
+      "height": 32,
+      "imageSpec": {
+        "id": "graveyardProps",
+        "sx": 0,
+        "sy": 32,
+        "sWidth": 32,
+        "sHeight": 32
+      },
+      "x": 35.12107383959782,
+      "y": 159.19284294234592
     }
   ],
   "walkways": {
-    "150": [
+    "183.19284294234592": [
+      [],
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      [
+        {
+          "type": "enemy",
+          "name": "FROSTED_DONUT",
+          "width": 32,
+          "height": 32,
+          "imageSpec": {
+            "id": "donutSheet",
+            "sx": 0,
+            "sy": 64,
+            "sWidth": 32,
+            "sHeight": 32,
+            "animations": {
+              "death": [
+                {
+                  "id": "donutSheet",
+                  "sx": 32,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 64,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 96,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 100
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 128,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 1000
+                }
+              ],
+              "hurt": [
+                {
+                  "id": "donutSheet",
+                  "sx": 160,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 192,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 224,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 256,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                }
+              ]
+            }
+          },
+          "x": 113.25046048573041,
+          "y": 151.19284294234592
+        },
+        {
+          "type": "enemy",
+          "name": "FROSTED_DONUT",
+          "width": 32,
+          "height": 32,
+          "imageSpec": {
+            "id": "donutSheet",
+            "sx": 0,
+            "sy": 64,
+            "sWidth": 32,
+            "sHeight": 32,
+            "animations": {
+              "death": [
+                {
+                  "id": "donutSheet",
+                  "sx": 32,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 64,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 96,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 100
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 128,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 1000
+                }
+              ],
+              "hurt": [
+                {
+                  "id": "donutSheet",
+                  "sx": 160,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 192,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 224,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 256,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                }
+              ]
+            }
+          },
+          "x": 394.2845036160709,
+          "y": 151.19284294234592
+        }
+      ],
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      [
+        {
+          "type": "enemy",
+          "name": "CHOCO_DONUT",
+          "width": 32,
+          "height": 32,
+          "imageSpec": {
+            "id": "donutSheet",
+            "sx": 0,
+            "sy": 32,
+            "sWidth": 32,
+            "sHeight": 32,
+            "animations": {
+              "death": [
+                {
+                  "id": "donutSheet",
+                  "sx": 32,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 64,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 96,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 100
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 128,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 1000
+                }
+              ],
+              "hurt": [
+                {
+                  "id": "donutSheet",
+                  "sx": 160,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 192,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 224,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 256,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                }
+              ]
+            }
+          },
+          "x": 36.536806044722894,
+          "y": 151.19284294234592
+        },
+        {
+          "type": "enemy",
+          "name": "CHOCO_DONUT",
+          "width": 32,
+          "height": 32,
+          "imageSpec": {
+            "id": "donutSheet",
+            "sx": 0,
+            "sy": 32,
+            "sWidth": 32,
+            "sHeight": 32,
+            "animations": {
+              "death": [
+                {
+                  "id": "donutSheet",
+                  "sx": 32,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 64,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 96,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 100
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 128,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 1000
+                }
+              ],
+              "hurt": [
+                {
+                  "id": "donutSheet",
+                  "sx": 160,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 192,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 224,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 256,
+                  "sy": 32,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                }
+              ]
+            }
+          },
+          "x": 397.4117333076657,
+          "y": 151.19284294234592
+        }
+      ]
+    ],
+    "155.14711729622266": [
+      [],
+      null,
+      null,
+      null,
+      [
+        {
+          "type": "enemy",
+          "name": "TOASTER_BAT",
+          "width": 32,
+          "height": 32,
+          "imageSpec": {
+            "id": "toaster",
+            "sx": 0,
+            "sy": 0,
+            "sWidth": 32,
+            "sHeight": 32
+          },
+          "x": 61.86282556669278,
+          "y": 123.14711729622266
+        },
+        {
+          "type": "enemy",
+          "name": "TOASTER_BAT",
+          "width": 32,
+          "height": 32,
+          "imageSpec": {
+            "id": "toaster",
+            "sx": 0,
+            "sy": 0,
+            "sWidth": 32,
+            "sHeight": 32
+          },
+          "x": 395.85914168084946,
+          "y": 123.14711729622266
+        }
+      ],
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
       [
         {
           "type": "enemy",
           "name": "RASPBERRY_DONUT",
-          "count": 3,
           "width": 32,
           "height": 32,
           "imageSpec": {
@@ -181,166 +795,174 @@
             "sx": 0,
             "sy": 0,
             "sWidth": 32,
-            "sHeight": 32
+            "sHeight": 32,
+            "animations": {
+              "death": [
+                {
+                  "id": "donutSheet",
+                  "sx": 32,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 64,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 96,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 100
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 128,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 1000
+                }
+              ],
+              "hurt": [
+                {
+                  "id": "donutSheet",
+                  "sx": 160,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 192,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 224,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 256,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                }
+              ]
+            }
           },
-          "x": -39.88308791849356,
-          "y": 117.53934740882917,
-          "endX": 276.3416377322148
+          "x": 62.1331755358479,
+          "y": 123.14711729622266
         },
         {
           "type": "enemy",
-          "name": "EVIL_PRINTER",
+          "name": "RASPBERRY_DONUT",
           "width": 32,
           "height": 32,
           "imageSpec": {
-            "id": "printerSheet",
+            "id": "donutSheet",
             "sx": 0,
             "sy": 0,
             "sWidth": 32,
-            "sHeight": 32
+            "sHeight": 32,
+            "animations": {
+              "death": [
+                {
+                  "id": "donutSheet",
+                  "sx": 32,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 64,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 96,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 100
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 128,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 1000
+                }
+              ],
+              "hurt": [
+                {
+                  "id": "donutSheet",
+                  "sx": 160,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 192,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 224,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 256,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                }
+              ]
+            }
           },
-          "x": 651.9332184403274,
-          "y": 117.53934740882917,
-          "endX": 307.39691309526825
+          "x": 283.2864505628645,
+          "y": 123.14711729622266
         }
       ],
       null,
       null,
-      [
-        {
-          "type": "enemy",
-          "name": "FROSTED_DONUT",
-          "width": 32,
-          "height": 32,
-          "imageSpec": {
-            "id": "donutSheet",
-            "sx": 0,
-            "sy": 64,
-            "sWidth": 32,
-            "sHeight": 32
-          },
-          "x": -31.737207593076008,
-          "y": 118,
-          "endX": 299.71989761005653
-        }
-      ],
-      null,
-      null,
-      [
-        {
-          "type": "enemy",
-          "name": "CHOCO_DONUT",
-          "width": 32,
-          "height": 32,
-          "imageSpec": {
-            "id": "donutSheet",
-            "sx": 0,
-            "sy": 32,
-            "sWidth": 32,
-            "sHeight": 32
-          },
-          "x": -32.41277846769901,
-          "y": 118,
-          "endX": 223.7120916440682
-        }
-      ],
       null,
       null,
       null,
       null,
-      []
-    ],
-    "174": [
-      [
-        {
-          "type": "enemy",
-          "name": "CHOCO_DONUT",
-          "width": 32,
-          "height": 32,
-          "imageSpec": {
-            "id": "donutSheet",
-            "sx": 0,
-            "sy": 32,
-            "sWidth": 32,
-            "sHeight": 32
-          },
-          "x": -40.12882378285222,
-          "y": 142,
-          "endX": 233.04022100007603
-        },
-        {
-          "type": "enemy",
-          "name": "EVIL_PRINTER",
-          "width": 32,
-          "height": 32,
-          "imageSpec": {
-            "id": "printerSheet",
-            "sx": 0,
-            "sy": 0,
-            "sWidth": 32,
-            "sHeight": 32
-          },
-          "x": 639.9562308335657,
-          "y": 142,
-          "endX": 358.0687837392604
-        }
-      ],
       null,
-      null,
-      [
-        {
-          "type": "enemy",
-          "name": "FROSTED_DONUT",
-          "width": 32,
-          "height": 32,
-          "imageSpec": {
-            "id": "donutSheet",
-            "sx": 0,
-            "sy": 64,
-            "sWidth": 32,
-            "sHeight": 32
-          },
-          "x": -31.27655422358518,
-          "y": 142,
-          "endX": 300.1805509795474
-        }
-      ],
-      null,
-      [
-        {
-          "type": "enemy",
-          "name": "FROSTED_DONUT",
-          "width": 32,
-          "height": 32,
-          "imageSpec": {
-            "id": "donutSheet",
-            "sx": 0,
-            "sy": 64,
-            "sWidth": 32,
-            "sHeight": 32
-          },
-          "x": 253.6753811480843,
-          "y": 142
-        }
-      ],
-      [
-        {
-          "type": "enemy",
-          "name": "CHOCO_DONUT",
-          "width": 32,
-          "height": 32,
-          "imageSpec": {
-            "id": "donutSheet",
-            "sx": 0,
-            "sy": 32,
-            "sWidth": 32,
-            "sHeight": 32
-          },
-          "x": -32.87343183718986,
-          "y": 142,
-          "endX": 225.09405175254074
-        }
-      ],
       null,
       null,
       null,
@@ -356,10 +978,13 @@
             "sx": 0,
             "sy": 0,
             "sWidth": 45,
-            "sHeight": 32
+            "sHeight": 32,
+            "animations": {}
           },
-          "x": 397.4832029696407,
-          "y": 142
+          "x": -62.88282005398949,
+          "y": 123.14711729622266,
+          "count": 2,
+          "endX": 354.8579691376119
         }
       ]
     ]
