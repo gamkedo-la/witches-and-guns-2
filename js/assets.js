@@ -18,6 +18,7 @@ const assetSpecs = {
 	{id: "toaster", path: "images/toasterBat.png"},
     {id: "logo", path: "images/logo.png"},
 	{id: "menuBG", path: "images/menu_background.gif"},
+	{id: "unibrain", path: "images/unibrain.png"},
   ],
   sounds: [
 	{id: "playerShooting1", path: "sounds/player-shoot-1-WG.mp3"},
