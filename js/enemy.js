@@ -204,12 +204,20 @@ export class Enemy extends Entity {
 }
 
 
-export class Boss extends Enemy {
+class Boss extends Enemy {
   static INSTANCES = [];
 
   move() {
   }
 
   moveBack() {
+  }
+}
+
+
+export class UnicornBrainBoss extends Boss {
+  init(x, y, bounty) {
+	super.init(x, y, 49, 63, {id: "unibrain", sx: 0, sy: 0, sWidth: 49, sHeight: 63, animations: {}}, bounty, x, {death: "espressoDeath"});
+	this.hp = 100;
   }
 }

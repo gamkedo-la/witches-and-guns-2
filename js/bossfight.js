@@ -1,21 +1,29 @@
-import {Boss} from "./enemy.js";
+import {UnicornBrainBoss} from "./enemy.js";
 import {Level} from "./level.js";
 import {Projectile} from "./projectile.js";
 
 
 export class BossFight extends Level {
+  static classMap = {
+	unibrain: UnicornBrainBoss,
+	default: UnicornBrainBoss,
+  };
+
   constructor(data, width, height, player) {
 	super(data, width, height, player);
-	this.boss = Boss.spawn(width/2, height/2, 49, 63, {id: "unibrain", sx: 0, sy: 0, sWidth: 49, sHeight: 63, animations: {}}, 1000, width/2, {death: "espressoDeath"});
-	this.boss.hp = 100;
+	const bossClass = BossFight.classMap[data.boss || "default"];
+	this.bossPos = {x: width/2, y: height/2};
+	this.boss = new bossClass(this.bossPos.x, this.bossPos.y, 1000);
 	this.timer = 0;
+	this.player.setBoss(this.boss);
   }
 
   reset(data) {
-	this.boss = Boss.spawn(100, 100, 49, 63, {id: "unibrain", sx: 0, sy: 0, sWidth: 49, sHeight: 63, animations: {}}, 1000, 100, {death: "espressoDeath", shoot: "espressoAttack2"});
-	this.boss.hp = 100;
+	const bossClass = BossFight.classMap[data.boss || "default"];
+	this.boss = new bossClass(this.bossPos.x, this.bossPos.y, 1000);
 	this.timer = 0;
 	this.finished = false;
+	this.player.setBoss(this.boss);
   }
 
   update(dt) {
@@ -26,6 +34,7 @@ export class BossFight extends Level {
 	}
 	if (!(this.boss.live || this.boss.needsUpdate)) {
 	  this.finished = true;
+	  this.player.unsetBoss();
 	}
 	this.activeEntities = [this.boss].concat(Array.from(Projectile.alive()));
   }

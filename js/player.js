@@ -31,10 +31,26 @@ export class Player {
 	return {x: f*vel.x, y: f*vel.y};
   }
 
+  setBoss(boss) {
+	this.boss = boss;
+  }
+
+  unsetBoss() {
+	this.boss = null;
+  }
+
+  getTargets() {
+	const targets = getSortedActiveEntities().reverse();
+	if (this.boss && this.boss.live) {
+	  targets.push(this.boss);
+	}
+	return targets;
+  }
+
   getHitTargetHook() {
 	const player = this;
 	const hook = function(dt, shot) {
-	  for (const entity of getSortedActiveEntities().reverse()) {
+	  for (const entity of player.getTargets()) {
 		if (!entity.live) {
 		  continue;
 		}
