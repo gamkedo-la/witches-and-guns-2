@@ -6,7 +6,41 @@ import {pointInRectangle} from "./utils.js";
 import {Item} from "./item.js";
 
 
-export class Enemy extends Entity {
+
+class BaseEnemy extends Entity {
+
+  init(x, y, width, height, imageSpec, sfx, bounty, ...rest) {
+	super.init(x, y, width, height, imageSpec, bounty, ...rest);
+	this.attacked = false;
+	this.sfx = sfx;
+  }
+
+  update(accTime, player) {
+	super.update(accTime, player);
+	if (!this.live) {
+	  return;
+	}
+  }
+
+  attack(accTime, player) {
+	this.attacked = true;
+	if (player.wasKilled) {
+	  return;
+	}
+  }
+
+  move(accTime) {
+  }
+
+  hurt(damage) {
+	super.hurt(damage);
+	if (this.hp <= 0) {
+	  this.blastQueue.push(this.sfx.death);
+	}
+  }
+}
+
+export class Enemy extends BaseEnemy {
   static INSTANCES = [];
   static KINDS = {
 	TOASTER_BAT: {
@@ -103,7 +137,7 @@ export class Enemy extends Entity {
   };
 
   init(x, y, width, height, imageSpec, bounty, endX, sfx, timeToAttack, timeToReturn) {
-	super.init(x, y, width, height, imageSpec, bounty, timeToAttack, timeToReturn);
+	super.init(x, y, width, height, imageSpec, sfx, bounty, timeToAttack, timeToReturn);
 	this.startX = x;
 	this.endX = endX || this.startX;
 	this.walkSpeed = 64;
@@ -123,16 +157,11 @@ export class Enemy extends Entity {
 	timeToAttack = typeof(timeToAttack) === "undefined" ? 1 : (timeToAttack || 1);	// wait a second by default before attacking
 	this.endAttackTime = this.endMoveTime + timeToAttack;
 	this.timeToReturn = typeof(timeToReturn) === "undefined" ? 1 : (timeToReturn || 1);	// wait a second by default after attacking
-	this.attacked = false;
-	this.sfx = sfx;
 	this.itemDropChance = Math.random();
   }
 
   update(accTime, player) {
 	super.update(accTime, player);
-	if (!this.live) {
-	  return;
-	}
 	if (accTime < this.endMoveTime) {
 	  this.move(accTime);
 	} else if (accTime < this.endAttackTime) {
@@ -151,10 +180,7 @@ export class Enemy extends Entity {
   attack(accTime, player) {
 	this.x = this.endX;
 	this.y = this.endY;
-	this.attacked = true;
-	if (player.wasKilled) {
-	  return;
-	}
+	super.attack(accTime, player);
 	Projectile.spawn(
 	  this.x + this.width/2,	// starting x
 	  this.y + this.height/2,	// starting y
@@ -174,6 +200,7 @@ export class Enemy extends Entity {
   }
 
   move(accTime) {
+	super.move(accTime);
 	this.x = this.startX + this.velX*accTime;
 	this.y = this.startY + this.velY*accTime;
   }
@@ -187,13 +214,6 @@ export class Enemy extends Entity {
 	this.x = this.endX;
 	this.y = this.endY;
   }
-  
-  hurt(damage) {
-	super.hurt(damage);
-	if (this.hp <= 0) {
-	  this.blastQueue.push(this.sfx.death);
-	}
-  }
 
   die() {
 	if (this.itemDropChance >= 0.5) {
@@ -204,7 +224,7 @@ export class Enemy extends Entity {
 }
 
 
-class Boss extends Enemy {
+class Boss extends BaseEnemy {
   static INSTANCES = [];
 
   move() {
@@ -217,7 +237,12 @@ class Boss extends Enemy {
 
 export class UnicornBrainBoss extends Boss {
   init(x, y, bounty) {
-	super.init(x, y, 49, 63, {id: "unibrain", sx: 0, sy: 0, sWidth: 49, sHeight: 63, animations: {}}, bounty, x, {death: "espressoDeath"});
+	super.init(x, y, 49, 63, {id: "unibrain", sx: 0, sy: 0, sWidth: 49, sHeight: 63, animations: {}}, {death: "espressoDeath"}, bounty);
 	this.hp = 100;
   }
+
+  update(accTime, player) {
+	super.update(accTime, player);
+  }
+
 }
