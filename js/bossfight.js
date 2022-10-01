@@ -12,7 +12,7 @@ export class BossFight extends Level {
   constructor(data, width, height, player) {
 	super(data, width, height, player);
 	const bossClass = BossFight.classMap[data.boss || "default"];
-	this.bossPos = {x: width/2, y: height/2};
+	this.bossPos = {x: 10, y: height/2};
 	this.boss = new bossClass(this.bossPos.x, this.bossPos.y, 1000);
 	this.timer = 0;
 	this.player.setBoss(this.boss);
