@@ -6,9 +6,9 @@ run: node_modules
 
 dist: js images sounds levels
 	npx webpack
-	for f in `find images -type f \( -name "*.png" -o -name "*.gif" \)`; do cp --parents "$${f}" dist; done
-	for f in `find sounds -type f \( -name "*.mp3" -o -name "*.ogg" -o -name "*.wav" \)`; do cp --parents "$${f}" dist; done
-	for f in `find levels -type f -name "*.json"`; do cp --parents "$${f}" dist; done
+	cp -rv images dist/
+	cp -rv sounds dist/
+	cp -rv levels dist/
 
 upload: dist
 	butler push dist gonzalod/witches-n-guns-2:HTML5
