@@ -313,31 +313,84 @@ class PlayTestScene extends LevelScene {
 
 class CreditsScene {
   constructor(hooks) {
-	this.hooks = hooks;
+		this.hooks = hooks;
+		this.elapsedTime = 0;
+		this.lineHeight = 18;
+		this.contributorFont = `bold ${this.lineHeight}px serif`;
+		this.contributionsFont = `normal ${this.lineHeight}px serif`;
+		this.credits = [
+			{
+				contributor: 'Gonzalo',
+				contributions: 'Game Lead, etc...'
+			},
+			{
+				contributor: 'Someone Else',
+				contributions: 'Some great stuff...lnbvfghj kjhg fr eswxcfred scvgbhjk,mn jhgfdsdf ghj kiuyg fdghj kiuytr esdfghjkiu y t rdfghj kiuy'
+			}
+		]
   }
 
   exit() {
-	this.hooks.exit();
+		this.elapsedTime = 0;
+		this.hooks.exit();
   }
 
   update(dt, input) {
-	if (input.justReleasedKeys.has("Escape")) {
-	  this.exit();
-	}
+		if (input.justReleasedKeys.has("Escape")) {
+			this.exit();
+		} else {
+			this.elapsedTime += dt;
+		}
   }
 
   draw(ctx, assets) {
-	ctx.fillStyle = "black";
-	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-	ctx.fillStyle = "orange";
-	const oldAlign = ctx.textAlign;
-	const oldFont = ctx.oldFont;
-	ctx.textAlign = "center";
-	ctx.font = "bold 24px serif";
-	const midX = Math.round(ctx.canvas.width/2);
-	ctx.fillText("CREDITS", midX, Math.round(ctx.canvas.height/3));
-	ctx.fillText("HERE", midX, Math.round(ctx.canvas.height/2));
+		ctx.save();
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+		ctx.fillStyle = "orange";
+		ctx.textAlign = "center";
+		const midX = Math.round(ctx.canvas.width/2);
+		const baseY = Math.round(ctx.canvas.height/3) - this.lineHeight * this.elapsedTime;
+		let totalLines = 0;
+		for (let i = 0; i < this.credits.length; i++) {
+			ctx.font = this.contributorFont;
+			let contributorY = baseY + (this.lineHeight * totalLines);
+
+			if (contributorY > ctx.canvas.height) break
+
+			if (contributorY > 0) ctx.fillText(this.credits[i].contributor, midX, Math.round(contributorY));
+			totalLines++
+			const wrappedContributions = this.performWordWrap(this.credits[i].contributions);
+			ctx.font = this.contributionsFont;
+			for (const contribution of wrappedContributions) {
+				const contributionY = Math.round(baseY + (this.lineHeight * totalLines));
+
+				if (contributionY > ctx.canvas.height) break
+
+				if (contributionY > 0) ctx.fillText(contribution, midX, contributionY);
+				totalLines++;
+			}
+
+			totalLines++;
+		}
+		ctx.restore();
   }
+
+	performWordWrap (inputString) {
+		const lineLength = 50;
+		if (inputString.length < lineLength) return [inputString];
+		const results = []
+		let remainingString = inputString;
+		while (remainingString.length > lineLength) {
+			const lastSpace = remainingString.substring(0, lineLength).lastIndexOf(' ');
+			results.push(remainingString.substring(0, lastSpace));
+			remainingString = remainingString.substring(lastSpace);
+		}
+
+		results.push(remainingString);
+
+		return results;
+	}
 
   blast(ctx, assets) {
   }
