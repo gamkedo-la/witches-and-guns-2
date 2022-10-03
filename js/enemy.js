@@ -277,6 +277,7 @@ export class UnicornBrainBoss extends Boss {
 
   attack(dt, player) {
 	if (this.waitToShootTime <= 0) {
+	  this.blastQueue.push("uniBrainAttack");
 	  Projectile.spawn(
 		this.x + this.width/2,	// starting x
 		this.y + this.height/2,	// starting y
