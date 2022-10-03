@@ -1,0 +1,61 @@
+#+OPTIONS: reveal_title_slide:nil reveal_center:t reveal_progress:t reveal_history:nil reveal_control:t
+#+OPTIONS: reveal_rolling_links:t reveal_keyboard:t reveal_overview:t num:nil
+#+OPTIONS: toc:0
+#+REVEAL_ROOT: https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.9.2/
+#+REVEAL_MARGIN: 0.2
+#+REVEAL_MIN_SCALE: 0.8
+#+REVEAL_TRANS: fast
+#+REVEAL_THEME: blood
+
+
+* Witches n' Guns 2
+
+  #+BEGIN_export html
+  <h1>Week 16</h1>
+  <em>Release date</em>: <strong>October 16</strong><br>
+  <em>Lead</em>: <strong>Gonzalo Delgado</strong>
+  <hr>
+  #+END_export
+
+  - 10 new commits
+
+* Contributions
+
+** FightEXP
+   #+ATTR_HTML: :width 400 :style image-rendering:pixelated;float:left
+   [[./demo/images/Sprite1 Wip/RUN_Concept_1.png]]
+
+   #+ATTR_HTML: :width 400 :style image-rendering:pixelated;float:right
+   [[./Run_Concept_1.gif]]
+
+** Patrick McKeown
+
+   - unicorn brain psionic attack @@html:<audio controls><source src="./demo/sounds/unicorn_brain_psionic_attack.mp3" type="audio/mp3"></audio>@@
+   - toaster bat attack soundfx @@html:<audio controls><source src="./demo/sounds/toaster_bat_shooting.mp3" type="audio/mp3"></audio>@@
+** Gonzalo Delgado
+
+   - ~make dist~ bugfix
+   - Enemy class refactor
+   - Unicorn brain boss behavior
+
+* Demo
+
+#+BEGIN_export html
+<iframe src="./demo/index.html" width="852" height="480"></iframe>
+#+END_export
+
+* Schedule
+
+#+BEGIN_export html
+<blockquote class="trello-board-compact">
+  <a href="https://trello.com/b/MYl1KS07/witches-n-guns-2">
+  Witches 'n Guns 2 Schedule
+  </a>
+</blockquote>
+<script src="https://p.trellocdn.com/embed.min.js"></script>
+#+END_export
+
+* Join!
+
+  *#team-witches-and-guns-2*
+
