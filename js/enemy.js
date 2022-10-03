@@ -47,7 +47,7 @@ export class Enemy extends BaseEnemy {
 	  imageSpec: {
 		id: "toaster", sx: 0, sy: 0, sWidth: 32, sHeight: 32
 	  },
-	  sfx: {},
+	  sfx: {shoot: "toasterAttack"},
 	  bounty: 10,
 	},
 	RASPBERRY_DONUT: {

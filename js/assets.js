@@ -33,6 +33,7 @@ const assetSpecs = {
 	{id: "explosion3", path: "sounds/printer_shooting.mp3"},
 	{id: "espressoAttack1", path: "sounds/espresso_shoot_1.mp3"},
 	{id: "espressoAttack2", path: "sounds/espresso_shoot_2.mp3"},
+	{id: "toasterAttack", path: "sounds/toaster_bat_shooting.mp3"},
   ],
   levels: [
 	{id: "graveyard", path: "levels/graveyard.json"},
