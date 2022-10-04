@@ -598,9 +598,6 @@ export class Editor {
 	  ctx.fillStyle = 'hotpink';
 	  ctx.fillRect(0, Math.round(this.newWalkWay) - 10, ctx.canvas.width, 10);
 	}
-	for (const component of Object.values(this.components)) {
-	  component.draw(ctx, assets);
-	}
 	for (const [i, walkway, enemy] of this.getEnemiesForTime()) {
 	  const count = enemy.count || 1;
 	  for (let i=0; i<count; i++) {
@@ -631,6 +628,9 @@ export class Editor {
 	  for (const prop of this.levelData.props.filter(prop => prop.y < Number(walkway))) {
 		this.drawEntity(prop, ctx, assets);
 	  }
+	}
+	for (const component of Object.values(this.components)) {
+	  component.draw(ctx, assets);
 	}
 	if (this.isDraggingWP) {
 	  ctx.strokeStyle = "red";
