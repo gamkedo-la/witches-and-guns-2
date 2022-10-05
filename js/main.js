@@ -45,6 +45,17 @@ class Game {
 	this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
 	this.scene.draw(this.ctx, this.assets.images);
+
+	if (this.input.pause && this.scene.canPause) {
+	  const oldAlign = this.ctx.textAlign;
+	  const oldFont = this.ctx.oldFont;
+	  this.ctx.fillStyle = "white";
+	  this.ctx.font = "bold 18px sans";
+	  this.ctx.textAlign = "center";
+	  this.ctx.fillText("PAUSED", Math.round(this.ctx.canvas.width/2), Math.round(this.ctx.canvas.height/2));
+	  this.ctx.textAlign = oldAlign;
+	  this.ctx.font = oldFont;
+	}
   }
 
   blast() {
@@ -133,6 +144,13 @@ class MenuScene {
 	  }
 	  ctx.fillText(label.toUpperCase(), midX - 24, Math.round(ctx.canvas.height*0.5 + 12*i));
 	}
+
+	ctx.font = "10px sans";
+	ctx.fillText("- Left, Right: Move (Double tap to Dodge)", ctx.canvas.width * 0.1, ctx.canvas.height * 0.5 + 12 * (Object.keys(this.options).length + 1))
+	ctx.fillText("- Spacebar: Shoot", ctx.canvas.width * 0.1, ctx.canvas.height * 0.5 + 12 * (Object.keys(this.options).length + 2))
+	ctx.fillText("- Up, Down: Aim", ctx.canvas.width * 0.1, ctx.canvas.height * 0.5 + 12 * (Object.keys(this.options).length + 3))
+	ctx.fillText("- p or Tab: Pause", ctx.canvas.width * 0.1, ctx.canvas.height * 0.5 + 12 * (Object.keys(this.options).length + 4))
+
 	ctx.textAlign = oldAlign;
 	ctx.font = oldFont;
   }
@@ -153,8 +171,11 @@ class LevelScene {
 	this.level = new Level(levelData, constants.PLAYABLE_WIDTH, constants.VIEWABLE_HEIGHT, this.player);
 	this.level.reset(levelData);
   }
-  
+
   update(dt, input) {
+	if (input.pause) {
+	  return;
+	}
 	this.level.update(dt, input);
 	if (this.level.finished) {
 	  console.log("LEVEL FINISHED", this.level);
@@ -191,9 +212,11 @@ class BossFightScene extends LevelScene {
   loadLevel(levelData) {
 	this.level = new BossFight(levelData, constants.PLAYABLE_WIDTH, constants.VIEWABLE_HEIGHT, this.player);
 	this.level.reset(levelData);
+	this.canPause = true;
   }
 
   onFinishedLevel() {
+	this.canPause = false;
 	this.parent.tallyUp();
   }
 }
@@ -253,23 +276,29 @@ class GamePlayScene {
   }
 
   bossFight() {
+	this.canPause = false;
 	this.subscene = new BossFightScene(this.player, this.subscene.level.levelData, this);
 	console.log("BOSS FIGHT", this.subscene);
+	this.canPause = true;
   }
-  
+
   tallyUp() {
+	this.canPause = false;
 	this.subscene = new TallyUpScene(this, this.player.levelStats);
   }
 
   gameOver() {
+	this.canPause = false;
 	this.subscene = new GameOverScene({exit: () => this.game.scene = this.game.menu});
   }
 
   loadNextLevel() {
+	this.canPause = false;
 	const levelId = Object.keys(this.levels)[this.nextLevelIdx];
 	this.player.resetLevelStats();
 	this.subscene = new LevelScene(this.player, this.levels[levelId], this);
 	console.log("LOADED LEVEL", levelId);
+	this.canPause = true;
 	this.nextLevelIdx = (this.nextLevelIdx + 1) % Object.keys(this.levels).length;
   }
 
@@ -294,7 +323,7 @@ class PlayTestScene extends LevelScene {
   }
 
   update(dt, input) {
-	if (input.justReleasedKeys.has(Input.EDIT)) { 
+	if (input.justReleasedKeys.has(Input.EDIT)) {
 	  this.exit();
 	  return;
 	}

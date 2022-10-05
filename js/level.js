@@ -150,9 +150,9 @@ export class Level {
   }
 
   draw(ctx, assets) {
-    
+
     this.drawBG(ctx,assets);
-	
+
     // TODO: filter out off-screen entities
     for (const entity of this.activeEntities) {
 	  entity.draw(ctx, assets, this.offset);

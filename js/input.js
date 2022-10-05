@@ -5,6 +5,7 @@ export class Input {
 
   constructor(canvas) {
 	this.up = this.down = this.left = this.right = this.shoot = false;
+	this.pause = false;
     this.rightReleaseTime = this.leftReleaseTime = this.dodgeLeftUntil = this.dodgeRightUntil = 0; // timestamps
 	this.edit = false;
 	this.mousePos = {x: null, y: null};
@@ -42,7 +43,7 @@ export class Input {
                 //console.log("double tap was soon enough! dodging.");
                 this.dodgeLeftUntil = now + constants.DODGE_TIMESPAN;
             }
-        } 
+        }
       }
 
       break;
@@ -61,7 +62,7 @@ export class Input {
                 //console.log("double tap was soon enough! dodging.");
                 this.dodgeRightUntil = now + constants.DODGE_TIMESPAN;
             }
-        } 
+        }
       }
 
 	  break;
@@ -75,6 +76,13 @@ export class Input {
 	  break;
 	case "e":
 	  this.edit = value;
+	  break;
+	case "p":
+	case "Tab":
+	  let keyReleased = (value === false);
+	  if (keyReleased) {
+	    this.pause = !this.pause;
+	  }
 	  break;
 	}
   }
