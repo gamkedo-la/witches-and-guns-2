@@ -82,7 +82,7 @@ export class Level {
 	}
 	Level.#WAVE_TIMER += dt;
 	const timeIndex = Math.floor(Level.#TIMER*1000/constants.TIME_SLOT);
-	if (Level.#WAVE_TIMER*1000 > constants.TIME_SLOT) {
+	if (Math.ceil(Level.#WAVE_TIMER*1000) >= constants.TIME_SLOT) {
 	  if (typeof(this.enemies[timeIndex - 1]) === "undefined") {
 		this.enemies[timeIndex - 1] = [];
 	  }
