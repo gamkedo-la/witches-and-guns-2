@@ -141,7 +141,7 @@ export class Enemy extends BaseEnemy {
 	this.startX = x;
 	this.endX = endX || this.startX;
 	this.walkSpeed = 64;
-	this.popOutSpeed = 48;
+	this.popOutSpeed = 24;
 	this.startY = y;
 	if (this.endX == this.startX) {	// pop out enemy
 	  this.endY = this.y - this.height/2;
