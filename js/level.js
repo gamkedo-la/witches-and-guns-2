@@ -111,7 +111,7 @@ export class Level {
 	  }
 	  Level.#WAVE_TIMER = 0;
 	  // reset when timer reaches max
-	  if (timeIndex >= this.maxTimeIndex && Array.from(Enemy.alive()).length <= 0) {
+	  if (timeIndex > this.maxTimeIndex && Array.from(Enemy.alive()).length <= 0) {
 		Level.#TIMER = 0;
 		this.enemies = [];
 	  }
