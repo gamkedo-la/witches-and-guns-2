@@ -266,13 +266,55 @@ class TallyUpScene {
   }
 }
 
+class PlayerSelectScene {
+  constructor(parent) {
+	this.parent = parent;
+	this.selected = "left";
+  }
+
+  update(dt, input) {
+	if (input.justReleasedKeys.has("ArrowRight") || input.justReleasedKeys.has("d")) {
+	  this.selected = "right";
+	}
+	if (input.justReleasedKeys.has("ArrowLeft") || input.justReleasedKeys.has("a")) {
+	  this.selected = "left";
+	}
+	if (input.justReleasedKeys.has("Enter")) {
+	  this.parent.setPlayer(new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight}));
+	  this.parent.loadNextLevel();
+	}
+  }
+
+  draw(ctx, assets) {
+	ctx.fillStyle = "black";
+	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+	ctx.globalAlpha = 0.1;
+	ctx.drawImage(assets.menuBG, assets.menuBG.width - ctx.canvas.width, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
+	ctx.globalAlpha = this.selected == 'left' ? 1 : 0.4;
+	ctx.drawImage(assets.player1, 0, 0, 50, 48, (ctx.canvas.width - 50*2)/4, (ctx.canvas.height - 48*2)/2, 50*2, 48*2);
+	ctx.globalAlpha = this.selected == 'right' ? 1 : 0.4;
+	ctx.drawImage(assets.player2, 65, 0, 35, 49, 3*(ctx.canvas.width - 35*2)/4, (ctx.canvas.height - 49*2)/2, 35*2, 49*2);
+	ctx.globalAlpha = 1;
+  }
+
+  blast(ctx, assets) {
+  }
+}
+
 class GamePlayScene {
   constructor(game, levels) {
 	this.game = game;
-	this.player = new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight});
 	this.levels = levels;
 	this.nextLevelIdx = 0;
-	this.loadNextLevel();
+	this.playerSelect();
+  }
+
+  setPlayer(player) {
+	this.player = player;
+  }
+
+  playerSelect() {
+	this.subscene = new PlayerSelectScene(this);
   }
 
   bossFight() {
