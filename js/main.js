@@ -290,11 +290,13 @@ class PlayerSelectScene {
 	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 	ctx.globalAlpha = 0.1;
 	ctx.drawImage(assets.menuBG, assets.menuBG.width - ctx.canvas.width, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
-	ctx.globalAlpha = this.selected == 'left' ? 1 : 0.4;
-	ctx.drawImage(assets.player1, 0, 0, 50, 48, (ctx.canvas.width - 50*2)/4, (ctx.canvas.height - 48*2)/2, 50*2, 48*2);
-	ctx.globalAlpha = this.selected == 'right' ? 1 : 0.4;
-	ctx.drawImage(assets.player2, 65, 0, 35, 49, 3*(ctx.canvas.width - 35*2)/4, (ctx.canvas.height - 49*2)/2, 35*2, 49*2);
-	ctx.globalAlpha = 1;
+    
+    ctx.globalAlpha = this.selected == 'left' ? 1 : 0.4;
+	ctx.drawImage(assets.player1, ctx.canvas.width/2 - 100, 50);
+    ctx.globalAlpha = this.selected == 'right' ? 1 : 0.4;
+	ctx.drawImage(assets.player2, ctx.canvas.width/2 + 50, 50);
+
+    ctx.globalAlpha = 1;
   }
 
   blast(ctx, assets) {
