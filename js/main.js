@@ -280,7 +280,35 @@ class PlayerSelectScene {
 	  this.selected = "left";
 	}
 	if (input.justReleasedKeys.has("Enter")) {
-	  this.parent.setPlayer(new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight}));
+	  const imageSpec = this.selected == "right" ? {
+		id: "player2",
+		sx: 0,
+		sy: 0,
+		sWidth: 28,
+		sHeight: 49,
+		animations: {
+		  move: [{id: "player2", sx: 31, sy: 0, sWidth: 34, sHeight: 49}],
+		  // shoot: [],
+		  // death: [],
+		}
+	  } : {
+		id: "player1",
+		sx: 0,
+		sy: 0,
+		sWidth: 48,
+		sHeight: 49,
+		animations: {
+		  move: [
+			{id: "player1", sx: 0, sy: 0, sWidth: 49, sHeight: 50, time: 90},
+			{id: "player1", sx: 50, sy: 0, sWidth: 51, sHeight: 50, time: 90},
+			{id: "player1", sx: 0, sy: 50, sWidth: 49, sHeight: 50, time: 90},
+			{id: "player1", sx: 50, sy: 50, sWidth: 51, sHeight: 50, time: 90},
+		  ],
+		  // shoot: [],
+		  // death: [],
+		}
+	  };
+	  this.parent.setPlayer(new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight}, imageSpec));
 	  this.parent.loadNextLevel();
 	}
   }
@@ -290,11 +318,11 @@ class PlayerSelectScene {
 	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 	ctx.globalAlpha = 0.1;
 	ctx.drawImage(assets.menuBG, assets.menuBG.width - ctx.canvas.width, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
-    
-    ctx.globalAlpha = this.selected == 'left' ? 1 : 0.4;
-	ctx.drawImage(assets.player1, ctx.canvas.width/2 - 100, 50);
-    ctx.globalAlpha = this.selected == 'right' ? 1 : 0.4;
-	ctx.drawImage(assets.player2, ctx.canvas.width/2 + 50, 50);
+
+	ctx.globalAlpha = this.selected == 'left' ? 1 : 0.4;
+	ctx.drawImage(assets.player1, 0, 0, 50, 48, (ctx.canvas.width - 50*2)/4, (ctx.canvas.height - 48*2)/2, 50*2, 48*2);
+	ctx.globalAlpha = this.selected == 'right' ? 1 : 0.4;
+	ctx.drawImage(assets.player2, 65, 0, 35, 49, 3*(ctx.canvas.width - 35*2)/4, (ctx.canvas.height - 49*2)/2, 35*2, 49*2);
 
     ctx.globalAlpha = 1;
   }

@@ -1,3 +1,4 @@
+import {Animation} from "./animation.js";
 import {Enemy} from "./enemy.js";
 import {Projectile} from "./projectile.js";
 import {constants} from "./constants.js";
@@ -72,7 +73,7 @@ export class Player {
 	return hook;
   }
 
-  constructor(startPos) {
+  constructor(startPos, imageSpec) {
 	this.lives = 4;
 	this.score = 0;
 	this.avatarPos = {x: 100, y: startPos.y};
@@ -91,7 +92,9 @@ export class Player {
 	  items: 0,
 	  vandalism: 0,
 	};
-	this.facing = 'front';
+	this.facing = "front";
+	this.imageSpec = imageSpec;
+	this.currentAnimation = null;
   }
 
   resetLevelStats() {
@@ -104,8 +107,11 @@ export class Player {
 	if (this.lives <= 0) {
 	  return;
 	}
+	if (this.currentAnimation !== null) {
+	  this.currentAnimation.update(dt);
+	}
 	if (this.wasKilled) {
-	  if (this.respawnTimer < Player.timeToRespawn) {
+	  if (this.respawnTimer < Player.timeToRespawn && (this.currentAnimation === null || !this.currentAnimation.playing)) {
 		this.respawnTimer += dt;
 		return;
 	  } else {
@@ -139,6 +145,7 @@ export class Player {
 	  this.shots.push(...shots);
 	  this.blastQueue.push(this.gun.shootingSound);
 	  this.shotDelay = this.gun.timeBetweenShots;
+	  this.currentAnimation = typeof(this.imageSpec.animations.shoot) == "undefined" ? null : new Animation(this.imageSpec.animations.death);
 	}
 	this.shotDelay -= dt;
 	const cv = Player.getAxis(input.up, input.down, input.left, input.right);
@@ -182,11 +189,20 @@ export class Player {
 	  }
 	}
 	if (input.right) {
-	  this.facing = 'right';
+	  if (this.facing !== "right") {
+		this.facing = "right";
+		this.currentAnimation = new Animation(this.imageSpec.animations.move, false, true);
+	  }
 	} else if (input.left) {
-	  this.facing = 'left';
+	  if (this.facing !== "left") {
+		this.facing = "left";
+		this.currentAnimation = new Animation(this.imageSpec.animations.move, true, true);
+	  }
 	} else {
-	  this.facing = 'front';
+	  if (this.facing !== "front") {
+		this.facing = "front";
+		this.currentAnimation = null;
+	  }
 	}
   }
 
@@ -209,16 +225,12 @@ export class Player {
 	if (this.invincibleTimer > 0 && this.invincibleTimer % 0.5 > 0.2) {
 	  ctx.globalAlpha = 0.01;
 	}
-	switch (this.facing) {
-	case "left":
-	  ctx.drawImage(assets.player, 65, 0, 35, 49, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), 35, 49);
-	  break;
-	case "right":
-	  ctx.drawImage(assets.player, 30, 0, 35, 49, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), 35, 49);
-	  break;
-	case "front":
-	default:
-	  ctx.drawImage(assets.player, 0, 0, 28, 49, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y), 28, 49); 
+	const x = Math.round(this.avatarPos.x - offset);
+	const y = Math.round(this.avatarPos.y);
+	if (this.currentAnimation === null) {
+	  ctx.drawImage(assets[this.imageSpec.id], this.imageSpec.sx, this.imageSpec.sy, this.imageSpec.sWidth, this.imageSpec.sHeight, x, y, this.imageSpec.sWidth, this.imageSpec.sHeight);
+	} else {
+	  this.currentAnimation.draw(ctx, assets, x, y);
 	}
 	ctx.globalAlpha = oldAlpha;
   }
@@ -270,6 +282,7 @@ export class Player {
   die() {
 	this.lives--;
 	this.wasKilled = true;
+	this.currentAnimation = typeof(this.imageSpec.animations.death) == "undefined" ? null : new Animation(this.imageSpec.animations.death);
   }
 }
 

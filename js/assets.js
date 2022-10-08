@@ -1,12 +1,9 @@
 const assetSpecs = {
   images: [
 	{id: "player", path: "images/julhilde.png"},
-    
-    // FIXME: these two images do not yet exist
-    {id: "player1", path: "images/1player.png"},
-	{id: "player2", path: "images/2players.png"},
-	
-    {id: "tile", path: "images/tile.png"},
+	{id: "player1", path: "images/Sprite1 Wip/RUN_Concept_1.png"},
+	{id: "player2", path: "images/julhilde.png"},
+	{id: "tile", path: "images/tile.png"},
 	{id: "levelBG", path: "images/background.gif"},
 	{id: "levelBG2", path: "images/background2.gif"},
 	{id: "levelBG3", path: "images/background3.gif"},
