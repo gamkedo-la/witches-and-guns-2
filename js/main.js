@@ -287,7 +287,12 @@ class PlayerSelectScene {
 		sWidth: 28,
 		sHeight: 49,
 		animations: {
-		  move: [{id: "player2", sx: 31, sy: 0, sWidth: 34, sHeight: 49}],
+		  move: [
+			{id: "player2", sx: 31, sy: 0, sWidth: 34, sHeight: 49, time: 180},
+			{id: "player2", sx: 31, sy: 49, sWidth: 34, sHeight: 49, time: 180},
+			{id: "player2", sx: 31, sy: 0, sWidth: 34, sHeight: 49, time: 180},
+			{id: "player2", sx: 31, sy: 100, sWidth: 34, sHeight: 49, time: 180},
+		  ],
 		  // shoot: [],
 		  // death: [],
 		}
