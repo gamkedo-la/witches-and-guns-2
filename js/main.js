@@ -99,23 +99,23 @@ class MenuScene {
   }
 
   update(dt, input) {
-	const numOptions = Object.keys(this.options).length;
-	if (input.justReleasedKeys.has("ArrowDown")) {
-	  this.selectedIndex++;
-	  this.selectedIndex = this.selectedIndex % numOptions;
-	}
-	if (input.justReleasedKeys.has("ArrowUp")) {
-	  this.selectedIndex--;
-	  if (this.selectedIndex < 0) {
-		this.selectedIndex = numOptions + this.selectedIndex;
-	  } else {
-		this.selectedIndex = this.selectedIndex % numOptions;
-	  }
-	}
-	if (input.justReleasedKeys.has("Enter")) {
-	  const option = Object.keys(this.options)[this.selectedIndex];
-	  this.options[option]();
-	}
+		const numOptions = Object.keys(this.options).length;
+		if (input.justReleasedKeys.has("ArrowDown")) {
+			this.selectedIndex++;
+			this.selectedIndex = this.selectedIndex % numOptions;
+		}
+		if (input.justReleasedKeys.has("ArrowUp")) {
+			this.selectedIndex--;
+			if (this.selectedIndex < 0) {
+			this.selectedIndex = numOptions + this.selectedIndex;
+			} else {
+			this.selectedIndex = this.selectedIndex % numOptions;
+			}
+		}
+		if (input.justReleasedKeys.has("Enter")) {
+			const option = Object.keys(this.options)[this.selectedIndex];
+			this.options[option]();
+		}
   }
 
   draw(ctx, assets) {
@@ -417,6 +417,7 @@ class CreditsScene {
 		this.hooks = hooks;
 		this.elapsedTime = 0;
 		this.lineHeight = 18;
+		this.scrollPaused = false;
 		this.contributorFont = `bold ${this.lineHeight}px serif`;
 		this.contributionsFont = `normal ${this.lineHeight}px serif`;
 		this.credits = [
@@ -439,7 +440,15 @@ class CreditsScene {
   update(dt, input) {
 		if (input.justReleasedKeys.has("Escape")) {
 			this.exit();
-		} else {
+		} else if (input.justReleasedKeys.has("ArrowDown")) {
+			this.scrollPaused = true;
+			this.elapsedTime -= 0.50;
+		} else if (input.justReleasedKeys.has("ArrowUp")) {
+			this.scrollPaused = true;
+			this.elapsedTime += 0.50;
+		} else if (input.justReleasedKeys.has(" ")) {
+			this.scrollPaused = !this.scrollPaused;
+		} else if (!this.scrollPaused) {
 			this.elapsedTime += dt;
 		}
   }
