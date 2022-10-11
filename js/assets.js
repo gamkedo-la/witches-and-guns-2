@@ -40,9 +40,7 @@ const assetSpecs = {
   ],
   levels: [
 	{id: "graveyard", path: "levels/graveyard.json"},
-	{id: "level1", path: "levels/level2.json"},
-	{id: "level2", path: "levels/level3.json"},
-	{id: "level3", path: "levels/level4.json"},
+	{id: "forest", path: "levels/level1.json"},
   ],
 };
 
