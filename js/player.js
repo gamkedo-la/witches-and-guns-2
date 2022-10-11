@@ -13,6 +13,40 @@ export class Player {
   static avatarSpeed = 120;
   static timeToRespawn = 3;
   static respawnInvincibilityTime = 2;
+  static player1ImageSpec = {
+	id: "player1",
+	sx: 0,
+	sy: 0,
+	sWidth: 48,
+	sHeight: 49,
+	animations: {
+	  move: [
+		{id: "player1", sx: 0, sy: 0, sWidth: 49, sHeight: 50, time: 90},
+		{id: "player1", sx: 50, sy: 0, sWidth: 51, sHeight: 50, time: 90},
+		{id: "player1", sx: 0, sy: 50, sWidth: 49, sHeight: 50, time: 90},
+		{id: "player1", sx: 50, sy: 50, sWidth: 51, sHeight: 50, time: 90},
+	  ],
+	  // shoot: [],
+	  // death: [],
+	}
+  };
+  static player2ImageSpec = {
+	id: "player2",
+	sx: 0,
+	sy: 0,
+	sWidth: 28,
+	sHeight: 49,
+	animations: {
+	  move: [
+		{id: "player2", sx: 31, sy: 0, sWidth: 34, sHeight: 49, time: 180},
+		{id: "player2", sx: 31, sy: 49, sWidth: 34, sHeight: 49, time: 180},
+		{id: "player2", sx: 31, sy: 0, sWidth: 34, sHeight: 49, time: 180},
+		{id: "player2", sx: 31, sy: 100, sWidth: 34, sHeight: 49, time: 180},
+	  ],
+	  // shoot: [],
+	  // death: [],
+	}
+  };
 
   static getAxis = function(up, down, left, right) {
 	let axis = { x: 0, y: 0 };

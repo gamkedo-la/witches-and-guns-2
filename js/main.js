@@ -18,7 +18,7 @@ class Game {
 	this.assets = loadedAssets;
 	this.input = new Input(canvas);
 	this.editor = new Editor(loadedAssets.levels, {
-	  play: levelData => this.scene = new PlayTestScene(new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight}), levelData, this.editor),
+	  play: levelData => this.scene = new PlayTestScene(new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight}, Player.player2ImageSpec), levelData, this.editor),
 	  edit: levelData => this.scene = this.editor,
 	  exit: () => this.scene = this.menu,
 	});
@@ -280,39 +280,7 @@ class PlayerSelectScene {
 	  this.selected = "left";
 	}
 	if (input.justReleasedKeys.has("Enter")) {
-	  const imageSpec = this.selected == "right" ? {
-		id: "player2",
-		sx: 0,
-		sy: 0,
-		sWidth: 28,
-		sHeight: 49,
-		animations: {
-		  move: [
-			{id: "player2", sx: 31, sy: 0, sWidth: 34, sHeight: 49, time: 180},
-			{id: "player2", sx: 31, sy: 49, sWidth: 34, sHeight: 49, time: 180},
-			{id: "player2", sx: 31, sy: 0, sWidth: 34, sHeight: 49, time: 180},
-			{id: "player2", sx: 31, sy: 100, sWidth: 34, sHeight: 49, time: 180},
-		  ],
-		  // shoot: [],
-		  // death: [],
-		}
-	  } : {
-		id: "player1",
-		sx: 0,
-		sy: 0,
-		sWidth: 48,
-		sHeight: 49,
-		animations: {
-		  move: [
-			{id: "player1", sx: 0, sy: 0, sWidth: 49, sHeight: 50, time: 90},
-			{id: "player1", sx: 50, sy: 0, sWidth: 51, sHeight: 50, time: 90},
-			{id: "player1", sx: 0, sy: 50, sWidth: 49, sHeight: 50, time: 90},
-			{id: "player1", sx: 50, sy: 50, sWidth: 51, sHeight: 50, time: 90},
-		  ],
-		  // shoot: [],
-		  // death: [],
-		}
-	  };
+	  const imageSpec = this.selected == "right" ? Player.player1ImageSpec : Player.player2ImageSpec;
 	  this.parent.setPlayer(new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight}, imageSpec));
 	  this.parent.loadNextLevel();
 	}
