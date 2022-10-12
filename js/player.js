@@ -170,9 +170,12 @@ export class Player {
 	  this.isShooting = false;
 	} else if (this.shotDelay <= 0) {
 	  this.isShooting = true;
-	  const shots = this.gun.fire(
-		this.avatarPos.x + Player.avatarWidth/2,	// starting x
-		this.avatarPos.y,	// starting y
+      let gunx = 0;
+      if (this.facing=="right") gunx = constants.GUN_BARREL_OFFSETX;
+      if (this.facing=="left") gunx = -1 * constants.GUN_BARREL_OFFSETX;
+      const shots = this.gun.fire(
+		this.avatarPos.x + Player.avatarWidth/2 + gunx, // starting x
+		this.avatarPos.y + constants.GUN_BARREL_OFFSETY, // starting y
 		{x: this.reticlePos.x, y: this.reticlePos.y, width: 3, height: 3},	// target rectangle
 		[this.getHitTargetHook()],
 	  );

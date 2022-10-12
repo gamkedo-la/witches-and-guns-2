@@ -1,10 +1,5 @@
+import {constants} from "./constants.js";
 import {Entity} from "./entity.js";
-
-const PROJECTILE_TRAILS_ENABLED = true; // false to remove all trails
-const BULLET_TRAIL_ALPHA = 0.25; // 1.0 is fully opaque
-// the bullet sprites are not centered so we need to shift from the corner to the middle
-const BULLET_TRAIL_XOFFSET = -4;
-const BULLET_TRAIL_YOFFSET = -4;
 
 export class Projectile extends Entity {
   static INSTANCES = [];
@@ -65,7 +60,7 @@ export class Projectile extends Entity {
 	  y: this.reachedTarget ? this.target.y : this.y,
 	};
 	// bullet trail
-    if (PROJECTILE_TRAILS_ENABLED) this.drawBitmapLine(ctx, assets.bullet_trail, this.startx, this.starty, shotDrawPos.x + BULLET_TRAIL_XOFFSET, shotDrawPos.y  + BULLET_TRAIL_YOFFSET, BULLET_TRAIL_ALPHA);
+    if (constants.PROJECTILE_TRAILS_ENABLED) this.drawBitmapLine(ctx, assets.bullet_trail, this.startx, this.starty, shotDrawPos.x + constants.BULLET_TRAIL_XOFFSET, shotDrawPos.y  + constants.BULLET_TRAIL_YOFFSET, constants.BULLET_TRAIL_ALPHA);
     // projectile sprite
     ctx.drawImage(assets[this.imageSpec.id], this.imageSpec.sx, this.imageSpec.sy, this.imageSpec.sWidth, this.imageSpec.sHeight, Math.round(shotDrawPos.x - offset - this.imageSpec.sWidth/2), Math.round(shotDrawPos.y - this.imageSpec.sHeight*1.5), this.imageSpec.sWidth, this.imageSpec.sHeight);
   }
