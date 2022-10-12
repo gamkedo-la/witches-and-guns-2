@@ -1,5 +1,11 @@
 import {Entity} from "./entity.js";
 
+const PROJECTILE_TRAILS_ENABLED = true; // false to remove all trails
+const BULLET_TRAIL_ALPHA = 0.25; // 1.0 is fully opaque
+// the bullet sprites are not centered so we need to shift from the corner to the middle
+const BULLET_TRAIL_XOFFSET = -4;
+const BULLET_TRAIL_YOFFSET = -4;
+
 export class Projectile extends Entity {
   static INSTANCES = [];
 
@@ -13,6 +19,8 @@ export class Projectile extends Entity {
 	};
 	this.hooks = hooks;
 	this.reachedTarget = false;
+    this.startx = x;
+    this.starty = y;
 	return this;
   }
 
@@ -27,11 +35,38 @@ export class Projectile extends Entity {
 	}
   }
 
+    // rotates and stretches a bitmap to go from point A to point B, used by Woosh Lines FX
+    drawBitmapLine(canvasContext, useBitmap, startX, startY, endX, endY, alpha) {
+        var lineLength = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+        var lineAngle = Math.atan2(endY - startY, endX - startX);
+        // edge case: avoid floating point imprecision flickering of angle on small values
+        if (lineLength < 1) {
+            // we COULD just not render, but this leaves gaps in the effect
+            // if we are drawing multiple lines close together
+            // return; 
+            lineAngle = 0;
+            lineLength = 1;
+        }
+        canvasContext.save();
+        canvasContext.translate(startX, startY);
+        canvasContext.rotate(lineAngle);
+        canvasContext.translate(0, - useBitmap.height / 2);
+        canvasContext.globalAlpha = alpha;
+        canvasContext.drawImage(useBitmap,
+            0, 0, useBitmap.width, useBitmap.height, // src 
+            0, 0, lineLength, useBitmap.height);     // dest
+        canvasContext.globalAlpha = 1;
+        canvasContext.restore();
+    }
+
   draw(ctx, assets, offset) {
 	const shotDrawPos = {
 	  x: this.reachedTarget ? this.target.x : this.x,
 	  y: this.reachedTarget ? this.target.y : this.y,
 	};
-	ctx.drawImage(assets[this.imageSpec.id], this.imageSpec.sx, this.imageSpec.sy, this.imageSpec.sWidth, this.imageSpec.sHeight, Math.round(shotDrawPos.x - offset - this.imageSpec.sWidth/2), Math.round(shotDrawPos.y - this.imageSpec.sHeight*1.5), this.imageSpec.sWidth, this.imageSpec.sHeight);
+	// bullet trail
+    if (PROJECTILE_TRAILS_ENABLED) this.drawBitmapLine(ctx, assets.bullet_trail, this.startx, this.starty, shotDrawPos.x + BULLET_TRAIL_XOFFSET, shotDrawPos.y  + BULLET_TRAIL_YOFFSET, BULLET_TRAIL_ALPHA);
+    // projectile sprite
+    ctx.drawImage(assets[this.imageSpec.id], this.imageSpec.sx, this.imageSpec.sy, this.imageSpec.sWidth, this.imageSpec.sHeight, Math.round(shotDrawPos.x - offset - this.imageSpec.sWidth/2), Math.round(shotDrawPos.y - this.imageSpec.sHeight*1.5), this.imageSpec.sWidth, this.imageSpec.sHeight);
   }
 }

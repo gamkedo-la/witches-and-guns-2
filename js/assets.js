@@ -21,6 +21,7 @@ const assetSpecs = {
     {id: "logo", path: "images/logo.png"},
 	{id: "menuBG", path: "images/menu_background.gif"},
 	{id: "unibrain", path: "images/unibrain.png"},
+    {id: "bullet_trail" , path: "images/bullet_trail.png"},
   ],
   sounds: [
 	{id: "playerShooting1", path: "sounds/player-shoot-1-WG.mp3"},
