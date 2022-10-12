@@ -170,7 +170,7 @@ export class Player {
 	  this.isShooting = false;
 	} else if (this.shotDelay <= 0) {
 	  this.isShooting = true;
-      let gunx = 0;
+      let gunx = constants.GUN_BARREL_OFFSETX; // this was 0 but the art when centered has gun on right anyways
       if (this.facing=="right") gunx = constants.GUN_BARREL_OFFSETX;
       if (this.facing=="left") gunx = -1 * constants.GUN_BARREL_OFFSETX;
       const shots = this.gun.fire(
