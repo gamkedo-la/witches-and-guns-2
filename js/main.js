@@ -280,7 +280,7 @@ class PlayerSelectScene {
 	  this.selected = "left";
 	}
 	if (input.justReleasedKeys.has("Enter")) {
-	  const imageSpec = this.selected == "right" ? Player.player1ImageSpec : Player.player2ImageSpec;
+	  const imageSpec = this.selected == "left" ? Player.player1ImageSpec : Player.player2ImageSpec;
 	  this.parent.setPlayer(new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight}, imageSpec));
 	  this.parent.loadNextLevel();
 	}
