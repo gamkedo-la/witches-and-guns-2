@@ -339,12 +339,20 @@ class GamePlayScene {
 
   loadNextLevel() {
 	this.canPause = false;
-	const levelId = Object.keys(this.levels)[this.nextLevelIdx];
-	this.player.resetLevelStats();
-	this.subscene = new LevelScene(this.player, this.levels[levelId], this);
-	console.log("LOADED LEVEL", levelId);
-	this.canPause = true;
-	this.nextLevelIdx = (this.nextLevelIdx + 1) % Object.keys(this.levels).length;
+	if (this.nextLevelIdx >= Object.keys(this.levels).length) {
+	  this.subscene = new GameFinishedScene(this);
+	} else {
+	  const levelId = Object.keys(this.levels)[this.nextLevelIdx];
+	  this.player.resetLevelStats();
+	  this.subscene = new LevelScene(this.player, this.levels[levelId], this);
+	  this.canPause = true;
+	  this.nextLevelIdx = (this.nextLevelIdx + 1); // % Object.keys(this.levels).length;
+	}
+  }
+
+  rollCredits() {
+	this.canPause = false;
+	this.subscene = new CreditsScene({exit: () => this.gameOver()});
   }
 
   update(dt, input) {
@@ -360,6 +368,43 @@ class GamePlayScene {
   }
 }
 
+
+class GameFinishedScene {
+  constructor(parent) {
+	this.parent = parent;
+	this.timer = 0;
+  }
+
+  update(dt, input) {
+	this.timer += dt;
+	if (this.timer > 6) {
+	  this.parent.rollCredits();
+	  return;
+	}
+  }
+
+  draw(ctx, assets) {
+	ctx.fillStyle = "black";
+	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+	ctx.fillStyle = "pink";
+	const oldAlign = ctx.textAlign;
+	const oldFont = ctx.oldFont;
+	ctx.textAlign = "center";
+	ctx.font = "bold 24px serif";
+	const midX = Math.round(ctx.canvas.width/2);
+	ctx.fillText("YOU DID IT!", midX, Math.round(ctx.canvas.height/2) - 50);
+	ctx.textAlign = "left";
+	ctx.font = "16px sans";
+	ctx.fillText("THANKS FOR DEFEATING THE EVIL WITCH.", 10, Math.round(ctx.canvas.height/2));
+	ctx.fillText("LET'S GO FOR A BURGER....", 10, Math.round(ctx.canvas.height/2) + 20);
+	ctx.fillText("HA! HA! HA! HA!", 10, Math.round(ctx.canvas.height/2) + 40);
+	ctx.textAlign = oldAlign;
+	ctx.oldFont = oldFont;
+  }
+
+  blast(ctx, assets) {
+  }
+}
 
 class PlayTestScene extends LevelScene {
   constructor(player, levelData, editor) {
