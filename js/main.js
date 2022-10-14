@@ -1,5 +1,5 @@
 import {Input} from "./input.js";
-import {Player} from "./player.js";
+import {Player, Gun, ShotGun} from "./player.js";
 import {Level} from "./level.js";
 import {BossFight} from "./bossfight.js";
 import {Editor} from "./editor.js";
@@ -18,7 +18,7 @@ class Game {
 	this.assets = loadedAssets;
 	this.input = new Input(canvas);
 	this.editor = new Editor(loadedAssets.levels, {
-	  play: levelData => this.scene = new PlayTestScene(new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight}, Player.player2ImageSpec), levelData, this.editor),
+	  play: levelData => this.scene = new PlayTestScene(new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight}, Player.player2ImageSpec, new ShotGun()), levelData, this.editor),
 	  edit: levelData => this.scene = this.editor,
 	  exit: () => this.scene = this.menu,
 	});
@@ -281,7 +281,8 @@ class PlayerSelectScene {
 	}
 	if (input.justReleasedKeys.has("Enter")) {
 	  const imageSpec = this.selected == "left" ? Player.player1ImageSpec : Player.player2ImageSpec;
-	  this.parent.setPlayer(new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight}, imageSpec));
+	  const gun = this.selected == "left" ? new Gun() : new ShotGun();
+	  this.parent.setPlayer(new Player({x: 100, y: constants.VIEWABLE_HEIGHT - Player.avatarHeight}, imageSpec, gun));
 	  this.parent.loadNextLevel();
 	}
   }

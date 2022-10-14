@@ -107,7 +107,7 @@ export class Player {
 	return hook;
   }
 
-  constructor(startPos, imageSpec) {
+  constructor(startPos, imageSpec, gun) {
 	this.lives = 4;
 	this.score = 0;
 	this.avatarPos = {x: 100, y: startPos.y};
@@ -120,7 +120,7 @@ export class Player {
 	this.respawnTimer = 0;
 	this.respawning = true;
 	this.invincibleTimer = 0;
-	this.gun = new ShotGun();
+	this.gun = gun;
 	this.levelStats = {
 	  kills: 0,
 	  items: 0,
@@ -324,7 +324,7 @@ export class Player {
 }
 
 
-class Gun {
+export class Gun {
   constructor() {
 	this.timeBetweenShots = 1/9;
 	this.speed = 8;
@@ -346,7 +346,7 @@ class Gun {
 }
 
 
-class ShotGun extends Gun {
+export class ShotGun extends Gun {
   constructor() {
 	super();
 	this.timeBetweenShots = 1/5;
