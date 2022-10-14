@@ -121,9 +121,6 @@ export class Level {
 	  for (const prop of Prop.alive()) {
 		prop.update(accTime, this.player);
 	  }
-	  for (const item of Item.alive()) {
-		item.update(accTime, this.player);
-	  }
 	  if (typeof this.enemies[i] === "undefined") {
 		continue;
 	  }
@@ -132,6 +129,9 @@ export class Level {
 		  enemy.update(accTime, this.player);
 		}
 	  }
+	}
+	for (const item of Item.alive()) {
+	  item.update(dt);
 	}
 	for (const projectile of Projectile.alive()) {
 	  projectile.update(dt);
