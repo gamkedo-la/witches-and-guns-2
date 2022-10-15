@@ -112,7 +112,7 @@ class MenuScene {
 			this.selectedIndex = this.selectedIndex % numOptions;
 			}
 		}
-		if (input.justReleasedKeys.has("Enter")) {
+		if (input.justReleasedKeys.has("Enter") || input.justReleasedKeys.has(" ")) {
 			const option = Object.keys(this.options)[this.selectedIndex];
 			this.options[option]();
 		}
@@ -435,20 +435,24 @@ class CreditsScene {
   constructor(hooks) {
 		this.hooks = hooks;
 		this.elapsedTime = 0;
-		this.lineHeight = 18;
+		this.lineHeight = 13;
 		this.scrollPaused = false;
 		this.contributorFont = `bold ${this.lineHeight}px serif`;
 		this.contributionsFont = `normal ${this.lineHeight}px serif`;
+		this.MAX_CREDITS_SCROLL_TIME = 17.0;
 		this.credits = [
-			{
-				contributor: 'Gonzalo',
-				contributions: 'Game Lead, etc...'
-			},
-			{
-				contributor: 'Someone Else',
-				contributions: 'Some great stuff...lnbvfghj kjhg fr eswxcfred scvgbhjk,mn jhgfdsdf ghj kiuyg fdghj kiuytr esdfghjkiu y t rdfghj kiuy'
-			}
-		]
+{contributor: 'Gonzalo Delgado', contributions: 'Project lead, core gameplay, custom level editor and related UI/format, level design, hitboxcollision system, enemy behaviors, assorted bug fixes, general asset integration, title screen, level timer, level names setup'},
+{contributor: 'Vince McKeown', contributions: 'Sprite art (donut variants with animations, printer enemy, graves, bushes, rocks, latnern, expresso gangster, toaster bat), visual effects, game over and game win scenes, destroyable props, pickups, item drop, scoring, animation system, boss fight, gun types'},
+{contributor: 'FightEXP', contributions: 'Player 1 sprite animation (move and shoot), level backgrounds (moon, mountain graveyard), art concepts (character, shot, run, llama side view)'},
+{contributor: 'Patrick McKeown', contributions: 'Sounds (gunfire and bomb variations, enemy defeated, explosions, printer shots, toaster bat, coffee cup, unicorn barin, player defeated, witchboss), player shot sprites'},
+{contributor: 'Christer \"McFunkypants\" Kaitila', contributions: 'Player dodge, parallax background, logo, player mode GUI, shot trails, shot alignment'},
+{contributor: 'Chad Serrant', contributions: 'Player sprite walking animation, pause toggle'},
+{contributor: 'Liyi Zhang', contributions: 'Player 2 sprite (front and side, cape removed)'},
+{contributor: 'Abhishek @akhmin_ak', contributions: 'Enemy shot sound effect'},
+{contributor: 'H Trayford', contributions: 'Credits wrap and scroll'},
+{contributor: ' ', contributions: ' '},
+{contributor: 'Press ESC key for Main Menu', contributions: 'Or use up/down arrows for manual scroll'}
+]
   }
 
   exit() {
@@ -461,14 +465,22 @@ class CreditsScene {
 			this.exit();
 		} else if (input.justReleasedKeys.has("ArrowDown")) {
 			this.scrollPaused = true;
-			this.elapsedTime -= 0.50;
+			this.elapsedTime -= 1.50;
 		} else if (input.justReleasedKeys.has("ArrowUp")) {
 			this.scrollPaused = true;
-			this.elapsedTime += 0.50;
+			this.elapsedTime += 1.50;
 		} else if (input.justReleasedKeys.has(" ")) {
 			this.scrollPaused = !this.scrollPaused;
 		} else if (!this.scrollPaused) {
 			this.elapsedTime += dt;
+		}
+
+		// outside of auto scroll section so it will limit the arrows, too
+		if(this.elapsedTime < 0) {
+			this.elapsedTime = 0;
+		}
+		if(this.elapsedTime > this.MAX_CREDITS_SCROLL_TIME) {
+			this.elapsedTime = this.MAX_CREDITS_SCROLL_TIME;
 		}
   }
 
@@ -479,7 +491,7 @@ class CreditsScene {
 		ctx.fillStyle = "orange";
 		ctx.textAlign = "center";
 		const midX = Math.round(ctx.canvas.width/2);
-		const baseY = Math.round(ctx.canvas.height/3) - this.lineHeight * this.elapsedTime;
+		const baseY = Math.round(ctx.canvas.height/3) - this.lineHeight * this.elapsedTime*2.5;
 		let totalLines = 0;
 		for (let i = 0; i < this.credits.length; i++) {
 			ctx.font = this.contributorFont;
