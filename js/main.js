@@ -178,7 +178,7 @@ class LevelScene {
 	}
 	this.level.update(dt, input);
 	if (this.level.finished) {
-	  console.log("LEVEL FINISHED", this.level);
+	  if (!constants.PRODUCTION) console.log("LEVEL FINISHED", this.level);
 	  this.onFinishedLevel();
 	  return;
 	}
@@ -324,7 +324,7 @@ class GamePlayScene {
   bossFight() {
 	this.canPause = false;
 	this.subscene = new BossFightScene(this.player, this.subscene.level.levelData, this);
-	console.log("BOSS FIGHT", this.subscene);
+	if (!constants.PRODUCTION) console.log("BOSS FIGHT", this.subscene);
 	this.canPause = true;
   }
 

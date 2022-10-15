@@ -36,11 +36,11 @@ export class Input {
         let now = performance.now();
         if (!value) { // key released
             this.leftReleaseTime = now;
-            //console.log("just finished moving left");
+            //if (!constants.PRODUCTION) console.log("just finished moving left");
             this.dodgeLeftUntil = 0;
         } else { // key pressed
             if (performance.now() < (this.leftReleaseTime + constants.DODGE_DOUBLE_TAP_TIMING)) {
-                //console.log("double tap was soon enough! dodging.");
+                //if (!constants.PRODUCTION) console.log("double tap was soon enough! dodging.");
                 this.dodgeLeftUntil = now + constants.DODGE_TIMESPAN;
             }
         }
@@ -55,11 +55,11 @@ export class Input {
         let now = performance.now();
         if (!value) { // key released
             this.rightReleaseTime = now;
-            //console.log("just finished moving right");
+            //if (!constants.PRODUCTION) console.log("just finished moving right");
             this.dodgeRightUntil = 0;
         } else { // key pressed
             if (performance.now() < (this.rightReleaseTime + constants.DODGE_DOUBLE_TAP_TIMING)) {
-                //console.log("double tap was soon enough! dodging.");
+                //if (!constants.PRODUCTION) console.log("double tap was soon enough! dodging.");
                 this.dodgeRightUntil = now + constants.DODGE_TIMESPAN;
             }
         }

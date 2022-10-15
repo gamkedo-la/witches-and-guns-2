@@ -76,7 +76,7 @@ export class Level {
   update(dt) {
 	Level.#TIMER += dt;
 	if (!this.levelTimerDisabled && Level.#LEVEL_TIME - Level.#TIMER <= 0) {
-	  console.log("LEVEL FINISHED!!");
+	  if (!constants.PRODUCTION) console.log("LEVEL FINISHED!!");
 	  this.finished = true;
 	  return;
 	}
