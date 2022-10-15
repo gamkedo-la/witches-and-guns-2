@@ -311,7 +311,7 @@ export class Player {
 	if (this.lives <= 0 || this.wasKilled || this.invincibleTimer > 0) {
 	  return;
 	}
-	console.log("HIT BY", enemy, "WITH", shot, "LIVES REMAINING", this.lives);
+	this.blastQueue.push("playerDeath");
 	this.die();
   }
 

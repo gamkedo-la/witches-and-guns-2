@@ -27,6 +27,7 @@ const assetSpecs = {
   sounds: [
 	{id: "playerShooting1", path: "sounds/player-shoot-1-WG.mp3"},
 	{id: "playerShooting2", path: "sounds/player-shoot-2-WG.mp3"},
+	{id: "playerDeath", path: "sounds/player_death.mp3"},
 	{id: "donutDeath", path: "sounds/zombie-doughnut-death-short.mp3"},
 	{id: "printerDeath", path: "sounds/possessed-printer-death-WG.mp3"},
 	{id: "espressoDeath", path: "sounds/espresso-gangster-death-reverb.mp3"},
