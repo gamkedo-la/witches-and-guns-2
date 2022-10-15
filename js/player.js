@@ -14,17 +14,17 @@ export class Player {
   static timeToRespawn = 3;
   static respawnInvincibilityTime = 2;
   static player1ImageSpec = {
-	id: "player1",
-	sx: 0,
+	id: "player1Back",
+	sx: 8,
 	sy: 0,
-	sWidth: 48,
-	sHeight: 49,
+	sWidth: 27,
+	sHeight: 48,
 	animations: {
 	  move: [
-		{id: "player1", sx: 0, sy: 0, sWidth: 49, sHeight: 50, time: 90},
-		{id: "player1", sx: 50, sy: 0, sWidth: 51, sHeight: 50, time: 90},
-		{id: "player1", sx: 0, sy: 50, sWidth: 49, sHeight: 50, time: 90},
-		{id: "player1", sx: 50, sy: 50, sWidth: 51, sHeight: 50, time: 90},
+		{id: "player1Side", sx: 0, sy: 0, sWidth: 49, sHeight: 50, time: 90},
+		{id: "player1Side", sx: 50, sy: 0, sWidth: 51, sHeight: 50, time: 90},
+		{id: "player1Side", sx: 0, sy: 50, sWidth: 49, sHeight: 50, time: 90},
+		{id: "player1Side", sx: 50, sy: 50, sWidth: 51, sHeight: 50, time: 90},
 	  ],
 	  // shoot: [],
 	  // death: [],

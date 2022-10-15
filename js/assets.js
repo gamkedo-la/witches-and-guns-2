@@ -1,7 +1,8 @@
 const assetSpecs = {
   images: [
 	{id: "player1Portrait", path: "images/lama_sideview_avatar.png"},
-	{id: "player1", path: "images/Sprite1 Wip/RUN_Concept_1.png"},
+	{id: "player1Back", path: "images/sprite_1gun shoot.png"},
+	{id: "player1Side", path: "images/Sprite1 Wip/RUN_Concept_1.png"},
 	{id: "player2", path: "images/julhilde.png"},
 	{id: "tile", path: "images/tile.png"},
 	{id: "levelBG", path: "images/background2.png"},
