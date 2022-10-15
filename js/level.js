@@ -16,7 +16,7 @@ export class Level {
   static #LEVEL_TIME = 10;
   static BACKGROUNDS_MAP = {
 	graveyard: ["graveyardBG"],
-	default: ["levelBG", "levelBG2", "levelBG3", "levelBG4"],
+	default: ["levelBG"], //, "levelBG2", "levelBG3", "levelBG4"],
   }
 
   constructor(data, width, height, player) {
