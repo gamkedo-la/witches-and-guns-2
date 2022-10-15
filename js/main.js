@@ -294,7 +294,7 @@ class PlayerSelectScene {
 	ctx.drawImage(assets.menuBG, assets.menuBG.width - ctx.canvas.width, 0, ctx.canvas.width, ctx.canvas.height, 0, 0, ctx.canvas.width, ctx.canvas.height);
 
 	ctx.globalAlpha = this.selected == 'left' ? 1 : 0.4;
-	ctx.drawImage(assets.player1, 0, 0, 50, 48, (ctx.canvas.width - 50*2)/4, (ctx.canvas.height - 48*2)/2, 50*2, 48*2);
+	ctx.drawImage(assets.player1Portrait, 0, 0, assets.player1Portrait.width, assets.player1Portrait.height, (ctx.canvas.width - 50*2)/4, (ctx.canvas.height - 48*2)/2, assets.player1Portrait.width, assets.player1Portrait.height);
 	ctx.globalAlpha = this.selected == 'right' ? 1 : 0.4;
 	ctx.drawImage(assets.player2, 65, 0, 35, 49, 3*(ctx.canvas.width - 35*2)/4, (ctx.canvas.height - 49*2)/2, 35*2, 49*2);
 

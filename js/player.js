@@ -247,7 +247,6 @@ export class Player {
 	this.drawScore(ctx, assets);
 	this.drawLives(ctx, assets);
 	if (this.wasKilled) {
-	  ctx.drawImage(assets.player, 100, 6, 19, 25, Math.round(this.avatarPos.x - offset), Math.round(this.avatarPos.y + 5), 19, 25);
 	  return;
 	} else {
 	  ctx.strokeStyle = this.isShooting ? "lime" : "red";
