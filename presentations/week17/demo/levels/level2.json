@@ -1,0 +1,198 @@
+{
+  "name": "level1",
+  "props": [],
+  "walkways": {
+    "157": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      [],
+      null,
+      null,
+      [],
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      [
+        {
+          "type": "enemy",
+          "name": "RASPBERRY_DONUT",
+          "width": 32,
+          "height": 32,
+          "imageSpec": {
+            "id": "donutSheet",
+            "sx": 0,
+            "sy": 0,
+            "sWidth": 32,
+            "sHeight": 32,
+            "animations": {
+              "death": [
+                {
+                  "id": "donutSheet",
+                  "sx": 32,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 64,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 96,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 100
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 128,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 1000
+                }
+              ],
+              "hurt": [
+                {
+                  "id": "donutSheet",
+                  "sx": 160,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 192,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 224,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 256,
+                  "sy": 0,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                }
+              ]
+            }
+          },
+          "x": 88.97764044391259,
+          "y": 125
+        },
+        {
+          "type": "enemy",
+          "name": "FROSTED_DONUT",
+          "width": 32,
+          "height": 32,
+          "imageSpec": {
+            "id": "donutSheet",
+            "sx": 0,
+            "sy": 64,
+            "sWidth": 32,
+            "sHeight": 32,
+            "animations": {
+              "death": [
+                {
+                  "id": "donutSheet",
+                  "sx": 32,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 64,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 96,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 100
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 128,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 1000
+                }
+              ],
+              "hurt": [
+                {
+                  "id": "donutSheet",
+                  "sx": 160,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 192,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 224,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                },
+                {
+                  "id": "donutSheet",
+                  "sx": 256,
+                  "sy": 64,
+                  "sWidth": 32,
+                  "sHeight": 32,
+                  "time": 90
+                }
+              ]
+            }
+          },
+          "x": 321.91674179958363,
+          "y": 125
+        }
+      ]
+    ]
+  }
+}

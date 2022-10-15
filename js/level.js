@@ -16,7 +16,7 @@ export class Level {
   static #LEVEL_TIME = 10;
   static BACKGROUNDS_MAP = {
 	graveyard: ["graveyardBG"],
-	default: ["levelBG", "levelBG2", "levelBG3", "levelBG4"],
+	default: ["levelBG"], //, "levelBG2", "levelBG3", "levelBG4"],
   }
 
   constructor(data, width, height, player) {
@@ -76,7 +76,7 @@ export class Level {
   update(dt) {
 	Level.#TIMER += dt;
 	if (!this.levelTimerDisabled && Level.#LEVEL_TIME - Level.#TIMER <= 0) {
-	  console.log("LEVEL FINISHED!!");
+	  if (!constants.PRODUCTION) console.log("LEVEL FINISHED!!");
 	  this.finished = true;
 	  return;
 	}
@@ -121,9 +121,6 @@ export class Level {
 	  for (const prop of Prop.alive()) {
 		prop.update(accTime, this.player);
 	  }
-	  for (const item of Item.alive()) {
-		item.update(accTime, this.player);
-	  }
 	  if (typeof this.enemies[i] === "undefined") {
 		continue;
 	  }
@@ -132,6 +129,9 @@ export class Level {
 		  enemy.update(accTime, this.player);
 		}
 	  }
+	}
+	for (const item of Item.alive()) {
+	  item.update(dt);
 	}
 	for (const projectile of Projectile.alive()) {
 	  projectile.update(dt);

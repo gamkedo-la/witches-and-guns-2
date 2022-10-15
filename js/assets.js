@@ -1,8 +1,11 @@
 const assetSpecs = {
   images: [
-	{id: "player", path: "images/julhilde.png"},
+	{id: "player1Portrait", path: "images/lama_sideview_avatar.png"},
+	{id: "player1Back", path: "images/sprite_1gun shoot.png"},
+	{id: "player1Side", path: "images/Sprite1 Wip/RUN_Concept_1.png"},
+	{id: "player2", path: "images/julhilde.png"},
 	{id: "tile", path: "images/tile.png"},
-	{id: "levelBG", path: "images/background.gif"},
+	{id: "levelBG", path: "images/background2.png"},
 	{id: "levelBG2", path: "images/background2.gif"},
 	{id: "levelBG3", path: "images/background3.gif"},
 	{id: "levelBG4", path: "images/background4.gif"},
@@ -19,10 +22,12 @@ const assetSpecs = {
     {id: "logo", path: "images/logo.png"},
 	{id: "menuBG", path: "images/menu_background.gif"},
 	{id: "unibrain", path: "images/unibrain.png"},
+    {id: "bullet_trail" , path: "images/bullet_trail.png"},
   ],
   sounds: [
 	{id: "playerShooting1", path: "sounds/player-shoot-1-WG.mp3"},
 	{id: "playerShooting2", path: "sounds/player-shoot-2-WG.mp3"},
+	{id: "playerDeath", path: "sounds/player_death.mp3"},
 	{id: "donutDeath", path: "sounds/zombie-doughnut-death-short.mp3"},
 	{id: "printerDeath", path: "sounds/possessed-printer-death-WG.mp3"},
 	{id: "espressoDeath", path: "sounds/espresso-gangster-death-reverb.mp3"},
@@ -38,9 +43,7 @@ const assetSpecs = {
   ],
   levels: [
 	{id: "graveyard", path: "levels/graveyard.json"},
-	{id: "level1", path: "levels/level2.json"},
-	{id: "level2", path: "levels/level3.json"},
-	{id: "level3", path: "levels/level4.json"},
+	{id: "forest", path: "levels/level1.json"},
   ],
 };
 

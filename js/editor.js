@@ -73,7 +73,7 @@ class ToolButton extends Button {
   }
 
   action() {
-	console.log("CLICKED", this);
+	if (!constants.PRODUCTION) console.log("CLICKED", this);
   }
 }
 
@@ -231,7 +231,7 @@ export class Editor {
 	if (input.justReleasedKeys.has("PageDown")) {
 	  this.currentLevelIdx = (this.currentLevelIdx + 1) % levelArray.length;
 	  this.levelData = levelArray[this.currentLevelIdx];
-	  console.log("CHANGED TO LEVEL", Object.keys(this.levels)[this.currentLevelIdx]);
+	  if (!constants.PRODUCTION) console.log("CHANGED TO LEVEL", Object.keys(this.levels)[this.currentLevelIdx]);
 	  this.selectedWalkWay = null;
 	  this.selectedEnemy = null;
 	  this.selectedProp = null;
@@ -245,7 +245,7 @@ export class Editor {
 		this.currentLevelIdx %= levelArray.length;
 	  }
 	  this.levelData = levelArray[this.currentLevelIdx];
-	  console.log("CHANGED TO LEVEL", Object.keys(this.levels)[this.currentLevelIdx]);
+	  if (!constants.PRODUCTION) console.log("CHANGED TO LEVEL", Object.keys(this.levels)[this.currentLevelIdx]);
 	  this.selectedWalkWay = null;
 	  this.selectedEnemy = null;
 	  this.selectedProp = null;
@@ -264,7 +264,7 @@ export class Editor {
 		if (this.newWalkWay < this.components.timeSlider.y) {
 		  this.levelData.walkways[Math.round(this.newWalkWay)] = [];	// enemy waves
 		} else {
-		  console.log("Dropped walkway outside of gameplay area");
+		  if (!constants.PRODUCTION) console.log("Dropped walkway outside of gameplay area");
 		}
 		this.newWalkWay = null;
 	  }
@@ -413,7 +413,7 @@ export class Editor {
 		  this.selectedEnemy = null;
 		  this.selectedProp = null;
 		} else {
-		  console.log("Dropped walkway outside of gameplay area");
+		  if (!constants.PRODUCTION) console.log("Dropped walkway outside of gameplay area");
 		}
 		this.isDraggingWW = false;
 		this.dragWW = null;
@@ -540,7 +540,7 @@ export class Editor {
 	  }),
 	  walkways: JSON.parse(JSON.stringify(this.levelData.walkways)),
 	};
-	console.log("Took data snapshot", snapshot);
+	if (!constants.PRODUCTION) console.log("Took data snapshot", snapshot);
 	return snapshot;
   }
 
@@ -705,7 +705,7 @@ export class Editor {
 	  // TODO: find walkway
 	  this.deleteEnemy(this.selectedEnemy.walkway, this.selectedEnemy.index, this.selectedEnemy.subindex);
 	  this.selectedEnemy = null;
-	  console.log("DATA UPDATED", this.levelData, this.undoList);
+	  if (!constants.PRODUCTION) console.log("DATA UPDATED", this.levelData, this.undoList);
 	} else if (this.selectedProp !== null) {
 	  this.undoList.push(this.takeDataSnapshot());
 	  this.deleteProp(this.selectedProp.index);
@@ -725,7 +725,7 @@ export class Editor {
 	  this.selectedEnemy = null;
 	  this.selectedWalkWay = null;
 	} else {
-	  console.log("No further undo information");
+	  if (!constants.PRODUCTION) console.log("No further undo information");
 	}
   }
 
@@ -829,7 +829,7 @@ class TimeSlider {
 
   updateSliderPos(pos) {
 	this.sliderPos = pos;
-	console.log("Changed time slider position", this.sliderPos, "TIME:", this.getSelectedTime());
+	if (!constants.PRODUCTION) console.log("Changed time slider position", this.sliderPos, "TIME:", this.getSelectedTime());
 	this.editor.updateSimEnemies(this.sliderPos);
   }
 

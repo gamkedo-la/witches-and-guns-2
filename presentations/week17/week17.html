@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="author" content="Gonzalo"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.9.2/css/reveal.css"/>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.9.2/css/theme/blood.css" id="theme"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.9.2/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+
+<section>
+<section id="slide-org712e6e3">
+<h2 id="org712e6e3">Witches n' Guns 2</h2>
+<h1>Week 17</h1>
+<em>Release date</em>: <strong>October 16</strong><br>
+<em>Lead</em>: <strong>Gonzalo Delgado</strong>
+<hr>
+
+<ul>
+<li>16 new commits</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orga06c297">
+<h2 id="orga06c297">Contributions</h2>
+<div class="outline-text-2" id="text-orga06c297">
+</div>
+</section>
+<section id="slide-org4d2d6d8">
+<h3 id="org4d2d6d8">H Trayford</h3>
+<ul>
+<li>Credits word wrap and scroll</li>
+<li>Credits controls</li>
+
+</ul>
+
+</section>
+<section id="slide-org43b74d0">
+<h3 id="org43b74d0">Chad Serrant</h3>
+<ul>
+<li>Pause game functionality</li>
+<li><p>
+Player 2 walk animation
+</p>
+
+
+<div id="orgd46e4ef" class="figure">
+<p><img src="./demo/images/julhilde.png" alt="julhilde.png" height="500" style="image-rendering:pixelated" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-orgf632f1f">
+<h3 id="orgf632f1f">FightEXP</h3>
+<p>
+Lama avatar
+</p>
+
+
+<div id="org6be770d" class="figure">
+<p><img src="./demo/images/lama_sideview_avatar.png" alt="lama_sideview_avatar.png" height="500" style="image-rendering:pixelated" />
+</p>
+</div>
+
+
+</section>
+<section id="slide-org10171b8">
+<h3 id="org10171b8">Christer "McFunkypants" Kaitila</h3>
+<p>
+One / two player screen gui art
+</p>
+
+<p>
+<video width="800" autoplay src="./Witches2Player.mp4" type="video/mp4"></video>
+</p>
+
+</section>
+<section id="slide-orgdd4cd8c">
+<h3 id="orgdd4cd8c">Patrick McKeown</h3>
+<ul>
+<li>Player defeated SFX <audio controls><source src="./demo/sounds/player_death.mp3" type="audio/mp3"></audio></li>
+
+</ul>
+
+</section>
+<section id="slide-org04fc3fa">
+<h3 id="org04fc3fa">Gonzalo Delgado</h3>
+<ul>
+<li>Integrate unicorn brain shooting sound</li>
+<li>Integrate toaster bat shooting sound</li>
+<li>Adjust draw order in editor</li>
+<li>Enemy waves bugfixes</li>
+<li>Enemy pop-out speed adjustment</li>
+<li>Player select screen</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org591133b">
+<h2 id="org591133b">Demo</h2>
+<iframe src="./demo/index.html" width="852" height="480"></iframe>
+
+</section>
+</section>
+<section>
+<section id="slide-org00dc997">
+<h2 id="org00dc997">Schedule</h2>
+<blockquote class="trello-board-compact">
+  <a href="https://trello.com/b/MYl1KS07/witches-n-guns-2">
+  Witches 'n Guns 2 Schedule
+  </a>
+</blockquote>
+<script src="https://p.trellocdn.com/embed.min.js"></script>
+
+</section>
+</section>
+<section>
+<section id="slide-org4238288">
+<h2 id="org4238288">Join!</h2>
+<p>
+<b>#team-witches-and-guns-2</b>
+</p>
+</section>
+</section>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.9.2/js/reveal.js"></script>
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: true,
+keyboard: true,
+mouseWheel: false,
+fragmentInURL: false,
+hashOneBasedIndex: false,
+pdfSeparateFragments: true,
+overview: true,
+margin: 0.20,
+minScale: 0.80,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'fast', // see README of reveal.js for options
+transitionSpeed: 'default',
+
+// Optional libraries used to extend reveal.js
+dependencies: [
+ { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.9.2/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.9.2/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.9.2/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.9.2/plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.9.2/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } }]
+
+});
+</script>
+</body>
+</html>
