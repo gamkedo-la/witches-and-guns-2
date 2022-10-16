@@ -285,7 +285,7 @@ export class UnicornBrainBoss extends Boss {
 		1.5,	// height (not used)
 		{id: "bullets", sx: 12, sy: 2, sWidth: 6, sHeight: 6},	// image spec
 		{x: player.avatarPos.x + Player.avatarWidth/2, y: player.avatarPos.y + Player.avatarHeight/2, height: Player.avatarHeight/2},	// target position
-		5,	// speed
+		2,	// speed
 		1,	// damage
 		[(dt, shot) => {
 		  if (pointInRectangle(shot, Object.assign({width: Player.avatarWidth, height: Player.avatarHeight}, player.avatarPos))) {
