@@ -1,5 +1,6 @@
 {
   "name": "level1",
+  "boss": "witch",
   "props": [
     {
       "type": "prop",

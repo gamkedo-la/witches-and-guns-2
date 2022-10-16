@@ -1,4 +1,4 @@
-import {UnicornBrainBoss} from "./enemy.js";
+import {UnicornBrainBoss, EvilWitchBoss} from "./enemy.js";
 import {Level} from "./level.js";
 import {Projectile} from "./projectile.js";
 
@@ -6,6 +6,7 @@ import {Projectile} from "./projectile.js";
 export class BossFight extends Level {
   static classMap = {
 	unibrain: UnicornBrainBoss,
+	witch: EvilWitchBoss,
 	default: UnicornBrainBoss,
   };
 

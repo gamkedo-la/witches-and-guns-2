@@ -23,6 +23,7 @@ const assetSpecs = {
 	{id: "menuBG", path: "images/menu_background.gif"},
 	{id: "unibrain", path: "images/unibrain.png"},
     {id: "bullet_trail" , path: "images/bullet_trail.png"},
+	{id: "evilWitch", path: "images/witch.png"},
   ],
   sounds: [
 	{id: "playerShooting1", path: "sounds/player-shoot-1-WG.mp3"},
@@ -40,6 +41,9 @@ const assetSpecs = {
 	{id: "espressoAttack2", path: "sounds/espresso_shoot_2.mp3"},
 	{id: "toasterAttack", path: "sounds/toaster_bat_shooting.mp3"},
 	{id: "uniBrainAttack", path: "sounds/unicorn_brain_psionic_attack.mp3"},
+	{id: "evilWitchAttack1", path: "sounds/witchboss_attack.mp3"},
+	{id: "evilWitchAttack2", path: "sounds/witchboss_attack_2.mp3"},
+	{id: "evilWitchDeath", path: "sounds/witchboss_death.mp3"},
   ],
   levels: [
 	{id: "graveyard", path: "levels/graveyard.json"},

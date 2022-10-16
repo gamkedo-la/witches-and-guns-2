@@ -300,3 +300,76 @@ export class UnicornBrainBoss extends Boss {
 	}
   }
 }
+
+
+export class EvilWitchBoss extends Boss {
+
+  static CHANGE_DIR_DIST = constants.VIEWABLE_WIDTH - 32;
+
+  init(x, y, bounty) {
+	super.init(x, y, 49, 63, {id: "evilWitch", sx: 0, sy: 0, sWidth: 50, sHeight: 65, animations: {}}, {death: "evilWitchDeath"}, bounty);
+	this.hp = 50;
+	this.velX = 128;
+	this.velY = 8;
+	this.sinX = this.x;
+	this.startX = this.x;
+	this.resetTimeToAttack();
+	this.resetWaitToShootTime();
+	this.shootSounds = ["evilWitchAttack1", "evilWitchAttack2"];
+  }
+
+  resetTimeToAttack() {
+	this.timeToAttack = Math.random() + 2;
+  }
+
+  resetWaitToShootTime() {
+	this.waitToShootTime = Math.random() + 1;
+  }
+
+  update(accTime, player) {
+	const dt = accTime - this.prevAccTime;
+	this.prevAccTime = accTime;
+	if (this.timeToAttack <= 0) {
+	  this.attack(dt, player);
+	} else {
+	  this.timeToAttack -= dt;
+	  this.move(dt);
+	}
+	super.update(accTime, player);
+  }
+
+  move(dt) {
+	this.x += this.velX*dt;
+	this.sinX += this.velY*dt;
+	this.y = (Math.sin(this.sinX) + 1)*(100 - 50)/2 + 50;
+	if (Math.abs(this.x - this.startX) >= UnicornBrainBoss.CHANGE_DIR_DIST) {
+	  this.velX *= -1;
+	  this.startX = this.x;
+	}
+  }
+
+  attack(dt, player) {
+	if (this.waitToShootTime <= 0) {
+	  this.blastQueue.push(this.shootSounds[Math.floor(Math.random()*2)]);
+	  Projectile.spawn(
+		this.x + this.width/2,	// starting x
+		this.y + this.height/2,	// starting y
+		1.5,	// width (radius)
+		1.5,	// height (not used)
+		{id: "bullets", sx: 12, sy: 2, sWidth: 6, sHeight: 6},	// image spec
+		{x: player.avatarPos.x + Player.avatarWidth/2, y: player.avatarPos.y + Player.avatarHeight/2, height: Player.avatarHeight/2},	// target position
+		4,	// speed
+		1,	// damage
+		[(dt, shot) => {
+		  if (pointInRectangle(shot, Object.assign({width: Player.avatarWidth, height: Player.avatarHeight}, player.avatarPos))) {
+			player.takeShot(this, shot);
+		  }
+		}],
+	  );
+	  this.resetTimeToAttack();
+	  this.resetWaitToShootTime();
+	} else {
+	  this.waitToShootTime -= dt;
+	}
+  }
+}
