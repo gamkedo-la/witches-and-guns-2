@@ -13,7 +13,7 @@ export class Level {
   static #TIMER = 0;
   static #WAVE_TIMER = 0;
   static #SCROLL_SPEED = 256;
-  static #LEVEL_TIME = 10;
+  static #LEVEL_TIME = 32;
   static BACKGROUNDS_MAP = {
 	graveyard: ["graveyardBG"],
 	default: ["levelBG"], //, "levelBG2", "levelBG3", "levelBG4"],
