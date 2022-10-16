@@ -1,0 +1,77 @@
+#+OPTIONS: reveal_title_slide:nil reveal_center:t reveal_progress:t reveal_history:nil reveal_control:t
+#+OPTIONS: reveal_rolling_links:t reveal_keyboard:t reveal_overview:t num:nil
+#+OPTIONS: toc:0
+#+REVEAL_ROOT: https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.9.2/
+#+REVEAL_MARGIN: 0.2
+#+REVEAL_MIN_SCALE: 0.8
+#+REVEAL_TRANS: fast
+#+REVEAL_THEME: blood
+
+
+* Witches n' Guns 2
+
+  #+BEGIN_export html
+  <h1>RELEASE!</h1>
+  <em>Release date</em>: <strong>Today!</strong><br>
+  <em>Lead</em>: <strong>Gonzalo Delgado</strong>
+  <hr>
+  #+END_export
+
+  - 26 new commits
+
+* Contributions
+
+** H Trayford
+
+   - Flag to disable logging for production/release
+
+** Chris DeLeon
+
+   - Credits
+
+
+** FightEXP
+   Forest level background
+   #+ATTR_HTML: :height 200 :style image-rendering:pixelated
+   [[./demo/images/background2.png]]
+
+   Player 1 behind look and shooting frames
+   #+ATTR_HTML: :height 224 :style image-rendering:pixelated
+   [[./demo/images/sprite_1gun shoot.png]]
+
+** Christer "McFunkypants" Kaitila
+
+   - Bullet trails effect
+   - Bullet position and aiming adjustments
+
+** Patrick McKeown
+
+   - Evil Witch boss attack SFX #1 @@html:<audio controls><source src="./demo/sounds/witchboss_attack.mp3" type="audio/mp3"></audio>@@
+   - Evil Witch boss attack SFX #2 @@html:<audio controls><source src="./demo/sounds/witchboss_attack_2.mp3" type="audio/mp3"></audio>@@
+   - Evil Witch boss defeated SFX @@html:<audio controls><source src="./demo/sounds/witchboss_death.mp3" type="audio/mp3"></audio>@@
+
+** Vince McKeown
+
+   #+ATTR_HTML: :height 500 :style image-rendering:pixelated
+   [[./demo/images/witch.png]]
+
+** Gonzalo Delgado
+
+   - Editor playtest mode bugfix
+   - Forest level
+   - Game finished scene
+   - Player select bugfix
+   - Make each character use a different gun type
+   - Item drop bugfix
+   - Evil Witch boss AI
+   - Release set up
+
+* Demo
+
+#+BEGIN_export html
+<iframe src="./demo/index.html" width="852" height="480"></iframe>
+#+END_export
+
+
+* Thanks!
+
