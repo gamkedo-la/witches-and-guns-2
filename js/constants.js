@@ -13,6 +13,6 @@ export const constants = {
   BULLET_TRAIL_ALPHA: 0.25, // 1.0 is fully opaque
   BULLET_TRAIL_XOFFSET: -4, // the bullet sprites are not centered so we need to shift from the corner to the middle
   BULLET_TRAIL_YOFFSET: -4,
-  PRODUCTION: false, // set to true to disable console logging for release
+  PRODUCTION: true, // set to true to disable console logging for release
 };
 Object.freeze(constants);
