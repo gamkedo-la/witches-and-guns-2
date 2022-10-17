@@ -441,10 +441,10 @@ class CreditsScene {
 		this.contributionsFont = `normal ${this.lineHeight}px serif`;
 		this.MAX_CREDITS_SCROLL_TIME = 17.0;
 		this.credits = [
-{contributor: 'Gonzalo Delgado', contributions: 'Project lead, core gameplay, custom level editor and related UI/format, level design, hitboxcollision system, enemy behaviors, assorted bug fixes, general asset integration, title screen, level timer, level names setup'},
-{contributor: 'Vince McKeown', contributions: 'Sprite art (donut variants with animations, printer enemy, graves, bushes, rocks, latnern, expresso gangster, toaster bat), visual effects, game over and game win scenes, destroyable props, pickups, item drop, scoring, animation system, boss fight, gun types'},
+{contributor: 'Gonzalo Delgado', contributions: 'Project lead, core gameplay, custom level editor and related UI/format, level design, hitbox collision system, enemy behaviors, assorted bug fixes, general asset integration, title screen, level timer, level names setup'},
+{contributor: 'Vince McKeown', contributions: 'Sprite art (donut variants with animations, printer enemy, graves, bushes, rocks, lantern, expresso gangster, toaster bat), visual effects, game over and game win scenes, destroyable props, pickups, item drop, scoring, animation system, boss fight, gun types'},
 {contributor: 'FightEXP', contributions: 'Player 1 sprite animation (move and shoot), level backgrounds (moon, mountain graveyard), art concepts (character, shot, run, llama side view)'},
-{contributor: 'Patrick McKeown', contributions: 'Sounds (gunfire and bomb variations, enemy defeated, explosions, printer shots, toaster bat, coffee cup, unicorn barin, player defeated, witchboss), player shot sprites'},
+{contributor: 'Patrick McKeown', contributions: 'Sounds (gunfire and bomb variations, enemy defeated, explosions, printer shots, toaster bat, coffee cup, unicorn brain, player defeated, witch boss), player shot sprites'},
 {contributor: 'Christer \"McFunkypants\" Kaitila', contributions: 'Player dodge, parallax background, logo, player mode GUI, shot trails, shot alignment'},
 {contributor: 'Chad Serrant', contributions: 'Player sprite walking animation, pause toggle'},
 {contributor: 'Liyi Zhang', contributions: 'Player 2 sprite (front and side, cape removed)'},
