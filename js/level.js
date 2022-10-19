@@ -43,7 +43,7 @@ export class Level {
   }
 
   getMaxTimeIndex() {
-	return Math.max(...Object.values(this.levelData.walkways).map(walkway => walkway.findLastIndex(wave => wave !== null && wave.length > 0)));
+	return Math.max(...Object.values(this.levelData.walkways).map(walkway => Array.from(walkway).reverse().findIndex(wave => wave !== null && wave.length > 0)));
   }
 
   reset(data) {
