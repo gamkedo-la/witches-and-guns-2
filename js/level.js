@@ -14,6 +14,7 @@ export class Level {
   static #WAVE_TIMER = 0;
   static #SCROLL_SPEED = 256;
   static #LEVEL_TIME = 32;
+  static #LEVEL_TIMER = 0;
   static BACKGROUNDS_MAP = {
 	graveyard: ["graveyardBG"],
 	default: ["levelBG"], //, "levelBG2", "levelBG3", "levelBG4"],
@@ -48,6 +49,7 @@ export class Level {
 
   reset(data) {
 	Level.#TIMER = 0;
+	Level.#LEVEL_TIMER = 0;
 	Level.#WAVE_TIMER = 0;
 	this.levelData = data;
 	this.offset = 0;
@@ -75,7 +77,8 @@ export class Level {
 
   update(dt) {
 	Level.#TIMER += dt;
-	if (!this.levelTimerDisabled && Level.#LEVEL_TIME - Level.#TIMER <= 0) {
+	Level.#LEVEL_TIMER += dt;
+	if (!this.levelTimerDisabled && Level.#LEVEL_TIME - Level.#LEVEL_TIMER <= 0) {
 	  if (!constants.PRODUCTION) console.log("LEVEL FINISHED!!");
 	  this.finished = true;
 	  return;
@@ -165,7 +168,7 @@ export class Level {
 	ctx.fillStyle = "white";
 	ctx.font = "bold 18px sans";
 	ctx.textAlign = "center";
-	const timerStr = (Math.round(Level.#LEVEL_TIME - Level.#TIMER)).toString().padStart(2, "0");
+	const timerStr = (Math.round(Level.#LEVEL_TIME - Level.#LEVEL_TIMER)).toString().padStart(2, "0");
 	ctx.fillText(timerStr, Math.round(ctx.canvas.width/2), 16);
 	ctx.textAlign = oldAlign;
 	ctx.font = oldFont;
